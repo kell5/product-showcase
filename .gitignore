@@ -1,0 +1,27 @@
+# VS Code 配置（每台电脑不同，不要提交）
+.vscode/
+
+# IDE 配置
+.claude/
+.reasonix/
+
+# 运行时数据（敏感，不提交）
+data/products.json
+data/password.hash
+
+# 上传目录
+uploads/
+
+# 服务器配置片段
+nginx-config-snippet.conf
+
+# 压缩包
+*.zip
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 部署配置文件（包含本地路径等敏感信息）
+.env
+.env.local
