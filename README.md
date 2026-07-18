@@ -8,6 +8,7 @@ product-showcase/
 ├── product-gesture-arm.html      # GesturePilot 体感操控机械臂详情页
 ├── product-sound-core.html       # SoundCore 嵌入式音频终端详情页
 ├── product-vision-tracker.html   # VisionTracker 智能视觉追踪臂详情页
+├── product-yinghuo-zhilian.html  # 萤火智联 ESP32 Mesh 智能家居展示页
 ├── css/
 │   └── styles.css                # 全部样式（分段注释，便于维护）
 ├── js/
@@ -16,6 +17,13 @@ product-showcase/
 │   └── .gitkeep
 └── README.md                     # 本文件
 ```
+
+## 萤火智联
+
+- 展示页：`product-yinghuo-zhilian.html`
+- APK 下载：`https://www.lk-mcu.online/downloads/yinghuo-zhilian-mesh-app-release.apk`
+- 开源仓库：<https://github.com/kell5/esp32_ble_mesh>
+- 页面风格：冷白 + 冰蓝/星紫科技风，保留原网站项目展示与管理后台结构。
 
 ## 图片命名规范
 

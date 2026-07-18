@@ -41,6 +41,7 @@
         <a href="#about">关于我</a>
         <a href="#products">核心产品</a>
         <a href="#all-projects">全部项目</a>
+        <a href="product-yinghuo-zhilian.html">萤火智联</a>
         <a href="product-gesture-arm.html">体感机械臂</a>
         <a href="product-vision-tracker.html">视觉追踪臂</a>
         <a href="#contact" class="nav-contact-btn">联系我</a>
@@ -72,7 +73,7 @@
         <p class="hero-desc">
           从体感控制到视觉追踪，从智能家居到工业物联 — 一个人完成需求分析、硬件选型、PCB设计、固件开发与上位机调试的全流程。
           <br/>
-          <span data-typewriter='["GesturePilot 体感操控机械臂","SoundCore 嵌入式音频终端","VisionTracker 智能视觉追踪臂","嵌入式创新项目"]' style="color:var(--c-accent);font-weight:600;"></span>
+          <span data-typewriter='["萤火智联 ESP32 Mesh 智能家居","GesturePilot 体感操控机械臂","SoundCore 嵌入式音频终端","VisionTracker 智能视觉追踪臂"]' style="color:var(--c-accent);font-weight:600;"></span>
           <span style="display:inline-block;width:2px;height:1.1em;background:var(--c-accent);vertical-align:middle;animation:dotPulse 1s infinite;margin-left:2px;"></span>
         </p>
         <div class="hero-actions">
@@ -182,7 +183,31 @@
       </div>
 
       <!-- 核心产品由后台动态渲染 -->
-      <div class="products-grid"></div>
+      <div class="products-grid">
+        <a href="product-yinghuo-zhilian.html" class="product-card yinghuo-card-link reveal reveal-delay-1">
+          <div class="product-card-image">
+            <div class="placeholder">
+              <img src="images/yinghuo-light.webp" alt="萤火智联 App 与智能灯泡" />
+              <span>ESP32 Mesh 智能家居闭环</span>
+            </div>
+            <div class="product-card-overlay"></div>
+            <span class="product-card-badge">智能家居 / OTA</span>
+          </div>
+          <div class="product-card-body">
+            <h3 class="product-card-title">萤火智联</h3>
+            <p class="product-card-desc">基于 ESP32、Flutter、MQTT、FastAPI 的智能家居开源系统，覆盖门铃、Mesh 灯控、云端设备影子和 OTA。</p>
+            <div class="product-card-tags">
+              <span class="product-card-tag">ESP32-S3</span>
+              <span class="product-card-tag">Flutter</span>
+              <span class="product-card-tag">MQTT</span>
+              <span class="product-card-tag">OTA</span>
+            </div>
+          </div>
+          <div class="product-card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </div>
+        </a>
+      </div>
     </div>
   </section>
 
@@ -197,6 +222,7 @@
 
       <div class="projects-scroll-grid">
         <!-- ★ 核心产品 -->
+        <a href="product-yinghuo-zhilian.html" class="mini-card reveal"><div class="mini-card-icon"><img src="images/yinghuo-light.webp" alt="萤火智联" /></div><div class="mini-card-title">萤火智联</div></a>
         <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="mini-card-title">体感操控机械臂</div></div>
         <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="mini-card-title">嵌入式音频终端</div></div>
         <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div class="mini-card-title">智能视觉追踪臂</div></div>
@@ -288,6 +314,7 @@
         </div>
         <div class="footer-links-group">
           <h4>核心产品</h4>
+          <a href="product-yinghuo-zhilian.html">萤火智联</a>
           <a href="product-gesture-arm.html">体感操控机械臂</a>
           <a href="product-sound-core.html">嵌入式音频终端</a>
           <a href="product-vision-tracker.html">智能视觉追踪臂</a>
