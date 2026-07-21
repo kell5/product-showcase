@@ -12,7 +12,7 @@
 
 - `index.html`：首页，总览项目与入口
 - `product-lightmesh.html`：LightMesh 灯联网单独展示页
-- `product-lightmesh-doorbell.html`：可视化门铃独立详情页
+- `product-lightmesh-doorbell.html`：可视化门铃详情页
 - `product-yinghuo-zhilian.html`：旧入口兼容跳转页
 - `admin.html`：后台管理页
 - `product-*.html`：其他项目详情页

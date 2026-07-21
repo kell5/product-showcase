@@ -34,7 +34,7 @@
         <a href="product-lightmesh.html">LightMesh 灯联网</a>
         <a href="#screens">App 页面</a>
         <a href="#link">视频链路</a>
-        <a href="#debug">调试说明</a>
+        <a href="#debug">使用说明</a>
         <a href="admin.html" class="nav-contact-btn">管理后台</a>
       </div>
       <button class="nav-toggle" aria-label="菜单">
@@ -57,7 +57,7 @@
           <div class="yinghuo-badge">ESP32-S3 · MQTT · MJPEG · Flutter App</div>
           <h1 class="yinghuo-title">
             可视化门铃
-            <span class="soft">独立详情页</span>
+            <span class="soft">网络视频设备</span>
           </h1>
           <p class="yinghuo-lead">
             门铃是 LightMesh 体系里的网络型设备：它和灯控、网关共用同一个 App 和云端账号体系，
@@ -76,9 +76,11 @@
           </div>
         </div>
 
-        <div class="doorbell-hero-stack reveal-right">
-          <img class="floating-screenshot floating-screenshot--main" src="images/doorbell-app-device.svg" alt="门铃设备详情页 App 截图" />
-          <img class="floating-screenshot floating-screenshot--side" src="images/doorbell-app-live.svg" alt="门铃实时画面 App 截图" />
+        <div class="doorbell-hero-media reveal-right">
+          <figure class="doorbell-real-shot doorbell-real-shot--hero">
+            <img src="images/doorbell-app-device.jpg" alt="门铃设备详情页 App 截图" />
+            <figcaption>门铃设备详情页</figcaption>
+          </figure>
         </div>
       </div>
     </div>
@@ -87,32 +89,29 @@
   <section class="yinghuo-section" id="screens">
     <div class="container">
       <div class="reveal" style="text-align:center;">
-        <span class="section-label">App Screens</span>
-        <h2 class="section-title">从你给的界面里挑了<span class="gradient-text">三张最能说明闭环的图</span></h2>
-        <p class="section-desc" style="margin:0 auto;">设备详情页说明“已连接信令服务器”和配网入口；实时画面页说明本地/中继切换；设备列表页说明门铃和 Mesh 设备在同一个 App 中统一管理。</p>
+        <span class="section-label">App Experience</span>
+        <h2 class="section-title">门铃状态、配网和视频入口<span class="gradient-text">集中在设备页</span></h2>
+        <p class="section-desc" style="margin:0 auto;">设备详情页展示信令服务器连接状态、视频地址、首次上电/更换 WiFi 的配网入口，以及实时画面的访问入口。</p>
       </div>
-      <div class="doorbell-image-grid">
-        <figure class="doorbell-image-card reveal">
-          <img src="images/doorbell-app-device.svg" alt="门铃设备详情页：信令服务器、视频地址、设备配网和实时画面入口" />
-          <figcaption>
-            <strong>设备详情页</strong>
-            <span>连接状态、视频地址、换 WiFi 配网、实时画面入口集中在同一个页面。</span>
-          </figcaption>
+      <div class="doorbell-showcase-grid">
+        <figure class="doorbell-real-shot reveal">
+          <img src="images/doorbell-app-device.jpg" alt="门铃设备详情页：信令服务器、视频地址、设备配网和实时画面入口" />
+          <figcaption>真实 App 设备页截图</figcaption>
         </figure>
-        <figure class="doorbell-image-card doorbell-image-card--large reveal">
-          <img src="images/doorbell-app-live.svg" alt="门铃实时画面页：本地局域网和中继远程切换" />
-          <figcaption>
-            <strong>实时画面页</strong>
-            <span>本地局域网和中继远程两套链路可以切换，调试时能快速判断网络路径问题。</span>
-          </figcaption>
-        </figure>
-        <figure class="doorbell-image-card reveal">
-          <img src="images/doorbell-app-list.svg" alt="我的设备列表页：智能门铃和 Mesh 网关统一显示" />
-          <figcaption>
-            <strong>统一设备入口</strong>
-            <span>门铃、Mesh 网关、灯控节点都在“我的设备”里出现，但业务协议按设备类型分流。</span>
-          </figcaption>
-        </figure>
+        <div class="doorbell-showcase-copy reveal">
+          <div class="doorbell-point">
+            <strong>信令状态清晰</strong>
+            <span>设备页直接展示“已连接信令服务器”，便于确认门铃是否在线。</span>
+          </div>
+          <div class="doorbell-point">
+            <strong>视频入口明确</strong>
+            <span>视频地址和“查看实时画面”按钮集中展示，用户可以直接进入画面页。</span>
+          </div>
+          <div class="doorbell-point">
+            <strong>配网路径保留</strong>
+            <span>首次上电或更换 WiFi 时，通过设备配网入口重新写入网络信息。</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -158,7 +157,7 @@ farmely/doorbell/&lt;device_id&gt;/up/event</code></pre>
     <div class="container">
       <div class="reveal" style="text-align:center;">
         <span class="section-label">Debug Notes</span>
-        <h2 class="section-title">调试时重点看<span class="gradient-text">三个状态</span></h2>
+        <h2 class="section-title">使用时重点关注<span class="gradient-text">三个状态</span></h2>
       </div>
       <div class="debug-grid">
         <div class="yinghuo-card debug-card reveal">
@@ -174,8 +173,8 @@ farmely/doorbell/&lt;device_id&gt;/up/event</code></pre>
           <p>局域网通但中继不通，优先查云端 relay；中继通但本地不通，优先查手机和门铃是否同网段。</p>
         </div>
         <div class="yinghuo-card debug-card reveal">
-          <h3>不要影响灯控</h3>
-          <p>门铃网络链路和 BLE Mesh 灯控链路独立，修改门铃页面时不要改动灯控节点配网、Mesh 控制和 OTA 入口。</p>
+          <h3>独立于灯控链路</h3>
+          <p>门铃网络链路和 BLE Mesh 灯控链路独立，视频访问不会占用 Mesh 控制通道。</p>
         </div>
       </div>
     </div>

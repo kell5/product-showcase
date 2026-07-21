@@ -2612,7 +2612,7 @@ ul, ol { list-style: none; }
   .doorbell-hardware-card { align-items: flex-start; }
 }
 
-/* LightMesh 可视化门铃独立详情页 */
+/* LightMesh 可视化门铃详情页 */
 .yinghuo-section--doorbell-teaser {
   padding-top: 8px;
 }
@@ -2694,27 +2694,6 @@ ul, ol { list-style: none; }
   min-height: 860px;
 }
 
-.floating-screenshot {
-  position: absolute;
-  width: min(100%, 360px);
-  border-radius: 36px;
-  background: #fff;
-  box-shadow: 0 34px 90px rgba(15,23,42,0.16);
-  border: 12px solid rgba(255,255,255,0.85);
-}
-
-.floating-screenshot--main {
-  top: 0;
-  left: 0;
-  transform: rotate(-6deg);
-}
-
-.floating-screenshot--side {
-  right: 0;
-  top: 214px;
-  transform: rotate(4deg);
-}
-
 .doorbell-image-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2766,6 +2745,56 @@ ul, ol { list-style: none; }
   margin-top: 14px;
 }
 
+.doorbell-hero-media {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.doorbell-real-shot {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 34px;
+  background: rgba(255,255,255,0.88);
+  border: 12px solid rgba(255,255,255,0.88);
+  box-shadow:
+    0 34px 90px rgba(15,23,42,0.16),
+    0 0 0 1px rgba(15,23,42,0.06);
+  transform: translateY(-4px);
+}
+
+.doorbell-real-shot--hero {
+  width: min(100%, 390px);
+}
+
+.doorbell-real-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 24px;
+}
+
+.doorbell-real-shot figcaption {
+  padding: 14px 12px 6px;
+  text-align: center;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.doorbell-showcase-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: center;
+  margin-top: 36px;
+}
+
+.doorbell-showcase-copy {
+  display: grid;
+  gap: 16px;
+}
+
 @media (max-width: 1024px) {
   .doorbell-detail-layout,
   .doorbell-teaser-card {
@@ -2777,8 +2806,8 @@ ul, ol { list-style: none; }
   .doorbell-image-card--large {
     transform: none;
   }
-  .floating-screenshot--side {
-    top: 178px;
+  .doorbell-showcase-grid {
+    grid-template-columns: 1fr;
   }
 }
 
