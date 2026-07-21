@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>可视化门铃详情 | LightMesh 灯联网</title>
+  <meta name="description" content="LightMesh 灯联网可视化门铃详情页，展示 ESP32-S3 门铃的 App 设备详情、实时画面、本地/远程中继视频链路、配网和 MQTT 信令设计。" />
+  <meta name="keywords" content="LightMesh 灯联网,可视化门铃,ESP32-S3,Flutter App,MQTT,MJPEG,设备配网,远程中继" />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://www.lk-mcu.online/product-lightmesh-doorbell.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="智能硬件工作室" />
+  <meta property="og:title" content="可视化门铃详情 | LightMesh 灯联网" />
+  <meta property="og:description" content="门铃保持独立网络链路，不混入 Mesh 控制链路；App 内支持设备详情、配网、实时画面和远程中继查看。" />
+  <meta property="og:url" content="https://www.lk-mcu.online/product-lightmesh-doorbell.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="yinghuo-page doorbell-page">
+
+  <div class="scroll-progress"></div>
+  <div class="cursor-glow"></div>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <span class="nav-brand-icon"></span>
+        智能硬件工作室
+      </a>
+      <div class="nav-links">
+        <a href="index.html">首页</a>
+        <a href="product-lightmesh.html">LightMesh 灯联网</a>
+        <a href="#screens">App 页面</a>
+        <a href="#link">视频链路</a>
+        <a href="#debug">调试说明</a>
+        <a href="admin.html" class="nav-contact-btn">管理后台</a>
+      </div>
+      <button class="nav-toggle" aria-label="菜单">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="doorbell-detail-hero">
+    <div class="container">
+      <div class="doorbell-detail-layout">
+        <div class="reveal">
+          <div class="page-hero-breadcrumb">
+            <a href="index.html">首页</a>
+            <span class="sep">/</span>
+            <a href="product-lightmesh.html">LightMesh 灯联网</a>
+            <span class="sep">/</span>
+            <span>可视化门铃</span>
+          </div>
+          <div class="yinghuo-badge">ESP32-S3 · MQTT · MJPEG · Flutter App</div>
+          <h1 class="yinghuo-title">
+            可视化门铃
+            <span class="soft">独立详情页</span>
+          </h1>
+          <p class="yinghuo-lead">
+            门铃是 LightMesh 体系里的网络型设备：它和灯控、网关共用同一个 App 和云端账号体系，
+            但底层不依赖 Mesh 转发，而是独立走 Wi-Fi、MQTT 信令和 MJPEG 视频链路。
+          </p>
+          <div class="yinghuo-actions">
+            <a class="yinghuo-btn yinghuo-btn--primary" href="#screens">查看 App 展示</a>
+            <a class="yinghuo-btn yinghuo-btn--ghost" href="product-lightmesh.html">返回灯联网主页</a>
+          </div>
+          <div class="doorbell-hardware-card doorbell-hardware-card--hero">
+            <img src="images/yinghuo-doorbell.webp" alt="ESP32-S3 可视化门铃设备" />
+            <div>
+              <strong>ESP32-S3 Doorbell</strong>
+              <span>OV3660 摄像头 · IO0 门铃事件 · MQTT 信令 · 本地/中继 MJPEG 视频</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="doorbell-hero-stack reveal-right">
+          <img class="floating-screenshot floating-screenshot--main" src="images/doorbell-app-device.svg" alt="门铃设备详情页 App 截图" />
+          <img class="floating-screenshot floating-screenshot--side" src="images/doorbell-app-live.svg" alt="门铃实时画面 App 截图" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="yinghuo-section" id="screens">
+    <div class="container">
+      <div class="reveal" style="text-align:center;">
+        <span class="section-label">App Screens</span>
+        <h2 class="section-title">从你给的界面里挑了<span class="gradient-text">三张最能说明闭环的图</span></h2>
+        <p class="section-desc" style="margin:0 auto;">设备详情页说明“已连接信令服务器”和配网入口；实时画面页说明本地/中继切换；设备列表页说明门铃和 Mesh 设备在同一个 App 中统一管理。</p>
+      </div>
+      <div class="doorbell-image-grid">
+        <figure class="doorbell-image-card reveal">
+          <img src="images/doorbell-app-device.svg" alt="门铃设备详情页：信令服务器、视频地址、设备配网和实时画面入口" />
+          <figcaption>
+            <strong>设备详情页</strong>
+            <span>连接状态、视频地址、换 WiFi 配网、实时画面入口集中在同一个页面。</span>
+          </figcaption>
+        </figure>
+        <figure class="doorbell-image-card doorbell-image-card--large reveal">
+          <img src="images/doorbell-app-live.svg" alt="门铃实时画面页：本地局域网和中继远程切换" />
+          <figcaption>
+            <strong>实时画面页</strong>
+            <span>本地局域网和中继远程两套链路可以切换，调试时能快速判断网络路径问题。</span>
+          </figcaption>
+        </figure>
+        <figure class="doorbell-image-card reveal">
+          <img src="images/doorbell-app-list.svg" alt="我的设备列表页：智能门铃和 Mesh 网关统一显示" />
+          <figcaption>
+            <strong>统一设备入口</strong>
+            <span>门铃、Mesh 网关、灯控节点都在“我的设备”里出现，但业务协议按设备类型分流。</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="yinghuo-section yinghuo-section--dark" id="link">
+    <div class="container">
+      <div class="reveal" style="text-align:center;">
+        <span class="section-label">Video Link</span>
+        <h2 class="section-title">门铃不进 Mesh，视频链路<span class="gradient-text">单独分流</span></h2>
+        <p class="section-desc" style="margin:0 auto;">这个设计是为了稳定性：灯控节点走 Mesh 控制，门铃走网络视频。两条链路互不拖累，但 App 页面、账号、设备影子和 OTA 入口保持统一。</p>
+      </div>
+      <div class="tutorial-timeline">
+        <div class="tutorial-step reveal">
+          <div class="step-no">01</div>
+          <div>
+            <h3>设备上电与配网</h3>
+            <p>首次上电或换 WiFi 时，App 从门铃详情页进入配网流程，把 SSID、密码和服务器地址写入设备侧存储。</p>
+            <div class="code-card">App → Doorbell Provisioning → Wi-Fi Connected → MQTT Online</div>
+          </div>
+        </div>
+        <div class="tutorial-step reveal">
+          <div class="step-no">02</div>
+          <div>
+            <h3>MQTT 信令保持在线</h3>
+            <p>门铃上报在线状态、事件和视频地址；App 看到“已连接信令服务器”后，才开放实时画面入口，避免用户点进空页面。</p>
+            <pre><code>farmely/doorbell/&lt;device_id&gt;/up/status
+farmely/doorbell/&lt;device_id&gt;/up/event</code></pre>
+          </div>
+        </div>
+        <div class="tutorial-step reveal">
+          <div class="step-no">03</div>
+          <div>
+            <h3>本地 / 中继双路径查看</h3>
+            <p>在同一实时画面页里切换“本地(局域网)”和“中继(远程)”。局域网适合近场低延迟调试，中继适合外网访问。</p>
+            <div class="code-card">Local MJPEG URL ⇄ Relay MJPEG URL</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="yinghuo-section" id="debug">
+    <div class="container">
+      <div class="reveal" style="text-align:center;">
+        <span class="section-label">Debug Notes</span>
+        <h2 class="section-title">调试时重点看<span class="gradient-text">三个状态</span></h2>
+      </div>
+      <div class="debug-grid">
+        <div class="yinghuo-card debug-card reveal">
+          <h3>信令是否在线</h3>
+          <p>如果信令服务器未连接，先看 Wi-Fi、MQTT 地址、账号绑定和设备 ID，不急着查视频流。</p>
+        </div>
+        <div class="yinghuo-card debug-card reveal">
+          <h3>视频地址是否可达</h3>
+          <p>App 展示的视频地址要能在本地或中继服务里访问，否则实时画面页会打开但没有画面。</p>
+        </div>
+        <div class="yinghuo-card debug-card reveal">
+          <h3>本地/远程路径区分</h3>
+          <p>局域网通但中继不通，优先查云端 relay；中继通但本地不通，优先查手机和门铃是否同网段。</p>
+        </div>
+        <div class="yinghuo-card debug-card reveal">
+          <h3>不要影响灯控</h3>
+          <p>门铃网络链路和 BLE Mesh 灯控链路独立，修改门铃页面时不要改动灯控节点配网、Mesh 控制和 OTA 入口。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer" id="contact">
+    <div class="container">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand">
+            <span class="nav-brand-icon"></span>
+            智能硬件工作室
+          </div>
+          <p class="footer-desc">可视化门铃是 LightMesh 灯联网中的独立网络设备：统一 App 入口，独立视频链路，后续继续接入 OTA 和事件通知。</p>
+        </div>
+        <div class="footer-links-group">
+          <h4>项目链接</h4>
+          <a href="product-lightmesh.html">LightMesh 灯联网</a>
+          <a href="https://github.com/kell5/esp32_ble_mesh" target="_blank" rel="noopener noreferrer">开源仓库</a>
+          <a href="downloads/lightmesh-app-release.apk" download>APK 下载</a>
+        </div>
+        <div class="footer-links-group">
+          <h4>网站功能</h4>
+          <a href="admin.html">管理后台</a>
+          <a href="product-gesture-arm.html">体感机械臂</a>
+          <a href="product-vision-tracker.html">视觉追踪臂</a>
+        </div>
+        <div class="footer-links-group">
+          <h4>联系方式</h4>
+          <a href="mailto:13393961819@163.com">邮箱: 13393961819@163.com</a>
+          <a href="tel:13393961819">电话: 13393961819</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 智能硬件工作室 · LightMesh 灯联网</span>
+        <span>Visual Doorbell · MQTT · MJPEG</span>
+        <span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">豫ICP备2026025181号-1</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

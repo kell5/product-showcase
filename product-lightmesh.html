@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -33,7 +33,7 @@
         <a href="index.html">首页</a>
         <a href="#intro">项目介绍</a>
         <a href="#architecture">系统架构</a>
-        <a href="#doorbell">可视门铃</a>
+        <a href="product-lightmesh-doorbell.html">可视门铃</a>
         <a href="#engineering">开发细节</a>
         <a href="#debug-notes">调试记录</a>
         <a href="#roadmap">后续更新</a>
@@ -324,10 +324,10 @@ Cloud/App   → farmely/light/{id}/down/cmd</code></pre>
           <h3>Flutter App</h3>
           <p>账号登录、设备列表、云端详情页、灯控、门铃视频入口、BLE/SoftAP 配网和 OTA 检查入口。</p>
         </div>
-        <div class="yinghuo-card feature-card reveal">
+        <a class="yinghuo-card feature-card reveal doorbell-feature-link" href="product-lightmesh-doorbell.html">
           <h3>ESP32 门铃</h3>
           <p>OV3660 摄像头、IO0 门铃事件、MQTT 信令、本地/中继 MJPEG 视频链路已形成闭环。</p>
-        </div>
+        </a>
         <div class="yinghuo-card feature-card reveal">
           <h3>Mesh 灯控</h3>
           <p>ESP-WIFI-MESH/BLE Mesh 网关与节点控制链路，支持节点状态聚合和 App 控制。</p>
@@ -340,90 +340,22 @@ Cloud/App   → farmely/light/{id}/down/cmd</code></pre>
     </div>
   </section>
 
-  <section class="yinghuo-section yinghuo-section--doorbell" id="doorbell">
+  <section class="yinghuo-section yinghuo-section--doorbell-teaser">
     <div class="container">
-      <div class="doorbell-layout">
-        <div class="reveal">
+      <a class="yinghuo-card doorbell-teaser-card reveal" href="product-lightmesh-doorbell.html">
+        <div class="doorbell-teaser-copy">
           <span class="section-label">Visual Doorbell</span>
-          <h2 class="section-title">可视化门铃也纳入<span class="gradient-text">同一个 App 闭环</span></h2>
-          <p class="section-desc">
-            门铃不走 Mesh 控制链路，而是保持独立的 Wi-Fi / MQTT / MJPEG 网络通道：App 里可以发现、配网、查看设备状态，
-            也可以在同一个设备详情页中切换本地局域网画面和云端中继画面。这样灯控节点的组网问题不会拖累门铃视频，门铃的视频链路也不会影响 Mesh 控制。
-          </p>
-          <div class="doorbell-points">
-            <div class="doorbell-point">
-              <strong>设备详情页</strong>
-              <span>展示信令服务器连接状态、视频地址、首次上电/换 WiFi 配网入口，以及实时画面按钮。</span>
-            </div>
-            <div class="doorbell-point">
-              <strong>实时视频页</strong>
-              <span>支持本地局域网和云端中继两种入口，现场调试时可快速判断是摄像头、网络还是中继服务异常。</span>
-            </div>
-            <div class="doorbell-point">
-              <strong>统一设备列表</strong>
-              <span>门铃、Mesh 网关、灯控节点都在“我的设备”里出现，但底层协议按产品类型分流。</span>
-            </div>
-          </div>
-          <div class="doorbell-hardware-card">
-            <img src="images/yinghuo-doorbell.webp" alt="ESP32-S3 可视化门铃设备" />
-            <div>
-              <strong>ESP32-S3 Doorbell</strong>
-              <span>OV3660 摄像头 · IO0 门铃事件 · MQTT 信令 · MJPEG 视频</span>
-            </div>
-          </div>
+          <h2 class="section-title">可视化门铃详情已拆成<span class="gradient-text">独立页面</span></h2>
+          <p class="section-desc">门铃继续保留在同一个 App 入口中，但底层走独立的 Wi-Fi / MQTT / MJPEG 网络链路，不混入 Mesh 控制链路。点击查看设备详情页、实时画面页和设备列表页的完整展示。</p>
+          <span class="doorbell-link-pill">进入可视门铃详情 →</span>
         </div>
-
-        <div class="doorbell-gallery reveal-right" aria-label="可视化门铃 App 页面展示">
-          <div class="doorbell-shot doorbell-shot--device">
-            <div class="shot-status"><span>中国电信</span><strong>09:37</strong><span>85%</span></div>
-            <div class="shot-title-row"><span class="shot-back">‹</span><strong>门铃</strong><span class="shot-gear">⚙</span></div>
-            <div class="shot-list-card shot-list-card--ok">
-              <i>✓</i>
-              <div><strong>已连接信令服务器</strong><span>最近事件：—</span></div>
-            </div>
-            <div class="shot-list-card">
-              <i>▣</i>
-              <div><strong>视频地址</strong><span>http://114.55.208.7...</span></div>
-            </div>
-            <div class="shot-list-card">
-              <i>⌁</i>
-              <div><strong>设备配网</strong><span>首次上电 / 换 WiFi</span></div>
-            </div>
-            <div class="shot-bell">🔔</div>
-            <div class="shot-primary-btn">查看实时画面</div>
-          </div>
-
-          <div class="doorbell-shot doorbell-shot--live">
-            <div class="live-head"><strong>实时画面</strong><span>LIVE</span><i>×</i></div>
-            <div class="live-toggle"><span>本地(局域网)</span><strong>中继(远程)</strong></div>
-            <div class="live-frame">
-              <div class="live-noise"></div>
-              <img src="images/yinghuo-doorbell.webp" alt="门铃视频源示意" />
-            </div>
-            <div class="snapshot-btn"><span>▣</span><strong>快照</strong></div>
-          </div>
-
-          <div class="doorbell-shot doorbell-shot--list">
-            <div class="shot-status shot-status--right"><strong>我的设备</strong></div>
-            <div class="device-preview-row">
-              <div class="device-preview-card muted">
-                <div class="preview-icon">🔔</div>
-                <strong>智能门铃</strong>
-                <span>离线</span>
-              </div>
-              <div class="device-preview-card">
-                <img src="images/yinghuo-gateway.webp" alt="Mesh 网关" />
-                <strong>Mesh 网关</strong>
-                <span>离线</span>
-              </div>
-            </div>
-            <p>门铃和灯联网共用 App 入口，但业务链路保持独立。</p>
-          </div>
+        <div class="doorbell-teaser-visual">
+          <img src="images/yinghuo-doorbell.webp" alt="可视化门铃设备" />
+          <div><strong>Doorbell</strong><span>MQTT · MJPEG · App</span></div>
         </div>
-      </div>
+      </a>
     </div>
   </section>
-
   <section class="yinghuo-section yinghuo-section--roadmap" id="roadmap">
     <div class="container">
       <div class="reveal" style="text-align:center;">
@@ -515,3 +447,4 @@ Cloud/App   → farmely/light/{id}/down/cmd</code></pre>
   <script src="js/main.js"></script>
 </body>
 </html>
+

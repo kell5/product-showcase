@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="450" height="900" viewBox="0 0 450 900" role="img" aria-label="门铃设备详情页截图风格展示">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0f172a" flood-opacity=".12"/>
+    </filter>
+    <linearGradient id="blue" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#1586ff"/>
+      <stop offset="1" stop-color="#006ee8"/>
+    </linearGradient>
+  </defs>
+  <rect width="450" height="900" rx="0" fill="#fff"/>
+  <text x="30" y="34" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="14" font-weight="700" fill="#111827">中国电信</text>
+  <text x="78" y="42" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="27" font-weight="900" fill="#111827">09:37</text>
+  <text x="396" y="38" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="17" font-weight="900" fill="#111827">85</text>
+  <text x="28" y="104" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="54" font-weight="400" fill="#1586ff">‹</text>
+  <text x="206" y="103" text-anchor="middle" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="27" font-weight="900" fill="#020617">门铃</text>
+  <text x="408" y="104" text-anchor="middle" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="34" fill="#1586ff">⚙</text>
+  <g filter="url(#shadow)">
+    <rect x="21" y="140" width="408" height="122" rx="18" fill="#fff" stroke="#e5e7eb" stroke-width="1.4"/>
+    <circle cx="58" cy="178" r="18" fill="#22c55e"/>
+    <text x="58" y="189" text-anchor="middle" font-family="Arial" font-size="30" font-weight="900" fill="#fff">✓</text>
+    <text x="88" y="184" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="25" font-weight="900" fill="#020617">已连接信令服务器</text>
+    <text x="43" y="230" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="24" fill="#9ca3af">最近事件：—</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="21" y="282" width="408" height="74" rx="18" fill="#fff" stroke="#e5e7eb" stroke-width="1.4"/>
+    <rect x="50" y="312" width="22" height="14" rx="2" fill="#1586ff"/>
+    <polygon points="72,314 85,306 85,333 72,326" fill="#1586ff"/>
+    <text x="88" y="327" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="25" font-weight="900" fill="#020617">视频地址</text>
+    <text x="192" y="327" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="22" fill="#9ca3af">http://114.55.208.7...</text>
+    <text x="390" y="329" font-family="Arial" font-size="36" fill="#cbd5e1">›</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="21" y="377" width="408" height="74" rx="18" fill="#fff" stroke="#e5e7eb" stroke-width="1.4"/>
+    <path d="M47 409c23-20 50-20 73 0M59 421c15-12 34-12 49 0M73 433c7-5 14-5 21 0" stroke="#1586ff" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <text x="88" y="424" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="25" font-weight="900" fill="#020617">设备配网</text>
+    <text x="220" y="424" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="22" fill="#9ca3af">首次上电 / 换 WiFi</text>
+    <text x="390" y="426" font-family="Arial" font-size="36" fill="#cbd5e1">›</text>
+  </g>
+  <circle cx="225" cy="577" r="86" fill="#f1f3f8"/>
+  <text x="225" y="600" text-anchor="middle" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="72" fill="#1586ff">🔔</text>
+  <rect x="21" y="704" width="408" height="70" rx="17" fill="url(#blue)"/>
+  <text x="225" y="748" text-anchor="middle" font-family="Arial,'Microsoft YaHei',sans-serif" font-size="25" font-weight="800" fill="#fff">查看实时画面</text>
+  <rect x="150" y="872" width="150" height="5" rx="3" fill="#a3a3a3"/>
+</svg>

@@ -12,6 +12,7 @@
 
 - `index.html`：首页，总览项目与入口
 - `product-lightmesh.html`：LightMesh 灯联网单独展示页
+- `product-lightmesh-doorbell.html`：可视化门铃独立详情页
 - `product-yinghuo-zhilian.html`：旧入口兼容跳转页
 - `admin.html`：后台管理页
 - `product-*.html`：其他项目详情页
@@ -29,7 +30,7 @@
 ## LightMesh 灯联网页面说明
 
 - 这是 ESP32 BLE Mesh 灯控与多设备 OTA 项目的独立展示页
-- 重点展示：设备架构、App、可视化门铃详情、网关、OTA、开源下载
+- 重点展示：设备架构、App、可视化门铃详情页、网关、OTA、开源下载
 - APK 放在网站静态目录，GitHub 仓库保留源码和文档
 
 ## 图片命名建议

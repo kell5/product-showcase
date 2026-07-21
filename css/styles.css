@@ -2611,3 +2611,188 @@ ul, ol { list-style: none; }
   .live-frame { margin-left: -16px; margin-right: -16px; }
   .doorbell-hardware-card { align-items: flex-start; }
 }
+
+/* LightMesh 可视化门铃独立详情页 */
+.yinghuo-section--doorbell-teaser {
+  padding-top: 8px;
+}
+
+.doorbell-teaser-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.8fr);
+  gap: 26px;
+  align-items: center;
+  padding: 30px;
+  border-radius: 32px;
+  text-decoration: none;
+  color: inherit;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(56,189,248,0.12), transparent 28%),
+    linear-gradient(135deg, rgba(255,255,255,0.96), rgba(240,247,255,0.92));
+  box-shadow: 0 26px 80px rgba(15,23,42,0.10);
+}
+
+.doorbell-feature-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.doorbell-link-pill {
+  display: inline-flex;
+  margin-top: 18px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: #0b84ff;
+  background: rgba(219,234,254,0.72);
+  font-weight: 900;
+}
+
+.doorbell-teaser-visual {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.doorbell-teaser-visual img {
+  width: min(100%, 180px);
+  filter: drop-shadow(0 26px 36px rgba(15,23,42,0.16));
+}
+
+.doorbell-teaser-visual strong {
+  color: #0f172a;
+  font-size: 18px;
+}
+
+.doorbell-teaser-visual span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.doorbell-detail-hero {
+  padding: 140px 0 92px;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(56,189,248,0.18), transparent 28%),
+    radial-gradient(circle at 82% 8%, rgba(129,140,248,0.14), transparent 30%),
+    linear-gradient(180deg, #f8fbff, #eef6ff 56%, #f8fbff);
+}
+
+.doorbell-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
+  gap: 44px;
+  align-items: center;
+}
+
+.doorbell-hardware-card--hero {
+  margin-top: 28px;
+}
+
+.doorbell-hero-stack {
+  position: relative;
+  min-height: 860px;
+}
+
+.floating-screenshot {
+  position: absolute;
+  width: min(100%, 360px);
+  border-radius: 36px;
+  background: #fff;
+  box-shadow: 0 34px 90px rgba(15,23,42,0.16);
+  border: 12px solid rgba(255,255,255,0.85);
+}
+
+.floating-screenshot--main {
+  top: 0;
+  left: 0;
+  transform: rotate(-6deg);
+}
+
+.floating-screenshot--side {
+  right: 0;
+  top: 214px;
+  transform: rotate(4deg);
+}
+
+.doorbell-image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 36px;
+}
+
+.doorbell-image-card {
+  overflow: hidden;
+  border-radius: 30px;
+  background: rgba(255,255,255,0.84);
+  border: 1px solid rgba(15,23,42,0.08);
+  box-shadow: 0 24px 72px rgba(15,23,42,0.12);
+}
+
+.doorbell-image-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 22px 26px rgba(15,23,42,0.12));
+}
+
+.doorbell-image-card figcaption {
+  padding: 20px 20px 24px;
+}
+
+.doorbell-image-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.doorbell-image-card span {
+  color: #64748b;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.doorbell-image-card--large {
+  transform: translateY(-18px);
+}
+
+.doorbell-page .tutorial-timeline {
+  margin-top: 34px;
+}
+
+.doorbell-page .code-card {
+  margin-top: 14px;
+}
+
+@media (max-width: 1024px) {
+  .doorbell-detail-layout,
+  .doorbell-teaser-card {
+    grid-template-columns: 1fr;
+  }
+  .doorbell-image-grid {
+    grid-template-columns: 1fr;
+  }
+  .doorbell-image-card--large {
+    transform: none;
+  }
+  .floating-screenshot--side {
+    top: 178px;
+  }
+}
+
+@media (max-width: 768px) {
+  .doorbell-hero-stack {
+    min-height: 690px;
+  }
+}
+
+@media (max-width: 480px) {
+  .doorbell-detail-hero {
+    padding-top: 112px;
+  }
+  .doorbell-image-grid {
+    gap: 14px;
+  }
+}
