@@ -2109,6 +2109,404 @@ ul, ol { list-style: none; }
   line-height: 1.75;
 }
 
+.yinghuo-section--doorbell {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(56,189,248,0.18), transparent 32%),
+    radial-gradient(circle at 82% 16%, rgba(129,140,248,0.16), transparent 30%),
+    linear-gradient(180deg, #f8fbff 0%, #eef6ff 52%, #f8fbff 100%);
+}
+
+.doorbell-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(420px, 1.12fr);
+  gap: 42px;
+  align-items: center;
+}
+
+.doorbell-points {
+  display: grid;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.doorbell-point,
+.doorbell-hardware-card {
+  border: 1px solid rgba(15,23,42,0.08);
+  background: rgba(255,255,255,0.74);
+  box-shadow: 0 20px 60px rgba(15,23,42,0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.doorbell-point {
+  padding: 18px 20px;
+  border-radius: 22px;
+}
+
+.doorbell-point strong,
+.doorbell-hardware-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 17px;
+  margin-bottom: 7px;
+}
+
+.doorbell-point span,
+.doorbell-hardware-card span {
+  color: #64748b;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.doorbell-hardware-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 26px;
+}
+
+.doorbell-hardware-card img {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+  border-radius: 24px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(239,246,255,0.94), rgba(255,255,255,0.78));
+  filter: drop-shadow(0 18px 26px rgba(37,99,235,0.14));
+}
+
+.doorbell-gallery {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.88fr) minmax(260px, 1.12fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.doorbell-shot {
+  position: relative;
+  overflow: hidden;
+  min-height: 440px;
+  border-radius: 34px;
+  border: 1px solid rgba(15,23,42,0.08);
+  background: rgba(255,255,255,0.86);
+  box-shadow: 0 32px 90px rgba(15,23,42,0.14);
+}
+
+.doorbell-shot--device {
+  padding: 24px 20px;
+}
+
+.shot-status,
+.shot-title-row,
+.live-head,
+.live-toggle,
+.device-preview-row {
+  display: flex;
+  align-items: center;
+}
+
+.shot-status {
+  justify-content: space-between;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 26px;
+}
+
+.shot-status strong {
+  font-size: 24px;
+  letter-spacing: -0.04em;
+}
+
+.shot-title-row {
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.shot-title-row strong {
+  color: #020617;
+  font-size: 28px;
+  letter-spacing: -0.05em;
+}
+
+.shot-back,
+.shot-gear {
+  color: #0b84ff;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.shot-gear {
+  font-size: 24px;
+}
+
+.shot-list-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 78px;
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border-radius: 22px;
+  border: 1px solid rgba(15,23,42,0.08);
+  background: rgba(255,255,255,0.88);
+  box-shadow: 0 10px 26px rgba(15,23,42,0.06);
+}
+
+.shot-list-card i {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #fff;
+  background: #1485ff;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.shot-list-card--ok i {
+  background: #22c55e;
+}
+
+.shot-list-card strong,
+.device-preview-card strong {
+  display: block;
+  color: #020617;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.shot-list-card span,
+.device-preview-card span {
+  display: block;
+  margin-top: 6px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.shot-bell {
+  width: 118px;
+  height: 118px;
+  display: grid;
+  place-items: center;
+  margin: 34px auto 28px;
+  border-radius: 50%;
+  color: #1485ff;
+  font-size: 54px;
+  background: #f1f3f8;
+}
+
+.shot-primary-btn {
+  display: grid;
+  place-items: center;
+  min-height: 62px;
+  border-radius: 20px;
+  color: #fff;
+  background: #0b84ff;
+  font-size: 20px;
+  font-weight: 800;
+  box-shadow: 0 18px 36px rgba(11,132,255,0.22);
+}
+
+.doorbell-shot--live {
+  grid-row: span 2;
+  padding: 26px 22px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 70% 10%, rgba(37,99,235,0.24), transparent 32%),
+    #020617;
+}
+
+.live-head {
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.live-head strong {
+  color: #fff;
+  font-size: 28px;
+}
+
+.live-head span {
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: #ef4444;
+  font-weight: 900;
+}
+
+.live-head i {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #020617;
+  background: #fff;
+  font-style: normal;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.live-toggle {
+  padding: 5px;
+  border-radius: 18px;
+  background: #27272a;
+  margin-bottom: 34px;
+}
+
+.live-toggle span,
+.live-toggle strong {
+  flex: 1;
+  padding: 13px 10px;
+  border-radius: 14px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.live-toggle span {
+  color: rgba(255,255,255,0.86);
+}
+
+.live-toggle strong {
+  color: #fff;
+  background: #0b84ff;
+  box-shadow: 0 12px 26px rgba(11,132,255,0.32);
+}
+
+.live-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 190px;
+  margin: 0 -22px;
+  overflow: hidden;
+  background:
+    linear-gradient(120deg, rgba(169,117,122,0.78), rgba(235,242,244,0.94) 72%),
+    #111827;
+}
+
+.live-frame::after {
+  content: "";
+  position: absolute;
+  right: -18px;
+  bottom: -22px;
+  width: 160px;
+  height: 70px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.78);
+  filter: blur(8px);
+  transform: rotate(-12deg);
+}
+
+.live-frame img {
+  position: relative;
+  z-index: 1;
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  opacity: 0.3;
+  filter: grayscale(1) brightness(1.4);
+}
+
+.live-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.16;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.snapshot-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 54px;
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  color: #fff;
+}
+
+.snapshot-btn span {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: #8b8d95;
+  font-size: 30px;
+}
+
+.snapshot-btn strong {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.doorbell-shot--list {
+  min-height: 300px;
+  padding: 24px 20px;
+  background:
+    radial-gradient(circle at 18% 30%, rgba(255,255,255,0.9), transparent 28%),
+    linear-gradient(135deg, #f8fbff, #f3f6fb);
+}
+
+.shot-status--right {
+  justify-content: flex-end;
+}
+
+.shot-status--right strong {
+  font-size: 30px;
+}
+
+.device-preview-row {
+  gap: 14px;
+  margin-top: 28px;
+  overflow: hidden;
+}
+
+.device-preview-card {
+  flex: 0 0 176px;
+  min-height: 210px;
+  padding: 20px;
+  border-radius: 30px;
+  background: rgba(255,255,255,0.8);
+  border: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 20px 50px rgba(15,23,42,0.08);
+}
+
+.device-preview-card img,
+.preview-icon {
+  width: 82px;
+  height: 82px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  margin-bottom: 46px;
+  object-fit: contain;
+  background: #eef2f7;
+  font-size: 34px;
+}
+
+.device-preview-card.muted {
+  opacity: 0.55;
+}
+
+.doorbell-shot--list p {
+  margin-top: 20px;
+  color: #64748b;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
 .yinghuo-section--roadmap {
   background: linear-gradient(180deg, rgba(241,245,249,0.3), rgba(248,251,255,0.76));
 }
@@ -2139,6 +2537,7 @@ ul, ol { list-style: none; }
   .about-skills { justify-content: center; }
   .about-stats-row { justify-content: center; }
   .yinghuo-two-col { grid-template-columns: 1fr; }
+  .doorbell-layout { grid-template-columns: 1fr; }
   .debug-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .roadmap-grid { grid-template-columns: 1fr; }
 }
@@ -2176,6 +2575,8 @@ ul, ol { list-style: none; }
   .architecture-grid,
   .feature-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tutorial-step { grid-template-columns: 1fr; }
+  .doorbell-gallery { grid-template-columns: 1fr; }
+  .doorbell-shot--live { grid-row: auto; }
 
   .footer-top { flex-direction: column; gap: var(--sp-lg); }
   .footer-bottom { flex-direction: column; gap: var(--sp-sm); text-align: center; }
@@ -2202,4 +2603,11 @@ ul, ol { list-style: none; }
   }
   .phone-stage { min-height: auto; display: grid; gap: 18px; }
   .floating-chip { display: none; }
+  .doorbell-gallery { gap: 14px; }
+  .doorbell-shot { min-height: auto; border-radius: 26px; }
+  .doorbell-shot--device,
+  .doorbell-shot--live,
+  .doorbell-shot--list { padding: 20px 16px; }
+  .live-frame { margin-left: -16px; margin-right: -16px; }
+  .doorbell-hardware-card { align-items: flex-start; }
 }
