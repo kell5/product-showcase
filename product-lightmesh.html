@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LightMesh 灯联网 | ESP32 BLE Mesh 灯控与 OTA 开源项目</title>
+  <meta name="description" content="LightMesh 灯联网是基于 ESP32、Flutter、MQTT、FastAPI 和 OTA 的开源设备联网项目，覆盖可视门铃、BLE Mesh 灯控、网关、云端设备影子和 App。" />
+  <meta name="keywords" content="LightMesh 灯联网,ESP32 Mesh,BLE Mesh,Flutter App,MQTT,OTA,灯控网关,开源项目" />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://www.lk-mcu.online/product-lightmesh.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="智能硬件工作室" />
+  <meta property="og:title" content="LightMesh 灯联网 | ESP32 BLE Mesh 灯控与 OTA 开源项目" />
+  <meta property="og:description" content="一个从 ESP32 设备、BLE Mesh 网关、Flutter App 到云端 OTA 的完整设备联网闭环。" />
+  <meta property="og:url" content="https://www.lk-mcu.online/product-lightmesh.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="yinghuo-page">
+
+  <div class="scroll-progress"></div>
+  <div class="cursor-glow"></div>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <span class="nav-brand-icon"></span>
+        智能硬件工作室
+      </a>
+      <div class="nav-links">
+        <a href="index.html">首页</a>
+        <a href="#intro">项目介绍</a>
+        <a href="#architecture">系统架构</a>
+        <a href="#engineering">开发细节</a>
+        <a href="#debug-notes">调试记录</a>
+        <a href="#roadmap">后续更新</a>
+        <a href="#download">下载开源</a>
+        <a href="admin.html" class="nav-contact-btn">管理后台</a>
+      </div>
+      <button class="nav-toggle" aria-label="菜单">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="yinghuo-hero">
+    <div class="container">
+      <div class="yinghuo-layout">
+        <div class="reveal">
+          <div class="page-hero-breadcrumb">
+            <a href="index.html">首页</a>
+            <span class="sep">/</span>
+            <span>LightMesh 灯联网</span>
+          </div>
+          <div class="yinghuo-badge">ESP32 · Flutter · MQTT · OTA · Open Source</div>
+          <h1 class="yinghuo-title">
+            <span class="soft">LightMesh</span>
+            灯联网
+          </h1>
+          <p class="yinghuo-lead">
+            一个面向真实硬件闭环的设备联网系统：ESP32-S3 可视门铃、BLE Mesh 网关与灯控节点、
+            Flutter 跨端 App、FastAPI 云端设备影子、MQTT 消息总线和灰度 OTA 升级统一在同一套协议下工作。
+          </p>
+          <p class="yinghuo-note">
+            说明：LightMesh 灯联网是个人开源项目代号，不是公司主体名称，也不作为商业售卖品牌使用。
+          </p>
+          <div class="yinghuo-actions">
+            <a class="yinghuo-btn yinghuo-btn--primary" href="downloads/lightmesh-app-release.apk" download>
+              下载 Android APK
+            </a>
+            <a class="yinghuo-btn yinghuo-btn--ghost" href="https://github.com/kell5/esp32_ble_mesh" target="_blank" rel="noopener noreferrer">
+              查看开源源码
+            </a>
+            <a class="yinghuo-btn yinghuo-btn--ghost" href="#architecture">
+              了解架构
+            </a>
+          </div>
+          <div class="yinghuo-kpis">
+            <div class="yinghuo-kpi"><strong>S3</strong><span>ESP32-S3 灯控节点</span></div>
+            <div class="yinghuo-kpi"><strong>COM14</strong><span>节点实测烧录口</span></div>
+            <div class="yinghuo-kpi"><strong>OTA</strong><span>固件升级链路</span></div>
+            <div class="yinghuo-kpi"><strong>MQTT</strong><span>统一消息协议</span></div>
+          </div>
+        </div>
+
+        <div class="phone-stage reveal-right">
+          <div class="floating-chip floating-chip--ota">OTA 已验证</div>
+          <div class="floating-chip floating-chip--mesh">Mesh 网关 · 灯控节点</div>
+          <div class="phone-shell">
+            <div class="phone-screen">
+              <div class="phone-top"><span>11:23</span><span>5G · 95%</span></div>
+              <div class="phone-title">我的设备</div>
+              <div class="device-grid">
+                <div class="device-tile offline">
+                  <img src="images/yinghuo-doorbell.webp" alt="智能门铃" />
+                  <strong>智能门铃</strong>
+                  <span>离线</span>
+                </div>
+                <div class="device-tile offline">
+                  <img src="images/yinghuo-gateway.webp" alt="Mesh 网关" />
+                  <strong>Mesh 网关</strong>
+                  <span>离线</span>
+                </div>
+                <div class="device-tile">
+                  <img src="images/yinghuo-light.webp" alt="智能灯泡" />
+                  <strong>智能灯泡</strong>
+                  <span>已关闭</span>
+                </div>
+                <div class="device-tile">
+                  <img src="images/yinghuo-light.webp" alt="RGB 灯泡" />
+                  <strong>RGB 灯泡</strong>
+                  <span>在线</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="device-detail-card">
+            <img src="images/yinghuo-light.webp" alt="智能灯泡详情" />
+            <div class="detail-row"><span>设备 ID</span><strong>rgb-F53324</strong></div>
+            <div class="detail-row"><span>当前版本</span><strong>v1.1.0</strong></div>
+            <div class="detail-row"><span>在线状态</span><strong>在线</strong></div>
+            <div class="detail-row"><span>固件升级</span><strong>已接入</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="yinghuo-section yinghuo-section--intro" id="intro">
+    <div class="container">
+      <div class="yinghuo-two-col">
+        <div class="reveal">
+          <span class="section-label">Product Intro</span>
+          <h2 class="section-title">这不是一个单板 Demo，而是一套<span class="gradient-text">可复用的设备联网骨架</span></h2>
+          <p class="section-desc">
+            LightMesh 灯联网把“设备发现、配网、控制、状态回传、云端影子、OTA 升级、App 页面”串成闭环。
+            后续如果新增门铃、网关、灯带、插座、传感器，不需要重新设计整套通信流程，只需要补产品能力和页面表现。
+          </p>
+          <div class="intro-checklist">
+            <span>✓ App 内统一设备入口</span>
+            <span>✓ BLE / SoftAP 配网保留</span>
+            <span>✓ Mesh 灯控节点可组网</span>
+            <span>✓ 门铃视频链路不被 Mesh 影响</span>
+            <span>✓ 固件版本与 OTA 三元组上报</span>
+            <span>✓ APK 与源码开放下载</span>
+          </div>
+        </div>
+        <div class="yinghuo-card product-snapshot reveal-right">
+          <div class="snapshot-title">当前可演示能力</div>
+          <div class="snapshot-grid">
+            <div><strong>门铃</strong><span>IO0 事件 / MQTT / MJPEG</span></div>
+            <div><strong>灯控</strong><span>ESP32-S3 / GPIO48 / WS2812</span></div>
+            <div><strong>网关</strong><span>Mesh root / MQTT bridge</span></div>
+            <div><strong>云端</strong><span>影子 / 账号 / OTA rollout</span></div>
+          </div>
+          <div class="snapshot-flow">
+            <span>App</span><i></i><span>MQTT</span><i></i><span>Gateway</span><i></i><span>Mesh Node</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="yinghuo-section" id="architecture">
+    <div class="container">
+      <div class="reveal" style="text-align:center;">
+        <span class="section-label">Architecture</span>
+        <h2 class="section-title">整体<span class="gradient-text">架构思想</span></h2>
+        <p class="section-desc" style="margin:0 auto;">以统一协议固定设备接入方式，让后续门铃、网关、灯、传感器等新产品复用同一套 App、云端、OTA 和设备影子能力。</p>
+      </div>
+
+      <div class="architecture-grid">
+        <div class="yinghuo-card arch-card reveal">
+          <div class="arch-index">01</div>
+          <h3>设备层</h3>
+          <p>ESP32-S3 门铃、RGB 灯、Mesh 网关与节点统一上报设备身份、能力、在线状态和版本信息。</p>
+        </div>
+        <div class="yinghuo-card arch-card reveal">
+          <div class="arch-index">02</div>
+          <h3>协议层</h3>
+          <p>固定 farmely.v1 MQTT 信封：topic、msg_id、capabilities、status、cmd、ota 全部标准化。</p>
+        </div>
+        <div class="yinghuo-card arch-card reveal">
+          <div class="arch-index">03</div>
+          <h3>云端层</h3>
+          <p>FastAPI + SQLite + MQTT bridge 维护设备影子、账号认领、自动化、固件仓库和灰度 rollout。</p>
+        </div>
+        <div class="yinghuo-card arch-card reveal">
+          <div class="arch-index">04</div>
+          <h3>应用层</h3>
+          <p>Flutter App 负责配网、设备页、门铃视频、灯控、OTA 检查，也可继续扩展 Web 端运行。</p>
+        </div>
+      </div>
+
+      <div class="protocol-panel reveal">
+        <strong>统一 MQTT Topic</strong>
+        <code>farmely/{class}/{device_id}/{direction}/{channel}</code>
+        <p style="margin-top:14px;color:#cbd5e1;">后续新增产品只扩展 class、device_type、capabilities 和 data 字段，不再临时创造接口。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="yinghuo-section yinghuo-section--dark" id="engineering">
+    <div class="container">
+      <div class="reveal" style="text-align:center;">
+        <span class="section-label">Engineering Detail</span>
+        <h2 class="section-title">蓝牙 Mesh 从上电到控制的<span class="gradient-text">开发拆解</span></h2>
+        <p class="section-desc" style="margin:0 auto;">这一部分按真实开发顺序展开：先让板子稳定入网，再处理消息收发、任务划分、回调事件和 Bug 收敛。</p>
+      </div>
+
+      <div class="tutorial-timeline">
+        <article class="tutorial-step reveal">
+          <div class="step-no">01</div>
+          <div>
+            <h3>硬件角色先固定：网关、节点、门铃三条线分开</h3>
+            <p>
+              网关负责 Wi-Fi、MQTT 和 Mesh 转发；灯控节点负责执行灯效；门铃保持独立网络链路，不进入 Mesh。
+              这样做的好处是故障定位清晰：门铃视频卡顿不会影响 Mesh 灯控，Mesh 组网问题也不会破坏门铃配网和页面。
+            </p>
+            <div class="code-card">ESP32-S3 节点：GPIO48 WS2812 · 当前实测 COM14 可烧录</div>
+          </div>
+        </article>
+
+        <article class="tutorial-step reveal">
+          <div class="step-no">02</div>
+          <div>
+            <h3>组网流程：Mesh 事件回调驱动状态机</h3>
+            <p>
+              固件注册 Mesh 事件回调后，根据 connected、disconnected、layer change、routing table change 等事件更新自身层级、root 状态和路由表。
+              root 产生后才启动 MQTT 桥接；普通节点拿到 root 地址后向上游周期性上报状态。
+            </p>
+            <pre><code>mesh_event_handler()
+ ├─ MESH_EVENT_STARTED：读取 mesh_id / layer
+ ├─ MESH_EVENT_CONNECTED：记录父节点，root 启动 MQTT
+ ├─ MESH_EVENT_ROOT_ADDRESS：节点保存 root 地址
+ └─ MESH_EVENT_LAYER_CHANGE：刷新灯效颜色与状态</code></pre>
+          </div>
+        </article>
+
+        <article class="tutorial-step reveal">
+          <div class="step-no">03</div>
+          <div>
+            <h3>操作系统线程：收发任务分离，避免回调里做重活</h3>
+            <p>
+              FreeRTOS 里拆出 `MPTX` 和 `MPRX` 两个任务：发送任务做状态上报和周期维护，接收任务阻塞等待 Mesh 数据。
+              回调函数只更新连接状态，不在事件回调里下载 OTA 或做复杂 JSON 处理，避免阻塞系统事件循环。
+            </p>
+            <pre><code>xTaskCreate(esp_mesh_p2p_tx_main, "MPTX", 3072, NULL, 5, NULL);
+xTaskCreate(esp_mesh_p2p_rx_main, "MPRX", 3072, NULL, 5, NULL);</code></pre>
+          </div>
+        </article>
+
+        <article class="tutorial-step reveal">
+          <div class="step-no">04</div>
+          <div>
+            <h3>消息模型：P2P 上行，root 聚合后再进 MQTT</h3>
+            <p>
+              节点不上云，不直接持有 MQTT 连接。节点把状态通过 Mesh P2P 发给 root，root 维护节点表，再发布到
+              `farmely/light/&lt;id&gt;/up/status`。控制方向相反：App → MQTT → root → Mesh node。
+            </p>
+            <pre><code>Node status → esp_mesh_send(root, MESH_DATA_P2P)
+Root table  → root_publish_node_status()
+Cloud/App   → farmely/light/{id}/down/cmd</code></pre>
+          </div>
+        </article>
+
+        <article class="tutorial-step reveal">
+          <div class="step-no">05</div>
+          <div>
+            <h3>OTA 设计：网关自升级，节点由 root 转发升级命令</h3>
+            <p>
+              网关收到 `farmely/gateway/&lt;id&gt;/down/ota` 后直接执行 OTA；灯控节点收到的是
+              `farmely/light/&lt;id&gt;/down/ota`，root 解析目标设备后把 url、sha256、fw_version 和 msg_id 封装为 Mesh OTA 命令转发给节点。
+            </p>
+            <pre><code>handle_mqtt_ota_command()
+ ├─ gateway OTA → mesh_ota_start()
+ └─ light OTA   → mesh_forward_ota_request()</code></pre>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="yinghuo-section" id="debug-notes">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-label">Debug Notes</span>
+        <h2 class="section-title">开发过程中真正踩过的<span class="gradient-text">问题与处理</span></h2>
+        <p class="section-desc">这部分不是包装后的“功能清单”，而是实际联调时会遇到的问题：串口识别、target 错刷、任务并发、分区大小、OTA 校验。</p>
+      </div>
+
+      <div class="debug-grid">
+        <div class="yinghuo-card debug-card reveal">
+          <h3>错刷芯片 target</h3>
+          <p>COM14 最初按 ESP32 节点烧录失败，esptool 明确提示实际芯片是 ESP32-S3。处理方式是先读芯片型号，再用 `set-target esp32s3` 重新生成构建目录。</p>
+        </div>
+        <div class="yinghuo-card debug-card reveal">
+          <h3>固件超过默认分区</h3>
+          <p>节点加入 OTA 和 MQTT 身份字段后，默认 1MB app 分区不够。临时测试使用 large app 分区，真正产品 OTA 需要按 flash 容量设计双 OTA 分区。</p>
+        </div>
+        <div class="yinghuo-card debug-card reveal">
+          <h3>RMT / WS2812 并发</h3>
+          <p>灯效可能被 Mesh 事件任务、接收任务、MQTT 控制路径同时调用，因此 WS2812 输出需要串行化，避免 RMT 驱动被并发访问导致灯态异常。</p>
+        </div>
+        <div class="yinghuo-card debug-card reveal">
+          <h3>OTA 进度状态处理</h3>
+          <p>`ESP_ERR_HTTPS_OTA_IN_PROGRESS` 不是失败，而是下载仍在继续。升级循环必须把它当成正常进行态，否则会误判 OTA 失败。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="yinghuo-section" id="features">
+    <div class="container">
+      <div class="reveal" style="text-align:center;">
+        <span class="section-label">Delivered</span>
+        <h2 class="section-title">已完成的<span class="gradient-text">核心功能</span></h2>
+      </div>
+      <div class="feature-grid-4">
+        <div class="yinghuo-card feature-card reveal">
+          <h3>Flutter App</h3>
+          <p>账号登录、设备列表、云端详情页、灯控、门铃视频入口、BLE/SoftAP 配网和 OTA 检查入口。</p>
+        </div>
+        <div class="yinghuo-card feature-card reveal">
+          <h3>ESP32 门铃</h3>
+          <p>OV3660 摄像头、IO0 门铃事件、MQTT 信令、本地/中继 MJPEG 视频链路已形成闭环。</p>
+        </div>
+        <div class="yinghuo-card feature-card reveal">
+          <h3>Mesh 灯控</h3>
+          <p>ESP-WIFI-MESH/BLE Mesh 网关与节点控制链路，支持节点状态聚合和 App 控制。</p>
+        </div>
+        <div class="yinghuo-card feature-card reveal">
+          <h3>云端 OTA</h3>
+          <p>固件仓库、灰度 rollout、MQTT 下发、设备进度回报，RGB 灯已从 v1.0.0 实机升级到 v1.1.0。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="yinghuo-section yinghuo-section--roadmap" id="roadmap">
+    <div class="container">
+      <div class="reveal" style="text-align:center;">
+        <span class="section-label">Next Updates</span>
+        <h2 class="section-title">后续更新会分成<span class="gradient-text">介绍页与详情页</span></h2>
+        <p class="section-desc" style="margin:0 auto;">点进项目先看到产品介绍、下载入口和演示能力；继续往下才是工程细节、调试记录和教程内容。后续新增产品也按这个结构扩展。</p>
+      </div>
+      <div class="roadmap-grid">
+        <div class="yinghuo-card roadmap-card reveal">
+          <strong>产品介绍</strong>
+          <p>面向访客：一句话说明项目价值、当前能演示什么、APK/源码在哪里、适合什么场景。</p>
+        </div>
+        <div class="yinghuo-card roadmap-card reveal">
+          <strong>技术详情</strong>
+          <p>面向开发者：固件目录、通信协议、Mesh 组网、线程划分、回调函数、BUG 处理和烧录命令。</p>
+        </div>
+        <div class="yinghuo-card roadmap-card reveal">
+          <strong>持续迭代</strong>
+          <p>下一步重点是双 OTA 分区、签名校验、门铃 OTA 实测、Mesh 分发稳定性和更完整的 App 设备页体验。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="yinghuo-section" id="download">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-label">Open Source</span>
+        <h2 class="section-title">APK 与<span class="gradient-text">源码开放</span></h2>
+        <p class="section-desc">APK 放在本站静态下载目录，GitHub 仓库保留源码、协议文档和构建说明，方便后续产品复用。</p>
+      </div>
+      <div class="yinghuo-card download-card reveal">
+        <div>
+          <h3>LightMesh 灯联网 Android APK</h3>
+          <p>当前包为 release 构建，用于演示和硬件联调。生产分发前仍建议配置正式签名、版本号和渠道信息。</p>
+          <div class="download-meta">
+            <span>大小：51,859,075 bytes</span>
+            <span>SHA256：C3AB9259...F921725</span>
+            <span>包名：com.example.mesh_app</span>
+          </div>
+        </div>
+        <a class="yinghuo-btn yinghuo-btn--primary" href="downloads/lightmesh-app-release.apk" download>
+          下载 APK
+        </a>
+      </div>
+      <div class="yinghuo-actions">
+        <a class="yinghuo-btn yinghuo-btn--ghost" href="https://github.com/kell5/esp32_ble_mesh" target="_blank" rel="noopener noreferrer">GitHub 源码</a>
+        <a class="yinghuo-btn yinghuo-btn--ghost" href="https://github.com/kell5/esp32_ble_mesh/blob/devin/1783931730-ble-mesh-integration/docs/COMMUNICATION_PROTOCOL.md" target="_blank" rel="noopener noreferrer">通信协议文档</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer" id="contact">
+    <div class="container">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand">
+            <span class="nav-brand-icon"></span>
+            智能硬件工作室
+          </div>
+          <p class="footer-desc">LightMesh 灯联网是 ESP32 设备联网闭环项目的一次产品化整理：从设备、云端、App 到 OTA，尽量让每个新产品都能复用同一套骨架。</p>
+        </div>
+        <div class="footer-links-group">
+          <h4>项目链接</h4>
+          <a href="index.html">返回首页</a>
+          <a href="https://github.com/kell5/esp32_ble_mesh" target="_blank" rel="noopener noreferrer">开源仓库</a>
+          <a href="downloads/lightmesh-app-release.apk" download>APK 下载</a>
+        </div>
+        <div class="footer-links-group">
+          <h4>网站功能</h4>
+          <a href="admin.html">管理后台</a>
+          <a href="product-gesture-arm.html">体感机械臂</a>
+          <a href="product-vision-tracker.html">视觉追踪臂</a>
+        </div>
+        <div class="footer-links-group">
+          <h4>联系方式</h4>
+          <a href="mailto:13393961819@163.com">邮箱: 13393961819@163.com</a>
+          <a href="tel:13393961819">电话: 13393961819</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 智能硬件工作室 · LightMesh 灯联网</span>
+        <span>ESP32 · Flutter · MQTT · OTA</span>
+        <span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">豫ICP备2026025181号-1</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

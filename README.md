@@ -1,102 +1,82 @@
-# 智能硬件产品展示网站
+# LightMesh 灯联网展示站
 
-## 项目结构
+这是「LightMesh 灯联网」的项目展示网站仓库，负责对外展示、项目入口、APK 下载和保留原有后台管理能力。
 
-```
-product-showcase/
-├── index.html                    # 首页（Hero + 产品卡片 + 全部项目）
-├── product-gesture-arm.html      # GesturePilot 体感操控机械臂详情页
-├── product-sound-core.html       # SoundCore 嵌入式音频终端详情页
-├── product-vision-tracker.html   # VisionTracker 智能视觉追踪臂详情页
-├── product-yinghuo-zhilian.html  # 萤火智联 ESP32 Mesh 智能家居展示页
-├── css/
-│   └── styles.css                # 全部样式（分段注释，便于维护）
-├── js/
-│   └── main.js                   # 全部交互脚本（模块化注释）
-├── images/                       # 产品图片目录（待上传）
-│   └── .gitkeep
-└── README.md                     # 本文件
-```
+## 在线入口
 
-## 萤火智联
+- LightMesh 灯联网展示页：<https://www.lk-mcu.online/product-lightmesh.html>
+- APK 下载：<https://www.lk-mcu.online/downloads/lightmesh-app-release.apk>
+- GitHub 源码仓库：<https://github.com/kell5/esp32_ble_mesh>
 
-- 展示页：`product-yinghuo-zhilian.html`
-- APK 下载：`https://www.lk-mcu.online/downloads/yinghuo-zhilian-mesh-app-release.apk`
-- 开源仓库：<https://github.com/kell5/esp32_ble_mesh>
-- 页面风格：冷白 + 冰蓝/星紫科技风，保留原网站项目展示与管理后台结构。
+## 页面组成
 
-## 图片命名规范
+- `index.html`：首页，总览项目与入口
+- `product-lightmesh.html`：LightMesh 灯联网单独展示页
+- `product-yinghuo-zhilian.html`：旧入口兼容跳转页
+- `admin.html`：后台管理页
+- `product-*.html`：其他项目详情页
+- `css/styles.css`：全站样式
+- `js/main.js`：首页交互
+- `js/admin.js`：后台管理逻辑
+- `images/`：展示图目录
 
-将图片放入 `images/` 目录，按以下命名约定命名：
+## 设计风格
 
-### 首页 Hero 区域
-| 文件名 | 建议尺寸 | 说明 |
-|--------|----------|------|
-| `hero-main.jpg` | 760×900 | 首屏右侧主卡片 |
-| `hero-sub1.jpg` | 400×520 | 首屏右侧副卡片1 |
-| `hero-sub2.jpg` | 400×400 | 首屏右侧副卡片2 |
+- 主色调：冷白、冰蓝、星紫
+- 目标气质：简约、科技、企业级
+- 页面要求：保留原有项目展示和后台管理结构，不丢风格，不丢功能
 
-### 首页产品卡片缩略图
-| 文件名 | 建议尺寸 | 说明 |
-|--------|----------|------|
-| `gesture-arm-thumb.jpg` | 800×560 | 体感操控机械臂卡片 |
-| `sound-core-thumb.jpg` | 800×560 | 嵌入式音频终端卡片 |
-| `vision-tracker-thumb.jpg` | 800×560 | 智能视觉追踪臂卡片 |
+## LightMesh 灯联网页面说明
 
-### 产品详情页画廊（每个产品3张）
-| 文件名 | 建议尺寸 | 说明 |
-|--------|----------|------|
-| `gesture-arm-main.jpg` | 800×600 | 机械臂主图（画廊大图） |
-| `gesture-arm-glove.jpg` | 400×300 | 体感手套特写 |
-| `gesture-arm-board.jpg` | 400×300 | 控制板细节 |
-| `sound-core-main.jpg` | 800×600 | 音频终端主图 |
-| `sound-core-lcd.jpg` | 400×300 | LCD界面展示 |
-| `sound-core-board.jpg` | 400×300 | 开发板与VS1053模块 |
-| `vision-tracker-main.jpg` | 800×600 | 视觉追踪臂主图 |
-| `vision-tracker-camera.jpg` | 400×300 | K210摄像头模块 |
-| `vision-tracker-tracking.jpg` | 400×300 | PID追踪效果演示 |
+- 这是 ESP32 BLE Mesh 灯控与多设备 OTA 项目的独立展示页
+- 重点展示：设备架构、App、门铃、网关、OTA、开源下载
+- APK 放在网站静态目录，GitHub 仓库保留源码和文档
+
+## 图片命名建议
+
+把图片放入 `images/`，并尽量按下面命名：
+
+### 首页 Hero
+
+- `hero-main.jpg`
+- `hero-sub1.jpg`
+- `hero-sub2.jpg`
+
+### 首页卡片缩略图
+
+- `gesture-arm-thumb.jpg`
+- `sound-core-thumb.jpg`
+- `vision-tracker-thumb.jpg`
+- `yinghuo-light.webp`
+
+### 详情页图片
+
+- `gesture-arm-main.jpg`
+- `gesture-arm-glove.jpg`
+- `gesture-arm-board.jpg`
+- `sound-core-main.jpg`
+- `sound-core-lcd.jpg`
+- `sound-core-board.jpg`
+- `vision-tracker-main.jpg`
+- `vision-tracker-camera.jpg`
+- `vision-tracker-tracking.jpg`
+- `yinghuo-zhilian-main.jpg`
+- `yinghuo-zhilian-app.jpg`
+- `yinghuo-zhilian-ota.jpg`
 
 ## 如何替换图片
 
-所有图片占位符已在 HTML 中用注释标记，只需：
+1. 把新图片放进 `images/`
+2. 在对应 HTML 里找到旧文件名
+3. 替换 `<img src="...">`
+4. 删除旧的占位块
 
-1. 将图片放入 `images/` 目录，按上表命名
-2. 在对应 HTML 文件中搜索图片文件名，取消注释 `<img>` 标签
-3. 删除对应的 `<div class="placeholder">` 或 `<div class="gallery-placeholder">` 块
+## 如何添加新项目
 
-### 示例：替换体感机械臂缩略图
+在首页 `全部项目总览` 区域复制一个 `mini-card` 块，再修改标题和链接即可。
 
-**替换前 (index.html):**
-```html
-<div class="placeholder">
-  <svg>...</svg>
-  <span>产品图片待上传</span>
-</div>
-<!-- <img src="images/gesture-arm-thumb.jpg" alt="GesturePilot 体感操控机械臂" /> -->
-```
+## 部署说明
 
-**替换后:**
-```html
-<img src="images/gesture-arm-thumb.jpg" alt="GesturePilot 体感操控机械臂" />
-```
-
-## 如何添加新项目卡片
-
-在 `index.html` 的 `全部项目总览` 区域，复制一个 `mini-card` 块并修改标题：
-
-```html
-<div class="mini-card reveal">
-  <div class="mini-card-icon">
-    <svg><!-- 选择合适的图标 --></svg>
-  </div>
-  <div class="mini-card-title">新项目名称</div>
-</div>
-```
-
-## 技术栈
-
-- **纯 HTML/CSS/JS**，无框架依赖，任何静态服务器即可部署
-- CSS 变量集中管理颜色、间距、圆角等设计令牌
-- Intersection Observer API 实现滚动显现动画
-- 响应式设计支持桌面、平板、手机
-- 多页面结构，每个产品独立页面，便于维护和扩展
+- 网站使用静态部署
+- 后续如果更新 APK，只更新静态下载目录即可
+- `downloads/` 只放公开下载资源；正式 APK 会随网站部署，临时文件不要放入仓库
