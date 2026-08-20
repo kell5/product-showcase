@@ -88,8 +88,8 @@
     <div class="container">
       <div class="reveal">
         <span class="section-label">Topic Library</span>
-        <h2 class="section-title">按<span class="gradient-text">方向</span>检索选题</h2>
-        <p class="section-desc">支持关键词搜索（题目 / 主控 / 传感器 / 功能），可按方向筛选，点击题目卡片可一键复制题目文本。</p>
+        <h2 class="section-title">按<span class="gradient-text">方向</span>分类展示</h2>
+        <p class="section-desc">每个方向先展示若干代表性题目，可展开该方向全部题目，也可用关键词搜索（题目 / 主控 / 传感器 / 功能）。点击题目卡片一键复制题目文本。</p>
       </div>
 
       <div class="thesis-toolbar reveal">
@@ -153,9 +153,10 @@
         <h2 class="section-title">没找到<span class="gradient-text">合适题目</span>？</h2>
         <p class="section-desc">可以按你的专业方向、已有硬件和时间安排，帮你把题目缩小到能落地的范围，或在现有题目上做差异化改造。</p>
         <div>
-          <a href="mailto:13393961819@163.com" class="btn btn-primary">邮件沟通选题</a>
+          <button type="button" class="btn btn-primary" id="thesisWechatBtn" data-wechat="13393961819">添加微信联系</button>
           <a href="index.html#all-projects" class="btn btn-outline">看已完成项目</a>
         </div>
+        <p class="thesis-wechat-tip" id="thesisWechatTip" hidden></p>
       </div>
       <p class="thesis-disclaimer">本专栏仅提供选题方向与技术栈参考，用于开题思路整理，请结合学校要求与自身能力独立完成设计与论文。</p>
     </div>

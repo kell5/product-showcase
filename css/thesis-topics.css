@@ -1,0 +1,329 @@
+/* ============================================================
+   毕设题目参考专栏样式（配合 css/styles.css 使用）
+   ============================================================ */
+
+.nav-links a.active { color: #fff; }
+.nav-links a.active::after { width: 100%; }
+
+.thesis-hero { min-height: 52vh; }
+
+.thesis-hero .hero-badge { margin-bottom: var(--sp-md); }
+
+.thesis-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-xl);
+  margin-top: var(--sp-lg);
+}
+.thesis-hero-stats .hero-stat-number { font-size: 34px; font-weight: 900; }
+.thesis-hero-stats .hero-stat-label { font-size: 13px; color: var(--c-text-muted); }
+
+/* ──────────── 工具栏 ──────────── */
+.thesis-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-md);
+  margin: var(--sp-lg) 0 var(--sp-md);
+}
+
+.thesis-search {
+  position: relative;
+  flex: 1 1 380px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+  transition: border-color 0.25s, background 0.25s;
+}
+.thesis-search:focus-within {
+  border-color: rgba(56, 189, 248, 0.55);
+  background: var(--c-bg-card-hover);
+}
+.thesis-search svg { width: 18px; height: 18px; color: var(--c-text-muted); flex: none; }
+.thesis-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--c-text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+}
+.thesis-search input::placeholder { color: rgba(148, 163, 184, 0.75); }
+
+.thesis-toolbar-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-md);
+  font-size: 14px;
+  color: var(--c-text-muted);
+}
+.thesis-reset {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--c-border);
+  background: transparent;
+  color: var(--c-text-muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.thesis-reset:hover { color: #fff; border-color: rgba(56, 189, 248, 0.5); }
+
+/* ──────────── 方向筛选 ──────────── */
+.thesis-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: var(--sp-lg);
+}
+.thesis-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--c-border);
+  background: var(--c-bg-card);
+  color: var(--c-text-muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.2s var(--ease-out-expo);
+}
+.thesis-chip:hover { color: var(--c-text); transform: translateY(-1px); }
+.thesis-chip.active {
+  color: #041018;
+  background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
+  border-color: transparent;
+  font-weight: 600;
+}
+.thesis-chip-num {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.18);
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+.thesis-chip.active .thesis-chip-num { background: rgba(4, 16, 24, 0.18); }
+
+/* ──────────── 题目卡片 ──────────── */
+.thesis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--sp-md);
+}
+
+.thesis-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 20px 16px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  background: var(--c-bg-card);
+  cursor: pointer;
+  transition: transform 0.35s var(--ease-out-expo), border-color 0.25s, background 0.25s;
+}
+.thesis-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(56, 189, 248, 0.4);
+  background: var(--c-bg-card-hover);
+}
+.thesis-card.copied { border-color: rgba(56, 189, 248, 0.75); }
+
+.thesis-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-sm);
+}
+.thesis-card-cat {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--c-primary);
+  text-transform: none;
+}
+.thesis-card-no {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(148, 163, 184, 0.7);
+}
+
+.thesis-card-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--c-text);
+}
+
+.thesis-card-stack {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--c-text-muted);
+}
+
+.thesis-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+.thesis-tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--c-border);
+  background: rgba(56, 189, 248, 0.07);
+  color: #cbd5e1;
+  font-size: 11px;
+}
+
+.thesis-card-copy {
+  font-size: 11px;
+  color: rgba(148, 163, 184, 0.55);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.thesis-card:hover .thesis-card-copy,
+.thesis-card.copied .thesis-card-copy { opacity: 1; }
+.thesis-card.copied .thesis-card-copy { color: var(--c-primary); }
+
+.thesis-empty {
+  padding: var(--sp-xl) var(--sp-md);
+  text-align: center;
+  color: var(--c-text-muted);
+  border: 1px dashed var(--c-border);
+  border-radius: var(--r-md);
+}
+
+.thesis-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-lg);
+}
+
+/* ──────────── 选题建议 ──────────── */
+.thesis-tips { background: var(--c-surface); }
+.thesis-tip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--sp-md);
+  margin-top: var(--sp-lg);
+}
+.thesis-tip-card {
+  padding: 24px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  background: var(--c-bg-card);
+}
+.thesis-tip-card h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+.thesis-tip-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--c-text-muted);
+}
+
+.thesis-disclaimer {
+  margin-top: var(--sp-lg);
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.65);
+}
+
+/* ──────────── 响应式 ──────────── */
+@media (max-width: 768px) {
+  .thesis-hero-stats { gap: var(--sp-lg); }
+  .thesis-toolbar { flex-direction: column; align-items: stretch; }
+  .thesis-toolbar-meta { justify-content: space-between; }
+  .thesis-grid { grid-template-columns: 1fr; }
+}
+
+/* ─────────── 方向分区块（默认视图） ─────────── */
+.thesis-grid--grouped {
+  display: block;
+}
+
+.thesis-cat-block + .thesis-cat-block {
+  margin-top: 48px;
+  padding-top: 40px;
+  border-top: 1px solid var(--c-border);
+}
+
+.thesis-cat-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.thesis-cat-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.thesis-cat-name {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.thesis-cat-count {
+  font-size: 13px;
+  color: var(--c-text-muted);
+}
+.thesis-cat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.thesis-cat-expand,
+.thesis-cat-all {
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--c-text-muted);
+  background: transparent;
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.25s, border-color 0.25s, background 0.25s;
+}
+.thesis-cat-expand:hover,
+.thesis-cat-all:hover {
+  color: #fff;
+  border-color: rgba(56, 189, 248, 0.45);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.thesis-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+@media (max-width: 768px) {
+  .thesis-cat-block + .thesis-cat-block { margin-top: 32px; padding-top: 28px; }
+  .thesis-cat-name { font-size: 18px; }
+  .thesis-cat-grid { grid-template-columns: 1fr; }
+}
+
+.thesis-wechat-tip {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--c-primary);
+}
