@@ -14,6 +14,7 @@
 - `product-lightmesh.html`：LightMesh 灯联网单独展示页
 - `product-lightmesh-doorbell.html`：可视化门铃详情页
 - `product-yinghuo-zhilian.html`：旧入口兼容跳转页
+- `thesis-topics.html`：毕设题目参考专栏（699 个选题，支持方向筛选与关键词搜索）
 - `admin.html`：后台管理页
 - `product-*.html`：其他项目详情页
 - `css/styles.css`：全站样式
@@ -71,6 +72,19 @@
 2. 在对应 HTML 里找到旧文件名
 3. 替换 `<img src="...">`
 4. 删除旧的占位块
+
+## 毕设题目参考专栏
+
+- 页面：`thesis-topics.html`，样式 `css/thesis-topics.css`，交互 `js/thesis-topics.js`
+- 数据：`js/thesis-topics.data.js`（挂载在 `window.THESIS_TOPICS`，由脚本生成，不要手改）
+- 更新数据：把新的「毕业设计题目分类整理」Markdown 放到本地，执行
+
+  ```bash
+  python3 tools/build-thesis-topics.py /path/to/毕业设计题目分类整理_宣传选题版.md
+  ```
+
+  Markdown 结构要求：`## <序号>. <方向名>` 小节 + 四列表格（序号 / 题目 / 技术栈 / 功能亮点）
+- 数据放在 `js/` 而不是 `data/`：服务器上 `data/` 目录被 `Deny from all` 限制，静态 JS 才能被浏览器直接加载
 
 ## 如何添加新项目
 

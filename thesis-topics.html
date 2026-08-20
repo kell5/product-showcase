@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>毕设题目参考 | 699 个嵌入式与物联网选题库</title>
+  <meta name="description" content="毕业设计题目参考专栏，收录 699 个嵌入式、单片机、物联网与信息系统选题，覆盖 16 个技术方向，含技术栈与功能亮点，支持关键词搜索与方向筛选。" />
+  <meta name="keywords" content="毕业设计题目,毕设选题,嵌入式毕设,STM32毕设,单片机课题,物联网毕业设计,毕设参考" />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://www.lk-mcu.online/thesis-topics.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="个人嵌入式项目展示" />
+  <meta property="og:title" content="毕设题目参考 | 699 个嵌入式与物联网选题" />
+  <meta property="og:description" content="16 个方向、699 个毕业设计题目参考，含技术栈与功能亮点，支持搜索与筛选。" />
+  <meta property="og:url" content="https://www.lk-mcu.online/thesis-topics.html" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css?v=20260820-1" />
+  <link rel="stylesheet" href="css/thesis-topics.css?v=20260820-1" />
+</head>
+<body class="thesis-page">
+
+  <div class="scroll-progress"></div>
+  <div class="cursor-glow"></div>
+
+  <!-- ==================== 导航栏 ==================== -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <span class="nav-brand-icon"></span>
+        智能硬件工作室
+      </a>
+      <div class="nav-links">
+        <a href="index.html">首页</a>
+        <a href="index.html#products">核心产品</a>
+        <a href="index.html#all-projects">全部项目</a>
+        <a href="product-lightmesh.html">LightMesh 灯联网</a>
+        <a href="thesis-topics.html" class="active">毕设题目参考</a>
+        <a href="#consult" class="nav-contact-btn">选题咨询</a>
+      </div>
+      <button class="nav-toggle" aria-label="菜单">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==================== 页头 ==================== -->
+  <section class="page-hero thesis-hero">
+    <div class="hero-bg">
+      <div class="hero-glow hero-glow--1"></div>
+      <div class="hero-glow hero-glow--2"></div>
+      <div class="hero-grid-lines"></div>
+    </div>
+    <div class="container">
+      <div class="page-hero-breadcrumb">
+        <a href="index.html">首页</a>
+        <span class="sep">/</span>
+        <span>毕设题目参考</span>
+      </div>
+      <div class="hero-badge"><span class="dot"></span> 选题库 · 持续整理</div>
+      <h1 class="page-hero-title">毕设<span class="gradient-text">题目参考</span></h1>
+      <p class="page-hero-subtitle">
+        按方向整理的嵌入式 / 单片机 / 物联网 / 信息系统毕业设计选题，每条附简要技术栈与功能亮点，
+        方便快速判断难度、确定题目范围和开题报告方向。
+      </p>
+      <div class="thesis-hero-stats">
+        <div>
+          <div class="hero-stat-number gradient-text" data-count="699">0</div>
+          <div class="hero-stat-label">收录题目</div>
+        </div>
+        <div>
+          <div class="hero-stat-number gradient-text" data-count="16">0</div>
+          <div class="hero-stat-label">技术方向</div>
+        </div>
+        <div>
+          <div class="hero-stat-number gradient-text" data-count="100" data-suffix="%">0</div>
+          <div class="hero-stat-label">含技术栈说明</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 选题列表 ==================== -->
+  <section class="section thesis-section" id="topics">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-label">Topic Library</span>
+        <h2 class="section-title">按<span class="gradient-text">方向</span>检索选题</h2>
+        <p class="section-desc">支持关键词搜索（题目 / 主控 / 传感器 / 功能），可按方向筛选，点击题目卡片可一键复制题目文本。</p>
+      </div>
+
+      <div class="thesis-toolbar reveal">
+        <div class="thesis-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input type="search" id="thesisSearch" placeholder="搜索题目、主控、传感器，例如：STM32 温室 / 人脸识别 / ESP32" autocomplete="off" />
+        </div>
+        <div class="thesis-toolbar-meta">
+          <span id="thesisCount">共 699 个题目</span>
+          <button type="button" class="thesis-reset" id="thesisReset">重置筛选</button>
+        </div>
+      </div>
+
+      <div class="thesis-filters reveal" id="thesisFilters" role="group" aria-label="方向筛选"></div>
+
+      <div class="thesis-grid" id="thesisGrid" aria-live="polite"></div>
+
+      <div class="thesis-empty" id="thesisEmpty" hidden>
+        没有匹配的题目，换个关键词试试（例如「灌溉」「门禁」「小程序」）。
+      </div>
+
+      <div class="thesis-more-wrap">
+        <button type="button" class="btn btn-outline" id="thesisMore">加载更多题目</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 选题建议 ==================== -->
+  <section class="section thesis-tips" id="tips">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-label">How To Choose</span>
+        <h2 class="section-title">怎么<span class="gradient-text">挑题目</span></h2>
+        <p class="section-desc">选题不是选最炫的，而是选能在有限时间内做出完整闭环、答辩讲得清楚的那一个。</p>
+      </div>
+      <div class="thesis-tip-grid">
+        <div class="thesis-tip-card reveal">
+          <h3>1. 先定主控，再定场景</h3>
+          <p>51 单片机适合入门与纯硬件方向；STM32 适合传感器多、需要实时控制的题目；ESP32 适合联网、App 远程控制；配 Java/Python 后台则偏管理信息系统。</p>
+        </div>
+        <div class="thesis-tip-card reveal">
+          <h3>2. 保证一条完整闭环</h3>
+          <p>采集 → 显示 → 阈值判断 → 执行/报警 → 远程查看，闭环齐全的题目更容易写出章节结构，也更好演示。</p>
+        </div>
+        <div class="thesis-tip-card reveal">
+          <h3>3. 亮点控制在 3 个以内</h3>
+          <p>功能堆太多容易做不完。挑 3 个核心亮点做扎实，剩下的写进「后续可拓展」，答辩时反而是加分项。</p>
+        </div>
+        <div class="thesis-tip-card reveal">
+          <h3>4. 同方向可替换主控</h3>
+          <p>同一场景内的题目可以自由替换主控（STM32 / 51 / ESP32 / GD32），技术栈只需同步替换主控与开发环境即可。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 咨询 ==================== -->
+  <section class="section product-cta thesis-consult" id="consult">
+    <div class="container" style="text-align:center;">
+      <div class="reveal">
+        <h2 class="section-title">没找到<span class="gradient-text">合适题目</span>？</h2>
+        <p class="section-desc">可以按你的专业方向、已有硬件和时间安排，帮你把题目缩小到能落地的范围，或在现有题目上做差异化改造。</p>
+        <div>
+          <a href="mailto:13393961819@163.com" class="btn btn-primary">邮件沟通选题</a>
+          <a href="index.html#all-projects" class="btn btn-outline">看已完成项目</a>
+        </div>
+      </div>
+      <p class="thesis-disclaimer">本专栏仅提供选题方向与技术栈参考，用于开题思路整理，请结合学校要求与自身能力独立完成设计与论文。</p>
+    </div>
+  </section>
+
+  <!-- ==================== 页脚 ==================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand">
+            <span class="nav-brand-icon"></span>
+            智能硬件工作室
+          </div>
+          <p class="footer-desc">嵌入式智能硬件独立开发者个人作品集，涵盖机器人、智能家居、物联网、视觉识别、医疗辅助等多领域创新项目。</p>
+        </div>
+        <div class="footer-links-group">
+          <h4>核心产品</h4>
+          <a href="product-lightmesh.html">LightMesh 灯联网</a>
+          <a href="product-gesture-arm.html">体感操控机械臂</a>
+          <a href="product-sound-core.html">嵌入式音频终端</a>
+          <a href="product-vision-tracker.html">智能视觉追踪臂</a>
+        </div>
+        <div class="footer-links-group">
+          <h4>快速导航</h4>
+          <a href="index.html">首页</a>
+          <a href="thesis-topics.html">毕设题目参考</a>
+          <a href="index.html#all-projects">全部项目</a>
+        </div>
+        <div class="footer-links-group">
+          <h4>联系方式</h4>
+          <a href="mailto:13393961819@163.com">邮箱: 13393961819@163.com</a>
+          <a href="tel:13393961819">电话: 13393961819</a>
+          <a href="admin.html" style="margin-top:8px;opacity:0.5;font-size:0.75rem;">管理后台</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 智能硬件工作室 · 个人作品集</span>
+        <span>用代码与电路构建智能硬件原型</span>
+        <span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">豫ICP备2026025181号-1</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/thesis-topics.data.js?v=20260820-1"></script>
+  <script src="js/thesis-topics.js?v=20260820-1"></script>
+</body>
+</html>
