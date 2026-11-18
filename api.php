@@ -90,7 +90,7 @@ function clientIp() {
     return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 }
 
-function strLen($s) {
+function textLength($s) {
     return function_exists('mb_strlen') ? mb_strlen($s) : strlen($s);
 }
 
@@ -404,7 +404,7 @@ switch ($action) {
         $oldPwd = (string) ($input['oldPassword'] ?? '');
         $newPwd = (string) ($input['newPassword'] ?? '');
 
-        if (strLen($newPwd) < 8) {
+        if (textLength($newPwd) < 8) {
             respond(['success' => false, 'message' => '新密码至少 8 位'], 400);
         }
         if (verifyPassword($oldPwd) !== true) {
