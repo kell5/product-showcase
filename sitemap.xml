@@ -2,62 +2,44 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.lk-mcu.online/</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-11-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.lk-mcu.online/product-gesture-arm.html</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lk-mcu.online/product-sound-core.html</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.lk-mcu.online/product-vision-tracker.html</loc>
-    <lastmod>2026-06-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://www.lk-mcu.online/product-lightmesh.html</loc>
-    <lastmod>2026-07-21</lastmod>
+    <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.lk-mcu.online/product-lightmesh-doorbell.html</loc>
-    <lastmod>2026-07-21</lastmod>
+    <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://www.lk-mcu.online/thesis-topics.html</loc>
-    <lastmod>2026-08-20</lastmod>
+    <lastmod>2026-11-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.lk-mcu.online/hand-tracking.html</loc>
-    <lastmod>2026-06-16</lastmod>
+    <loc>https://www.lk-mcu.online/product-gesture-arm.html</loc>
+    <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.lk-mcu.online/christmas-tree.html</loc>
-    <lastmod>2026-06-16</lastmod>
+    <loc>https://www.lk-mcu.online/product-sound-core.html</loc>
+    <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.lk-mcu.online/nebula-hand.html</loc>
-    <lastmod>2026-06-16</lastmod>
+    <loc>https://www.lk-mcu.online/product-vision-tracker.html</loc>
+    <lastmod>2026-11-18</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.8</priority>
   </url>
 </urlset>

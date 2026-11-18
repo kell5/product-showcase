@@ -23,9 +23,11 @@ jobs:
             --exclude='.vscode' \
             --exclude='.claude' \
             --exclude='.reasonix' \
-            --exclude='data/products.json' \
-            --exclude='data/password.hash' \
+            --exclude='data/*.json' \
+            --exclude='data/*.hash' \
+            --exclude='data/*.tmp*' \
             --exclude='uploads/' \
+            --exclude='downloads/*.apk' \
             --exclude='nginx-config-snippet.conf' \
             --exclude='*.zip' \
             --exclude='.gitignore' \
@@ -42,7 +44,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || '22' }}
           script: |
-            chmod -R 755 /www/wwwroot/114.55.208.72
-            chmod 644 /www/wwwroot/114.55.208.72/*.html
-            chmod 644 /www/wwwroot/114.55.208.72/*.php
-            echo "✅ 部署完成！" 
+            cd /www/wwwroot/114.55.208.72
+            chmod -R 755 .
+            find . -maxdepth 1 -name '*.html' -exec chmod 644 {} \;
+            find . -maxdepth 1 -name '*.php' -exec chmod 644 {} \;
+            # 运行时数据与密码哈希只允许属主读写
+            if [ -d data ]; then
+              find data -name '*.json' -exec chmod 640 {} \;
+              find data -name '*.hash' -exec chmod 640 {} \;
+            fi
+            echo "✅ 部署完成！"

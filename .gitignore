@@ -5,15 +5,18 @@
 .claude/
 .reasonix/
 
-# 运行时数据（敏感，不提交）
-data/products.json
-data/password.hash
+# 运行时数据（敏感，不提交；只存在于服务器）
+data/*.json
+data/*.hash
+data/*.tmp*
 
 # 上传目录
 uploads/
+
+# 下载资源：APK 体积大，不进 Git，只在服务器保留
+# 发布新版本请走 GitHub Release，或直接上传到服务器 downloads/
 downloads/*
 !downloads/README.md
-!downloads/lightmesh-app-release.apk
 
 # 服务器配置片段
 nginx-config-snippet.conf

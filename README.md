@@ -21,6 +21,21 @@
 - `js/main.js`：首页交互
 - `js/admin.js`：后台管理逻辑
 - `images/`：展示图目录
+- `api.php`：后台接口（产品 CRUD / 图片上传 / 登录鉴权）
+- `tools/set-admin-password.php`：在服务器上设置后台密码（命令行执行）
+- `deploy/nginx-security.conf`：服务器安全配置片段（必须手动贴到 nginx）
+
+## 后台与安全
+
+- **没有默认密码**。首次部署后必须在服务器执行：
+  ```bash
+  php tools/set-admin-password.php '你的新密码'
+  ```
+- 密码用 bcrypt 加盐存储；登录后签发 24 小时有效的 token，多端可同时登录，
+  改密码会让所有旧会话失效；同一 IP 连续 5 次密码错误封 15 分钟。
+- 图片上传按文件真实内容判断类型（`getimagesize`），不信任客户端 MIME 和文件名。
+- `data/` 目录存放运行时数据，nginx 侧必须用 `deploy/nginx-security.conf` 拒绝直接访问。
+- 详见 `DEPLOY.md` 的「第零步」。
 
 ## 设计风格
 
@@ -93,5 +108,7 @@
 ## 部署说明
 
 - 网站使用静态部署
-- 后续如果更新 APK，只更新静态下载目录即可
-- `downloads/` 只放公开下载资源；正式 APK 会随网站部署，临时文件不要放入仓库
+- APK 不再进 Git：`downloads/*.apk` 已在 `.gitignore` 和 rsync 排除列表中，
+  服务器上的 APK 不会被自动部署删掉，发新版本请直接传服务器或走 GitHub Release
+- `downloads/` 只放公开下载资源；临时文件不要放入仓库
+- 图片已统一压缩到 1600px 以内（原 14MB → 约 1.6MB），新增图片请先压缩再提交

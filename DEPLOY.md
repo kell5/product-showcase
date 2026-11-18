@@ -10,6 +10,33 @@
 
 ---
 
+## 第零步：首次部署必做的两件事 ⚠️
+
+### 1. 设置后台密码
+
+代码里**不再内置任何默认密码**。部署完成后，在服务器上执行一次：
+
+```bash
+cd /www/wwwroot/114.55.208.72
+php tools/set-admin-password.php '你的新密码至少8位'
+```
+
+- 密码以 bcrypt 加盐哈希存到 `data/password.hash`
+- 之后忘记密码，重新执行同一条命令即可覆盖
+- 如果没执行过，登录后台会提示「后台密码未初始化」
+
+### 2. 配置 nginx 安全规则
+
+仓库里的 `data/.htaccess` 是 Apache 语法，**nginx 不识别**，等于没生效
+（`data/products.json`、`data/password.hash` 默认能被直接下载）。
+
+把 `deploy/nginx-security.conf` 的内容粘贴到：
+宝塔面板 → 网站 → 设置 → 配置文件 → `server { }` 内部，保存即可。
+
+它做了 4 件事：`data/` 一律 404、`uploads/` 禁止执行脚本、隐藏文件 404、静态资源缓存。
+
+---
+
 ## 第一步：开通服务器 SSH 访问 ⚠️ 必须先做
 
 当前 SSH 端口 22 被阿里云安全组挡住了，需要先放行：
@@ -134,6 +161,23 @@ gh auth login                 # 登录
 | 多人协作 | ❌ 不支持 | ✅ 支持 |
 | 回滚 | ❌ 手动替换文件 | ✅ `git revert` |
 | 安全性 | 密钥在本机 | 密钥存在 GitHub（加密） |
+
+---
+
+## APK 怎么发布
+
+APK 已从 Git 移除（约 50MB，会把仓库撑大且无法回收）。自动部署里加了
+`--exclude='downloads/*.apk'`，所以**服务器上已有的 APK 不会被删除或覆盖**。
+
+发布新版本二选一：
+
+```bash
+# 方式 A：直接传服务器
+scp -i ~/.ssh/lk_mcu_sftp.pem lightmesh-app-release.apk \
+    root@114.55.208.72:/www/wwwroot/114.55.208.72/downloads/
+```
+
+方式 B：上传到 GitHub Releases，再把页面链接改成 Release 地址。
 
 ---
 
