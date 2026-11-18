@@ -921,3 +921,85 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+/* ═══════════════════════════════════════════════════
+   AI 助手配置
+   ═══════════════════════════════════════════════════ */
+
+.ai-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.ai-status-item {
+  padding: 12px 14px;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.ai-status-item span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.72rem;
+  color: var(--admin-text-muted);
+}
+
+.ai-status-item strong {
+  font-size: 0.98rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ai-status-item strong.is-on { color: var(--admin-success); }
+.ai-status-item strong.is-off { color: var(--admin-text-muted); }
+
+.admin-input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.admin-field-hint {
+  margin: 6px 0 0;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--admin-text-muted);
+}
+
+.admin-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 18px;
+  font-size: 0.88rem;
+  color: var(--admin-text);
+  cursor: pointer;
+  user-select: none;
+}
+
+.admin-switch input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--admin-primary);
+  cursor: pointer;
+}
+
+.admin-settings-desc code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82em;
+  color: #a5b4fc;
+}
+
+.admin-settings-desc a {
+  color: #818cf8;
+}
+
+@media (max-width: 640px) {
+  .admin-input-row { grid-template-columns: 1fr; }
+}

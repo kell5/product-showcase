@@ -722,11 +722,121 @@
     }
   });
 
+  // ─────────── AI 助手配置 ───────────
+  let aiLoaded = false;
+
+  function renderAiUsage(d) {
+    const u = d.usage || {};
+    const stateEl = document.getElementById('aiStatState');
+    stateEl.textContent = d.enabled ? '已开启' : '已关闭';
+    stateEl.className = d.enabled ? 'is-on' : 'is-off';
+    document.getElementById('aiStatToday').textContent =
+      (u.today || 0) + ' / ' + (u.limit || 0);
+    document.getElementById('aiStatTokens').textContent =
+      Number(u.tokens || 0).toLocaleString('zh-CN');
+    document.getElementById('aiStatHits').textContent = (u.hits || 0) + ' 次';
+  }
+
+  async function loadAiConfig(force) {
+    if (aiLoaded && !force) return;
+    try {
+      const res = await apiCall('get_ai_config', null, 'GET');
+      if (!res.ok || !res.data.success) {
+        showToast('读取 AI 配置失败', 'error');
+        return;
+      }
+      const d = res.data;
+      aiLoaded = true;
+
+      document.getElementById('aiEnabled').checked = !!d.enabled;
+      document.getElementById('aiModel').value = d.model || '';
+      document.getElementById('aiPerIp').value = d.perIp;
+      document.getElementById('aiPerTotal').value = d.perTotal;
+
+      const keyEl = document.getElementById('aiApiKey');
+      keyEl.value = '';
+      keyEl.placeholder = d.hasKey ? '已配置（' + d.keyMask + '），留空不修改' : '粘贴智谱 API Key';
+
+      const hint = document.getElementById('aiKeyHint');
+      if (d.hasKey) {
+        hint.textContent = '当前 Key：' + d.keyMask + '（只显示首尾各 4 位）';
+      } else if (d.keyFromEnv) {
+        hint.textContent = '当前使用服务器环境变量里的 Key';
+      } else {
+        hint.textContent = '尚未配置 Key，助手不会工作';
+      }
+
+      const list = document.getElementById('aiModelList');
+      list.innerHTML = (d.models || [])
+        .map((m) => '<option value="' + m + '"></option>')
+        .join('');
+
+      renderAiUsage(d);
+    } catch {
+      showToast('读取 AI 配置失败', 'error');
+    }
+  }
+
+  document.getElementById('aiForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+      apiKey: document.getElementById('aiApiKey').value.trim(),
+      model: document.getElementById('aiModel').value.trim(),
+      perIp: Number(document.getElementById('aiPerIp').value) || 30,
+      perTotal: Number(document.getElementById('aiPerTotal').value) || 800,
+      enabled: document.getElementById('aiEnabled').checked,
+    };
+    if (payload.enabled && !payload.apiKey) {
+      // 后端会自动沿用已保存的 Key，这里不拦，只提示一下
+      const hint = document.getElementById('aiKeyHint');
+      if (hint && hint.textContent.indexOf('尚未配置') !== -1) {
+        showToast('先填 API Key 再开启', 'error');
+        return;
+      }
+    }
+    try {
+      const res = await apiCall('set_ai_config', payload);
+      if (res.ok && res.data.success) {
+        showToast('AI 配置已保存');
+        document.getElementById('aiApiKey').value = '';
+        aiLoaded = false;
+        loadAiConfig(true);
+      } else {
+        showToast(res.data.message || '保存失败', 'error');
+      }
+    } catch {
+      showToast('保存失败', 'error');
+    }
+  });
+
+  document.getElementById('aiTestBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('aiTestBtn');
+    const label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '测试中…';
+    try {
+      const res = await apiCall('ai_test', {
+        apiKey: document.getElementById('aiApiKey').value.trim(),
+        model: document.getElementById('aiModel').value.trim(),
+      });
+      if (res.ok && res.data.success) {
+        showToast('连接成功 · ' + res.data.model + ' · ' + res.data.ms + 'ms');
+      } else {
+        showToast((res.data && res.data.message) || '连接失败', 'error');
+      }
+    } catch {
+      showToast('连接失败', 'error');
+    }
+    btn.disabled = false;
+    btn.textContent = label;
+  });
+
   // 进入设置页时加载 Hero 图片
   const origSwitchTab = switchTab;
   switchTab = function(tabName) {
     origSwitchTab(tabName);
     if (tabName === 'settings') loadHeroImages();
+    if (tabName === 'ai') loadAiConfig();
   };
 
 })();

@@ -107,7 +107,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  /* ─────────── 从 URL 带参进入：?q=关键词 / ?cat=方向 ───────────
+   * 站内 AI 助手的引用卡片会链到 ?q=完整题目，点进来直接定位到那一条。 */
+  const params = new URLSearchParams(window.location.search);
+  const initialQ = (params.get('q') || '').trim();
+  const initialCat = Number(params.get('cat') || 0);
+
+  if (initialQ) {
+    searchInput.value = initialQ;
+    keyword = initialQ.toLowerCase();
+  }
+  if (initialCat > 0) {
+    activeCategory = initialCat;
+    filtersBox.querySelectorAll('.thesis-chip').forEach((el) => {
+      el.classList.toggle('active', el.dataset.category === String(initialCat));
+    });
+  }
+
   applyFilters();
+
+  if (initialQ) {
+    const anchor = document.getElementById('topics');
+    if (anchor) {
+      window.history.replaceState(null, '', window.location.pathname + '?q=' + encodeURIComponent(initialQ) + '#topics');
+      setTimeout(() => anchor.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+    }
+  }
 
   /* ─────────── 逻辑 ─────────── */
   function setCategory(id) {

@@ -23,6 +23,8 @@
 - `images/`：展示图目录
 - `api.php`：后台接口（产品 CRUD / 图片上传 / 登录鉴权 / 留言读写）
 - `js/guestbook.js`、`css/guestbook.css`：留言板组件（自包含，页面只放容器）
+- `js/ai-assistant.js`、`css/ai-assistant.css`：AI 站内助手组件（自包含）
+- `docs/ai-assistant.md`：助手实现说明、成本与体验优化路线
 - `tools/set-admin-password.php`：在服务器上设置后台密码（命令行执行）
 - `deploy/nginx-security.conf`：服务器安全配置片段（必须手动贴到 nginx）
 
@@ -37,6 +39,15 @@
 - 数据存在 `data/messages.json`，最多保留 500 条；**不存储访客 IP**，
   限流只按 IP 哈希存一个短期计数
 - 留言提交后立即公开，后台「留言管理」可删除不合适的内容
+
+## AI 站内助手
+
+- 右下角悬浮入口（`js/ai-assistant.js`），任意按钮加 `data-ai-open` 也能打开面板
+- 回答只依据站内内容：PHP 先在 699 条选题与 5 个项目页里检索，命中 8 条再交给
+  智谱 GLM-4.7-Flash 组织语言，引用以来源卡片形式列出，点进去直接定位题目
+- 配置入口：后台 →「AI 助手」，填 Key、模型、额度；Key 存 `data/ai-config.php`
+- 防滥用：每人每日 30 次（可调）、全站每日 800 次、同 IP 3 秒间隔、相同问题 7 天缓存
+- 详细设计、成本估算与后续技术路线见 `docs/ai-assistant.md`
 
 ## 后台与安全
 

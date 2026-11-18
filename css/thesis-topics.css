@@ -374,3 +374,16 @@
   line-height: 1.75;
   color: var(--c-text-muted);
 }
+
+/* ─────────── 助手入口按钮 ─────────── */
+.thesis-ai-btn {
+  color: var(--c-primary);
+  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.06);
+}
+
+.thesis-ai-btn:hover {
+  color: #fff;
+  background: rgba(56, 189, 248, 0.14);
+  border-color: rgba(56, 189, 248, 0.6);
+}

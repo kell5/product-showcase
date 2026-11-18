@@ -45,6 +45,19 @@ define('MESSAGES_FILE', DATA_DIR . '/messages.json');
 define('MSG_LIMIT_FILE', DATA_DIR . '/msg-limit.php');
 define('UPLOAD_DIR', __DIR__ . '/uploads');
 
+// AI 助手：配置（含 API Key）、用量、问答缓存都用 .php 存，避免被直接下载
+define('AI_CONFIG_FILE', DATA_DIR . '/ai-config.php');
+define('AI_USAGE_FILE', DATA_DIR . '/ai-usage.php');
+define('AI_CACHE_FILE', DATA_DIR . '/ai-cache.php');
+define('TOPICS_DATA_FILE', __DIR__ . '/js/thesis-topics.data.js');
+
+define('AI_MAX_QUESTION', 200);      // 单次提问长度上限
+define('AI_CONTEXT_TOPICS', 8);      // 送给模型的题目条数
+define('AI_TIMEOUT', 40);            // 上游超时（秒）
+define('AI_MIN_INTERVAL', 3);        // 同一 IP 两次提问的最小间隔
+define('AI_CACHE_TTL', 604800);      // 问答缓存有效期 7 天
+define('AI_CACHE_MAX', 400);         // 缓存条目上限
+
 define('MSG_MAX_KEEP', 500);        // 最多保留多少条留言
 define('MSG_NAME_MAX', 20);         // 昵称长度上限
 define('MSG_BODY_MAX', 500);        // 留言长度上限
@@ -422,6 +435,616 @@ function migrateLegacySecrets() {
 
 migrateLegacySecrets();
 
+// ─────────── AI 站内助手 ───────────
+/**
+ * 思路：先把问题在本地选题库 / 项目里做关键词检索（带 idf 加权），
+ * 只把命中的 8 条题目交给模型改写。这样既不用把 699 条全塞进 prompt
+ * （省 token、响应快），模型也没有编造题目的空间。
+ */
+
+function aiModels() {
+    return ['glm-4.7-flash', 'glm-4.5-flash', 'glm-4-flash', 'glm-4-air', 'glm-4.6'];
+}
+
+function aiLower($s) {
+    return function_exists('mb_strtolower') ? mb_strtolower((string) $s, 'UTF-8') : strtolower((string) $s);
+}
+
+function aiConfig() {
+    $defaults = [
+        'enabled'     => false,
+        'api_key'     => '',
+        'model'       => 'glm-4.7-flash',
+        'base_url'    => 'https://open.bigmodel.cn/api/paas/v4',
+        'per_ip'      => 30,
+        'per_total'   => 800,
+        'temperature' => 0.6,
+        'max_tokens'  => 900,
+    ];
+    $saved = readSecret(AI_CONFIG_FILE, []);
+    if (!is_array($saved)) $saved = [];
+    $cfg = array_merge($defaults, $saved);
+
+    // 环境变量优先：不想把 Key 落在文件里时，可以在站点配置里设 ZHIPU_API_KEY
+    $envKey = getenv('ZHIPU_API_KEY');
+    if ($envKey === false || $envKey === '') $envKey = getenv('GLM_API_KEY');
+    if ($envKey !== false && trim((string) $envKey) !== '') $cfg['api_key'] = trim((string) $envKey);
+
+    $cfg['api_key']     = trim((string) $cfg['api_key']);
+    $cfg['per_ip']      = max(1, min(200, (int) $cfg['per_ip']));
+    $cfg['per_total']   = max(10, min(20000, (int) $cfg['per_total']));
+    $cfg['temperature'] = max(0, min(1.2, (float) $cfg['temperature']));
+    $cfg['max_tokens']  = max(200, min(2000, (int) $cfg['max_tokens']));
+    return $cfg;
+}
+
+function aiReady($cfg) {
+    return !empty($cfg['enabled']) && trim((string) $cfg['api_key']) !== '';
+}
+
+function aiIpKey() {
+    return substr(hash('sha256', clientIp() . '|ai-assistant'), 0, 16);
+}
+
+function aiMaskKey($key) {
+    $key = (string) $key;
+    $len = strlen($key);
+    if ($len <= 8) return $len ? str_repeat('*', $len) : '';
+    return substr($key, 0, 4) . str_repeat('*', 8) . substr($key, -4);
+}
+
+/** 当日用量（跨天自动归零，历史汇总保留 14 天） */
+function aiUsage() {
+    $today = date('Y-m-d');
+    $u = readSecret(AI_USAGE_FILE, []);
+    if (!is_array($u)) $u = [];
+    $history = (isset($u['history']) && is_array($u['history'])) ? $u['history'] : [];
+    $base = [
+        'day'     => $today,
+        'total'   => 0,
+        'tokens'  => 0,
+        'hits'    => 0,
+        'ips'     => [],
+        'last'    => 0,
+        'allTime' => (int) ($u['allTime'] ?? 0),
+        'history' => $history,
+    ];
+    if (($u['day'] ?? '') !== $today) return $base;
+    return array_merge($base, $u);
+}
+
+function aiUsageBump($tokens, $cached) {
+    $today = date('Y-m-d');
+    $u = readSecret(AI_USAGE_FILE, []);
+    if (!is_array($u)) $u = [];
+
+    if (($u['day'] ?? '') !== $today) {
+        $history = (isset($u['history']) && is_array($u['history'])) ? $u['history'] : [];
+        if (!empty($u['day'])) {
+            $history[$u['day']] = ['total' => (int) ($u['total'] ?? 0), 'tokens' => (int) ($u['tokens'] ?? 0)];
+        }
+        if (count($history) > 14) $history = array_slice($history, -14, null, true);
+        $u = [
+            'day' => $today, 'total' => 0, 'tokens' => 0, 'hits' => 0, 'ips' => [],
+            'allTime' => (int) ($u['allTime'] ?? 0), 'history' => $history,
+        ];
+    }
+
+    $u['total']   = (int) ($u['total'] ?? 0) + 1;
+    $u['allTime'] = (int) ($u['allTime'] ?? 0) + 1;
+    $u['tokens']  = (int) ($u['tokens'] ?? 0) + max(0, (int) $tokens);
+    if ($cached) $u['hits'] = (int) ($u['hits'] ?? 0) + 1;
+    $k = aiIpKey();
+    if (!isset($u['ips']) || !is_array($u['ips'])) $u['ips'] = [];
+    $entry = $u['ips'][$k] ?? ['n' => 0, 't' => 0];
+    if (is_int($entry) || is_numeric($entry)) $entry = ['n' => (int) $entry, 't' => 0];
+    $entry['n'] = (int) ($entry['n'] ?? 0) + 1;
+    $entry['t'] = time();
+    $u['ips'][$k] = $entry;
+    $u['last'] = time();
+    writeSecret(AI_USAGE_FILE, $u);
+}
+
+/** 当前 IP 的用量与上次提问时间（兼容早期只存整数的格式） */
+function aiIpUsed($u) {
+    $entry = $u['ips'][aiIpKey()] ?? ['n' => 0, 't' => 0];
+    if (is_int($entry) || is_numeric($entry)) $entry = ['n' => (int) $entry, 't' => 0];
+    return ['n' => (int) ($entry['n'] ?? 0), 't' => (int) ($entry['t'] ?? 0)];
+}
+
+/** 返回 null 表示放行，返回字符串表示应当拒答 */
+function aiQuotaError($cfg) {
+    $u = aiUsage();
+    $now = time();
+    $me = aiIpUsed($u);
+    $used = $me['n'];
+
+    // 最小间隔只看自己的上次提问，别人刚问过不该影响你
+    $gap = AI_MIN_INTERVAL - ($now - $me['t']);
+    if ($used > 0 && $me['t'] > 0 && $gap > 0) {
+        return '问得有点快，请 ' . $gap . ' 秒后再发';
+    }
+    if ($used >= (int) $cfg['per_ip']) {
+        return '今天的 ' . (int) $cfg['per_ip'] . ' 次提问已经用完了，可以明天再来，或直接在留言板提问';
+    }
+    if ((int) ($u['total'] ?? 0) >= (int) $cfg['per_total']) {
+        return '今天助手的总次数已用完，请晚些再试，或在留言板提问';
+    }
+    return null;
+}
+
+function aiPublicUsage() {
+    $cfg = aiConfig();
+    $u = aiUsage();
+    return [
+        'today'   => (int) ($u['total'] ?? 0),
+        'tokens'  => (int) ($u['tokens'] ?? 0),
+        'hits'    => (int) ($u['hits'] ?? 0),
+        'allTime' => (int) ($u['allTime'] ?? 0),
+        'limit'   => (int) $cfg['per_total'],
+        'history' => (isset($u['history']) && is_array($u['history'])) ? $u['history'] : [],
+    ];
+}
+
+function aiCacheGet($key) {
+    $store = readSecret(AI_CACHE_FILE, []);
+    if (!is_array($store) || !isset($store['items'][$key])) return null;
+    $item = $store['items'][$key];
+    if (!is_array($item) || (time() - (int) ($item['t'] ?? 0)) > AI_CACHE_TTL) return null;
+    $answer = (string) ($item['a'] ?? '');
+    return $answer === '' ? null : ['answer' => $answer];
+}
+
+function aiCacheSet($key, $answer) {
+    $store = readSecret(AI_CACHE_FILE, []);
+    if (!is_array($store)) $store = [];
+    $items = (isset($store['items']) && is_array($store['items'])) ? $store['items'] : [];
+
+    $now = time();
+    foreach ($items as $k => $v) {
+        if (($now - (int) ($v['t'] ?? 0)) > AI_CACHE_TTL) unset($items[$k]);
+    }
+    $items[$key] = ['a' => $answer, 't' => $now];
+    if (count($items) > AI_CACHE_MAX) {
+        uasort($items, function ($a, $b) { return (int) ($a['t'] ?? 0) - (int) ($b['t'] ?? 0); });
+        $items = array_slice($items, -AI_CACHE_MAX, null, true);
+    }
+    writeSecret(AI_CACHE_FILE, ['items' => $items]);
+}
+
+/** 把 js/thesis-topics.data.js 里的 JSON 取出来，建一个扁平索引 */
+function loadTopicIndex() {
+    static $index = null;
+    if ($index !== null) return $index;
+    $index = [];
+
+    if (!is_file(TOPICS_DATA_FILE)) return $index;
+    $raw = @file_get_contents(TOPICS_DATA_FILE);
+    if ($raw === false || $raw === '') return $index;
+
+    // 去掉可能存在的 BOM
+    $raw = preg_replace('/^\xEF\xBB\xBF/', '', $raw);
+    $start = strpos($raw, '{');
+    $end = strrpos($raw, '}');
+    if ($start === false || $end === false || $end <= $start) return $index;
+
+    $data = json_decode(substr($raw, $start, $end - $start + 1), true);
+    if (!is_array($data) || empty($data['categories']) || !is_array($data['categories'])) return $index;
+
+    foreach ($data['categories'] as $cat) {
+        $catName = (string) ($cat['name'] ?? '');
+        $topics = isset($cat['topics']) && is_array($cat['topics']) ? $cat['topics'] : [];
+        foreach ($topics as $t) {
+            $title = (string) ($t['title'] ?? '');
+            if ($title === '') continue;
+            $stack = (string) ($t['stack'] ?? '');
+            $hl = isset($t['highlights']) && is_array($t['highlights']) ? implode(' ', $t['highlights']) : '';
+            $index[] = [
+                'no'       => (int) ($t['no'] ?? 0),
+                'title'    => $title,
+                'stack'    => $stack,
+                'hl'       => $hl,
+                'category' => $catName,
+                'titleLow' => aiLower($title),
+                'stackLow' => aiLower($stack),
+                'hlLow'    => aiLower($hl),
+                'catLow'   => aiLower($catName),
+                'hay'      => aiLower($title . ' ' . $stack . ' ' . $hl . ' ' . $catName),
+            ];
+        }
+    }
+    return $index;
+}
+
+/** 口语/同义词映射：把学生常说的话映射到题目里真实出现的词 */
+function aiSynonyms() {
+    return [
+        '浇花' => '灌溉', '浇水' => '灌溉', '养花' => '灌溉', '种植' => '温室', '大棚' => '温室',
+        '温度' => '温湿', '湿度' => '温湿', '恒温' => '温控', '测温' => '温度',
+        '刷脸' => '人脸', '摄像头' => '视觉', '图像' => '视觉', '拍照' => '摄像头',
+        '门锁' => '门禁', '指纹锁' => '门禁', '钥匙' => '门禁',
+        '小车' => '智能车', '循迹' => '智能车', '避障' => '智能车',
+        '机械手' => '机械臂', '舵机' => '机械臂',
+        '播报' => '语音', '音频' => '语音', '录音' => '语音',
+        '心率' => '心率', '血压' => '血压', '血氧' => '血氧', '跌倒' => '跌倒', '老人' => '养老',
+        '猫' => '宠物', '狗' => '宠物', '喂食' => '宠物', '喂养' => '宠物',
+        '车位' => '停车', '停车场' => '停车', '取件' => '快递', '快递柜' => '快递',
+        '水质' => '水质', '空气' => '空气', 'pm2.5' => '粉尘', '烟雾' => '烟雾', '燃气' => '燃气',
+        '库存' => '仓储', '仓库' => '仓储', '物流' => '物流',
+        '考勤' => '考勤', '签到' => '考勤', '点名' => '考勤',
+        '小程序' => '小程序', 'app' => 'app', '网页' => 'web', '后台' => '管理',
+        '太阳能' => '光伏', '电池' => '锂电池', '充电' => '充电',
+        '无线' => '无线', '蓝牙' => '蓝牙', '组网' => '组网',
+        '简单' => '基础', '容易' => '基础', '入门' => '基础', '难' => '综合',
+    ];
+}
+
+/**
+ * 先把「帮我」「有没有」「题目」这类口语词剔掉。
+ * 不剔的话，2-gram 会把「有没」「有和」这种碎片也当成检索词，把泛问搅浑。
+ */
+function aiStripFiller($q) {
+    $fillers = [
+        '我只有', '我手上', '我这边', '帮我', '帮忙', '请你', '请问', '你好', '谢谢', '麻烦',
+        '一下', '几个', '一些', '那些', '这些', '那种', '这类', '相关', '方面', '题目', '选题',
+        '推荐', '有没有', '有什么', '什么', '哪个', '怎么', '如何', '可以', '想要', '我想',
+        '需要', '应该', '适合', '能不能', '两周', '一周', '时间', '做完', '做的', '做个',
+        '课程设计', '毕设', '毕业设计', '大作业', '简单点', '简单', '容易', '入门', '一点',
+        '有点', '比较',
+    ];
+    return str_replace($fillers, ' ', (string) $q);
+}
+
+/** 中文没有空格，用 2-gram + 同义词 + 英文/型号词拼出检索词 */
+function aiTerms($query) {
+    $q = aiLower(trim(aiStripFiller((string) $query)));
+    if ($q === '') return [];
+
+    $terms = [];
+
+    // 同义词先按短语匹配，权重高一些
+    foreach (aiSynonyms() as $word => $canon) {
+        if ($word !== '' && strpos($q, $word) !== false) {
+            $terms[$canon] = max($terms[$canon] ?? 0, 2.2);
+        }
+    }
+
+    // 英文与型号：stm32、esp32、k210、51、pid、wifi、4g、lora、rfid……
+    if (preg_match_all('/[a-z][a-z0-9\.\+#\-]{1,20}|\d{2,4}/', $q, $m)) {
+        foreach (array_unique($m[0]) as $w) {
+            if (strlen($w) < 2) continue;
+            $terms[$w] = max($terms[$w] ?? 0, 2.0);
+        }
+    }
+
+    // 中文 2-gram
+    if (preg_match_all('/[\x{4e00}-\x{9fa5}]+/u', $q, $m)) {
+        foreach ($m[0] as $run) {
+            $len = function_exists('mb_strlen') ? mb_strlen($run, 'UTF-8') : strlen($run);
+            if ($len < 2) continue;
+            if ($len <= 5) {
+                $terms[$run] = max($terms[$run] ?? 0, 3.0);
+            }
+            for ($i = 0; $i + 1 < $len; $i++) {
+                $bg = function_exists('mb_substr') ? mb_substr($run, $i, 2, 'UTF-8') : substr($run, $i, 2);
+                if ($bg === '') continue;
+                $terms[$bg] = max($terms[$bg] ?? 0, 1.4);
+            }
+        }
+    }
+
+    // 这些词在几乎所有标题里都有，命中也没有区分度
+    $stop = [
+        '基于', '设计', '实现', '系统', '的', '与', '和', '一个', '题目', '作品', '项目',
+        '帮我', '推荐', '一下', '有没有', '什么', '哪个', '怎么', '如何', '可以', '想要',
+        '我想', '需要', '应该', '适合', '请问', '你好', '谢谢', '做一', '做的', '能不',
+        '不能', '能两', '周做', '个題', '个题', '选的', '个方', '方向',
+    ];
+    foreach ($stop as $w) unset($terms[$w]);
+
+    return $terms;
+}
+
+/**
+ * 检索题目。idf 加权：命中率超过六成的词（单片机、显示、报警）权重自动降低，
+ * 避免「帮我找个单片机的题目」这种泛问把库里的高频词全捞出来。
+ */
+function aiSearchTopics($query, $limit = 8) {
+    $topics = loadTopicIndex();
+    $n = count($topics);
+    if (!$n) return [];
+
+    $terms = aiTerms($query);
+    if (!$terms) return [];
+
+    $df = [];
+    foreach ($terms as $term => $w) {
+        $count = 0;
+        foreach ($topics as $t) {
+            if (strpos($t['hay'], $term) !== false) $count++;
+        }
+        $df[$term] = $count;
+    }
+
+    $weighted = [];
+    foreach ($terms as $term => $w) {
+        $d = max(1, $df[$term]);
+        if ($d === 0) continue;                       // 库里没有这个词，不参与打分
+        $idf = log(1 + $n / $d);
+        $weighted[$term] = $w * max(0.35, min(4.5, $idf));
+    }
+    if (!$weighted) return [];
+
+    $qNorm = aiLower(preg_replace('/\s+/u', '', (string) $query));
+
+    // 查询里明确有两个概念（有空格分隔）时，要求题目同时命中两个，
+    // 否则「ESP32 门禁」会把只沾了 ESP32 的题目全捞进来。
+    $need = (preg_match('/\s/u', trim((string) $query)) && count($weighted) >= 2) ? 2 : 1;
+
+    $scored = [];
+    foreach ($topics as $t) {
+        $score = 0.0;
+        $matched = 0;
+        foreach ($weighted as $term => $w) {
+            $sub = 0.0;
+            if (strpos($t['titleLow'], $term) !== false) $sub += 9 * $w;
+            if (strpos($t['stackLow'], $term) !== false) $sub += 3.5 * $w;
+            if (strpos($t['hlLow'], $term) !== false) $sub += 2.5 * $w;
+            if (strpos($t['catLow'], $term) !== false) $sub += 2 * $w;
+            if ($sub > 0) {
+                $matched++;
+                $score += $sub;
+            }
+        }
+        if ($score <= 0 || $matched < $need) continue;
+        // 整句命中标题：说明用户几乎是照着题目问的
+        $qLen = function_exists('mb_strlen') ? mb_strlen($qNorm, 'UTF-8') : strlen($qNorm);
+        if ($qNorm !== '' && $qLen >= 5 && strpos(str_replace(' ', '', $t['titleLow']), $qNorm) !== false) {
+            $score += 25;
+        }
+        $scored[] = ['t' => $t, 's' => $score];
+    }
+    if (!$scored) return [];
+
+    usort($scored, function ($a, $b) {
+        if ($a['s'] == $b['s']) return 0;
+        return ($a['s'] < $b['s']) ? 1 : -1;
+    });
+
+    // 只沾到一个高频词的尾部结果直接丢掉，宁可少给几条
+    $floor = $scored[0]['s'] * 0.35;
+    $scored = array_values(array_filter($scored, function ($row) use ($floor) {
+        return $row['s'] >= $floor;
+    }));
+
+    $out = [];
+    $seen = [];
+    foreach ($scored as $row) {
+        $key = preg_replace('/\s+/u', '', $row['t']['titleLow']);
+        if (isset($seen[$key])) continue;
+        $seen[$key] = true;
+        $out[] = [
+            'no'         => $row['t']['no'],
+            'title'      => $row['t']['title'],
+            'stack'      => $row['t']['stack'],
+            'highlights' => $row['t']['hl'],
+            'category'   => $row['t']['category'],
+            'score'      => round($row['s'], 1),
+        ];
+        if (count($out) >= $limit) break;
+    }
+    return $out;
+}
+
+/** 站内项目页（写死，数量少且稳定，比每次抓 HTML 靠谱） */
+function aiSiteProjects() {
+    return [
+        [
+            'title' => 'LightMesh 灯联网',
+            'url'   => 'product-lightmesh.html',
+            'stack' => 'ESP32-S3 / BLE Mesh / MQTT / Flutter / FastAPI / OTA',
+            'desc'  => '设备联网系统，含 Mesh 灯控、门铃、云端设备影子与 OTA 升级，配套 Flutter App 与后端。',
+        ],
+        [
+            'title' => '可视化智能门铃',
+            'url'   => 'product-lightmesh-doorbell.html',
+            'stack' => 'ESP32 / 摄像头 / MQTT / App',
+            'desc'  => '按键触发拍照并上传，App 端实时查看画面并处理访客请求。',
+        ],
+        [
+            'title' => '体感操控机械臂',
+            'url'   => 'product-gesture-arm.html',
+            'stack' => 'STM32 / MPU6050 / NRF24L01 / SG90 舵机',
+            'desc'  => '体感手套采集六轴姿态，2.4G 无线传到机械臂，驱动多路舵机完成抬升、旋转与夹取。',
+        ],
+        [
+            'title' => '嵌入式音频终端',
+            'url'   => 'product-sound-core.html',
+            'stack' => 'STM32 / 音频解码 / LCD 显示',
+            'desc'  => '音频播放与控制终端，整合解码、显示和人机交互，用于教学演示与状态播报。',
+        ],
+        [
+            'title' => '智能视觉追踪臂',
+            'url'   => 'product-vision-tracker.html',
+            'stack' => 'K210 / OpenMV / 云台 / 串口',
+            'desc'  => 'K210 端侧识别目标并输出坐标，经串口驱动云台与机械臂实时跟随。',
+        ],
+    ];
+}
+
+function aiSearchProjects($query, $limit = 2) {
+    $terms = aiTerms($query);
+    if (!$terms) return [];
+
+    $out = [];
+    foreach (aiSiteProjects() as $p) {
+        $hay = aiLower($p['title'] . ' ' . $p['desc'] . ' ' . $p['stack']);
+        $score = 0.0;
+        foreach ($terms as $term => $w) {
+            if ($term === '') continue;
+            if (strpos(aiLower($p['title']), $term) !== false) $score += 6 * $w;
+            if (strpos($hay, $term) !== false) $score += 2 * $w;
+        }
+        if ($score > 0) {
+            $p['score'] = $score;
+            $out[] = $p;
+        }
+    }
+    usort($out, function ($a, $b) {
+        if ($a['score'] == $b['score']) return 0;
+        return ($a['score'] < $b['score']) ? 1 : -1;
+    });
+    return array_slice($out, 0, $limit);
+}
+
+function aiSystemPrompt() {
+    return "你是「智能硬件工作室」网站（lk-mcu.online）的站内助手，服务对象主要是准备毕业设计、课程设计的本科生。\n"
+        . "你只能依据下面给出的站内信息回答，不要编造站外事实、价格、排名、就业数据或别人的项目。\n"
+        . "回答要求：\n"
+        . "1. 中文，先给结论再给理由，总长度控制在 350 字以内。\n"
+        . "2. 推荐题目时从【题目】里挑 2-4 条，说清主控、关键模块和大概难度，句末用 [编号] 标注来源，例如 [2]。\n"
+        . "3. 站内没有相关内容时，直接说「站内暂时没有这块内容」，然后给 1-2 条下一步建议（去哪个页面看、搜什么词、留言问什么）。\n"
+        . "4. 需要列点时用短横线，不要用表格，不要输出标题层级。\n"
+        . "5. 不要说「根据资料」「根据上下文」这类话，直接回答即可。\n";
+}
+
+function aiBuildMessages($question, $topics, $projects, $history) {
+    $ctx = "【站点概况】收录 699 个嵌入式/单片机/物联网毕业设计题目，分 16 个方向"
+        . "（智慧农业、环境监测、医疗健康、智能家居、智慧交通、安防门禁、新能源电源、机器人、工业控制、智慧校园、宠物硬件、仪器仪表、娱乐文体、信息系统、AI 视觉等）；"
+        . "另有 5 个项目详情页和一个留言板。题目库页面：thesis-topics.html，支持按方向筛选与关键词搜索。\n";
+
+    if ($projects) {
+        $ctx .= "\n【项目】\n";
+        foreach ($projects as $i => $p) {
+            $ctx .= '[P' . ($i + 1) . '] ' . $p['title'] . '（' . $p['url'] . '）技术栈：' . $p['stack'] . '；' . $p['desc'] . "\n";
+        }
+    }
+
+    if ($topics) {
+        $ctx .= "\n【题目】\n";
+        foreach ($topics as $i => $t) {
+            $ctx .= '[' . ($i + 1) . '] ' . $t['title']
+                . '｜方向：' . $t['category']
+                . '｜技术栈：' . $t['stack']
+                . ($t['highlights'] !== '' ? '｜亮点：' . $t['highlights'] : '')
+                . "\n";
+        }
+    } else {
+        $ctx .= "\n【题目】本次没有检索到相关题目。\n";
+    }
+
+    $messages = [['role' => 'system', 'content' => aiSystemPrompt()]];
+
+    if (is_array($history)) {
+        foreach ($history as $h) {
+            if (!is_array($h)) continue;
+            $role = ($h['role'] ?? '') === 'assistant' ? 'assistant' : 'user';
+            $content = trim((string) ($h['content'] ?? ''));
+            if ($content === '') continue;
+            $messages[] = ['role' => $role, 'content' => clipText($content, 500)];
+        }
+    }
+
+    $messages[] = ['role' => 'user', 'content' => $ctx . "\n【用户问题】" . $question];
+    return $messages;
+}
+
+/** 只保留最近 4 轮对话，且长度受限，防止有人用 history 塞 prompt injection */
+function aiCleanHistory($raw) {
+    if (!is_array($raw)) return [];
+    $out = [];
+    foreach (array_slice($raw, -6) as $h) {
+        if (!is_array($h)) continue;
+        $role = ($h['role'] ?? '') === 'assistant' ? 'assistant' : 'user';
+        $content = trim((string) ($h['content'] ?? ''));
+        if ($content === '') continue;
+        $out[] = ['role' => $role, 'content' => clipText($content, 400)];
+    }
+    return $out;
+}
+
+function aiHttpPost($url, $headers, $body, $timeout) {
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $body,
+            CURLOPT_HTTPHEADER     => $headers,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => $timeout,
+            CURLOPT_CONNECTTIMEOUT => 8,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_USERAGENT      => 'lk-mcu-site/1.0',
+        ]);
+        $raw = curl_exec($ch);
+        $err = curl_error($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if ($raw === false) return [0, '', $err !== '' ? $err : '网络请求失败'];
+        return [$code, (string) $raw, ''];
+    }
+
+    $ctx = stream_context_create(['http' => [
+        'method'        => 'POST',
+        'header'        => implode("\r\n", $headers),
+        'content'       => $body,
+        'timeout'       => $timeout,
+        'ignore_errors' => true,
+    ]]);
+    $raw = @file_get_contents($url, false, $ctx);
+    if ($raw === false) return [0, '', '网络请求失败（服务器未启用 curl）'];
+    $code = 0;
+    if (isset($http_response_header[0]) && preg_match('/\s(\d{3})\s/', $http_response_header[0], $m)) {
+        $code = (int) $m[1];
+    }
+    return [$code, (string) $raw, ''];
+}
+
+/** 返回 [ok, text, error, tokens] */
+function aiCallModel($cfg, $messages, $maxTokens = null) {
+    $url = rtrim((string) $cfg['base_url'], '/') . '/chat/completions';
+    $payload = [
+        'model'       => $cfg['model'],
+        'messages'    => $messages,
+        'temperature' => (float) $cfg['temperature'],
+        'max_tokens'  => $maxTokens === null ? (int) $cfg['max_tokens'] : (int) $maxTokens,
+        'stream'      => false,
+    ];
+    $body = json_encode($payload, JSON_UNESCAPED_UNICODE);
+    if ($body === false) return [false, '', '请求体编码失败', 0];
+
+    $headers = [
+        'Content-Type: application/json',
+        'Accept: application/json',
+        'Authorization: Bearer ' . $cfg['api_key'],
+    ];
+    list($code, $raw, $err) = aiHttpPost($url, $headers, $body, AI_TIMEOUT);
+    if ($err !== '') return [false, '', $err, 0];
+
+    $json = json_decode($raw, true);
+    if ($code >= 200 && $code < 300 && is_array($json)) {
+        $text = (string) ($json['choices'][0]['message']['content'] ?? '');
+        $tokens = (int) ($json['usage']['total_tokens'] ?? 0);
+        if (trim($text) === '') return [false, '', '模型返回了空内容', $tokens];
+        return [true, trim($text), '', $tokens];
+    }
+
+    $detail = '';
+    if (is_array($json)) {
+        $detail = (string) ($json['error']['message'] ?? ($json['message'] ?? ''));
+    }
+    if ($detail === '') $detail = '接口返回 HTTP ' . $code;
+
+    if ($code === 401) $detail = 'API Key 无效或已过期';
+    elseif ($code === 429) $detail = '调用频率超限，请稍后再试';
+    elseif ($code === 404) $detail = '模型名不存在（' . $cfg['model'] . '），请在后台换一个';
+    elseif ($code >= 500) $detail = '模型服务暂时不可用，请稍后再试';
+
+    return [false, '', $detail, 0];
+}
+
 // ─────────── 路由 ───────────
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
@@ -685,6 +1308,232 @@ switch ($action) {
         respond(['success' => true, 'deleted' => $id]);
         break;
 
+    // ─────────── AI 站内助手 ───────────
+
+    // 助手状态（公开）：前端据此决定是否渲染悬浮入口
+    case 'ai_status':
+        $cfg = aiConfig();
+        $usage = aiUsage();
+        $used = aiIpUsed($usage)['n'];
+        respond([
+            'success' => true,
+            'enabled' => aiReady($cfg),
+            'model'   => $cfg['model'],
+            'perIp'   => (int) $cfg['per_ip'],
+            'used'    => $used,
+            'left'    => max(0, (int) $cfg['per_ip'] - $used),
+            'presets' => [
+                '我只有 STM32 和几个常用传感器，帮我挑个两周能做完的题目',
+                '有没有和智能家居、语音控制相关的题目？',
+                'LightMesh 灯联网的 OTA 是怎么做的？',
+                '答辩时老师一般会问什么？怎么讲工作量？',
+            ],
+        ]);
+        break;
+
+    // 提问（公开，带限流与缓存）
+    case 'ai_chat':
+        $cfg = aiConfig();
+        if (!aiReady($cfg)) {
+            respond(['success' => false, 'message' => '站内助手还没有开启'], 503);
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
+        $question = trim((string) ($input['question'] ?? ''));
+        $question = preg_replace('/\s+/u', ' ', $question);
+        if ($question === '') {
+            respond(['success' => false, 'message' => '请先输入问题'], 400);
+        }
+        if (textLength($question) > AI_MAX_QUESTION) {
+            $question = clipText($question, AI_MAX_QUESTION);
+        }
+
+        $limited = aiQuotaError($cfg);
+        if ($limited !== null) {
+            respond(['success' => false, 'message' => $limited], 429);
+        }
+
+        $history = aiCleanHistory($input['history'] ?? []);
+
+        // 追问很短（「那第二个呢」）时把上一轮问题带上一起检索，否则什么也搜不到
+        $searchQuery = $question;
+        if (count(aiTerms($question)) < 2) {
+            foreach (array_reverse($history) as $h) {
+                if ($h['role'] === 'user') {
+                    $searchQuery = $h['content'] . ' ' . $question;
+                    break;
+                }
+            }
+        }
+
+        $topics = aiSearchTopics($searchQuery, AI_CONTEXT_TOPICS);
+        $projects = aiSearchProjects($searchQuery, 2);
+
+        $sources = [];
+        foreach ($projects as $i => $p) {
+            $sources[] = [
+                'cite'  => 'P' . ($i + 1),
+                'type'  => 'project',
+                'title' => $p['title'],
+                'url'   => $p['url'],
+                'meta'  => $p['stack'],
+            ];
+        }
+        foreach ($topics as $i => $t) {
+            $sources[] = [
+                'cite'  => (string) ($i + 1),
+                'type'  => 'topic',
+                'title' => $t['title'],
+                'url'   => 'thesis-topics.html?q=' . rawurlencode($t['title']),
+                'meta'  => $t['category'] . ' · ' . $t['no'],
+            ];
+        }
+
+        $nos = [];
+        foreach ($topics as $t) $nos[] = $t['no'];
+        $cacheKey = hash('sha256', $cfg['model'] . '|' . aiLower($question) . '|' . implode(',', $nos));
+
+        $cached = aiCacheGet($cacheKey);
+        if ($cached !== null) {
+            aiUsageBump(0, true);
+            respond([
+                'success' => true,
+                'answer'  => $cached['answer'],
+                'sources' => $sources,
+                'cached'  => true,
+            ]);
+        }
+
+        list($ok, $answer, $error, $tokens) = aiCallModel(
+            $cfg,
+            aiBuildMessages($question, $topics, $projects, $history)
+        );
+
+        if (!$ok) {
+            respond(['success' => false, 'message' => $error], 502);
+        }
+
+        aiUsageBump($tokens, false);
+        aiCacheSet($cacheKey, $answer);
+
+        respond([
+            'success' => true,
+            'answer'  => $answer,
+            'sources' => $sources,
+            'tokens'  => $tokens,
+        ]);
+        break;
+
+    // 读取助手配置（需认证，Key 只返回掩码）
+    case 'get_ai_config':
+        requireAuth();
+        $cfg = aiConfig();
+        $raw = readSecret(AI_CONFIG_FILE, []);
+        $savedKey = is_array($raw) ? trim((string) ($raw['api_key'] ?? '')) : '';
+        respond([
+            'success'     => true,
+            'enabled'     => (bool) $cfg['enabled'],
+            'model'       => $cfg['model'],
+            'baseUrl'     => $cfg['base_url'],
+            'perIp'       => (int) $cfg['per_ip'],
+            'perTotal'    => (int) $cfg['per_total'],
+            'temperature' => (float) $cfg['temperature'],
+            'maxTokens'   => (int) $cfg['max_tokens'],
+            'hasKey'      => $savedKey !== '',
+            'keyMask'     => aiMaskKey($savedKey),
+            'keyFromEnv'  => $savedKey === '' && trim((string) $cfg['api_key']) !== '',
+            'models'      => aiModels(),
+            'usage'       => aiPublicUsage(),
+        ]);
+        break;
+
+    // 保存助手配置（需认证）
+    case 'set_ai_config':
+        requireAuth();
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
+        $cur = readSecret(AI_CONFIG_FILE, []);
+        if (!is_array($cur)) $cur = [];
+
+        $model = trim((string) ($input['model'] ?? ($cur['model'] ?? 'glm-4.7-flash')));
+        if (!preg_match('/^[A-Za-z0-9._\-]{3,40}$/', $model)) {
+            respond(['success' => false, 'message' => '模型名格式不正确'], 400);
+        }
+
+        $key = trim((string) ($input['apiKey'] ?? ''));
+        if ($key === '') {
+            $key = trim((string) ($cur['api_key'] ?? ''));
+        } elseif (!preg_match('/^[A-Za-z0-9._\-]{16,200}$/', $key)) {
+            respond(['success' => false, 'message' => 'API Key 看起来不对（智谱的 Key 形如 xxxxxxxx.yyyyyyyy）'], 400);
+        }
+
+        $enabled = !empty($input['enabled']);
+        if ($enabled && $key === '') {
+            respond(['success' => false, 'message' => '先填 API Key 再启用'], 400);
+        }
+
+        $baseUrl = trim((string) ($input['baseUrl'] ?? ($cur['base_url'] ?? 'https://open.bigmodel.cn/api/paas/v4')));
+        if (!preg_match('#^https://[a-z0-9\.\-]+(/[a-z0-9\.\-/_]*)?$#i', $baseUrl)) {
+            respond(['success' => false, 'message' => '接口地址必须是 https:// 开头的合法地址'], 400);
+        }
+
+        $next = [
+            'enabled'     => $enabled,
+            'api_key'     => $key,
+            'model'       => $model,
+            'base_url'    => rtrim($baseUrl, '/'),
+            'per_ip'      => max(1, min(200, (int) ($input['perIp'] ?? 30))),
+            'per_total'   => max(10, min(20000, (int) ($input['perTotal'] ?? 800))),
+            'temperature' => max(0, min(1.2, (float) ($input['temperature'] ?? 0.6))),
+            'max_tokens'  => max(200, min(2000, (int) ($input['maxTokens'] ?? 900))),
+            'updatedAt'   => date('c'),
+        ];
+
+        if (!writeSecret(AI_CONFIG_FILE, $next)) {
+            respond(['success' => false, 'message' => '保存失败：data/ 目录不可写，请检查属主与权限'], 500);
+        }
+        respond(['success' => true, 'enabled' => $next['enabled'], 'model' => $next['model']]);
+        break;
+
+    // 测试连通性（需认证）
+    case 'ai_test':
+        requireAuth();
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
+        $cfg = aiConfig();
+        if (trim((string) ($input['apiKey'] ?? '')) !== '') {
+            $cfg['api_key'] = trim((string) $input['apiKey']);
+        }
+        $m = trim((string) ($input['model'] ?? ''));
+        if ($m !== '' && preg_match('/^[A-Za-z0-9._\-]{3,40}$/', $m)) {
+            $cfg['model'] = $m;
+        }
+        if (trim((string) $cfg['api_key']) === '') {
+            respond(['success' => false, 'message' => '还没有填 API Key'], 400);
+        }
+
+        $start = microtime(true);
+        list($ok, $text, $error, $tokens) = aiCallModel(
+            $cfg,
+            [
+                ['role' => 'system', 'content' => '你是连通性测试助手，只回复 OK 两个字母。'],
+                ['role' => 'user', 'content' => 'ping'],
+            ],
+            16
+        );
+        $ms = (int) round((microtime(true) - $start) * 1000);
+
+        if (!$ok) {
+            respond(['success' => false, 'message' => $error, 'model' => $cfg['model'], 'ms' => $ms], 502);
+        }
+        respond([
+            'success'  => true,
+            'message'  => '连接成功',
+            'reply'    => clipText($text, 60),
+            'model'    => $cfg['model'],
+            'ms'       => $ms,
+            'tokens'   => $tokens,
+        ]);
+        break;
+
     // 获取 Hero 图片（公开）
     case 'get_hero':
         $hero = readJson(DATA_DIR . '/hero.json', []);
@@ -702,7 +1551,7 @@ switch ($action) {
     default:
         respond([
             'message' => 'Smart Hardware Lab API',
-            'actions' => ['list', 'login', 'logout', 'verify', 'add', 'update', 'delete', 'upload', 'get_hero', 'set_hero', 'list_messages', 'add_message', 'delete_message'],
+            'actions' => ['list', 'login', 'logout', 'verify', 'add', 'update', 'delete', 'upload', 'get_hero', 'set_hero', 'list_messages', 'add_message', 'delete_message', 'ai_status', 'ai_chat', 'get_ai_config', 'set_ai_config', 'ai_test'],
         ]);
 }
 

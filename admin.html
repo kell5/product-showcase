@@ -57,6 +57,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
           留言管理
         </a>
+        <a href="#" class="admin-nav-item" data-tab="ai">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2a3 3 0 0 0-3 3v1a3 3 0 0 0-3 3 3 3 0 0 0-1 5.8V16a3 3 0 0 0 3 3 3 3 0 0 0 4 2 3 3 0 0 0 4-2 3 3 0 0 0 3-3v-1.2A3 3 0 0 0 18 9a3 3 0 0 0-3-3V5a3 3 0 0 0-3-3z"/><path d="M9 13h.01M15 13h.01"/></svg>
+          AI 助手
+        </a>
         <a href="#" class="admin-nav-item" data-tab="settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68 1.65 1.65 0 0 0 10 3.17V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           系统设置
@@ -193,6 +197,79 @@
         </p>
         <div id="adminMessageList" class="admin-message-list">
           <div class="admin-empty">正在加载…</div>
+        </div>
+      </div>
+
+      <!-- Tab: AI 助手 -->
+      <div class="admin-tab" id="tab-ai">
+        <div class="admin-page-header">
+          <h2>AI 站内助手</h2>
+        </div>
+
+        <div class="admin-settings-card">
+          <h3>运行状态</h3>
+          <p class="admin-settings-desc">
+            助手只回答站内内容：先用关键词在 699 条选题和 5 个项目页里检索，再把命中结果交给模型组织语言，
+            所以它不会凭空编题目。检索在服务器本地完成，不额外消耗 token。
+          </p>
+          <div class="ai-status-grid">
+            <div class="ai-status-item">
+              <span>开关</span>
+              <strong id="aiStatState">加载中…</strong>
+            </div>
+            <div class="ai-status-item">
+              <span>今日调用</span>
+              <strong id="aiStatToday">—</strong>
+            </div>
+            <div class="ai-status-item">
+              <span>今日 tokens</span>
+              <strong id="aiStatTokens">—</strong>
+            </div>
+            <div class="ai-status-item">
+              <span>命中缓存</span>
+              <strong id="aiStatHits">—</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-settings-card">
+          <h3>模型接入</h3>
+          <p class="admin-settings-desc">
+            在 <a href="https://open.bigmodel.cn/usercenter/apikeys" target="_blank" rel="noopener noreferrer">智谱开放平台</a>
+            创建 API Key（形如 <code>xxxxxxxx.yyyyyyyy</code>）。免费档选 <code>glm-4.7-flash</code> 就够用。
+            Key 只写进服务器的 <code>data/ai-config.php</code>，浏览器端拿不到完整值。
+          </p>
+          <form id="aiForm" class="admin-form">
+            <div class="admin-input-group">
+              <label for="aiApiKey">API Key</label>
+              <input type="password" id="aiApiKey" placeholder="粘贴 API Key" autocomplete="off" spellcheck="false" />
+              <p class="admin-field-hint" id="aiKeyHint">尚未配置</p>
+            </div>
+            <div class="admin-input-group">
+              <label for="aiModel">模型</label>
+              <input type="text" id="aiModel" list="aiModelList" placeholder="glm-4.7-flash" autocomplete="off" spellcheck="false" />
+              <datalist id="aiModelList"></datalist>
+              <p class="admin-field-hint">换模型直接改这里，填错会提示「模型名不存在」。</p>
+            </div>
+            <div class="admin-input-row">
+              <div class="admin-input-group">
+                <label for="aiPerIp">每人每日次数</label>
+                <input type="number" id="aiPerIp" min="1" max="200" value="30" />
+              </div>
+              <div class="admin-input-group">
+                <label for="aiPerTotal">全站每日上限</label>
+                <input type="number" id="aiPerTotal" min="10" max="20000" value="800" />
+              </div>
+            </div>
+            <label class="admin-switch">
+              <input type="checkbox" id="aiEnabled" />
+              <span>在网站上显示助手入口</span>
+            </label>
+            <div class="admin-btn-row">
+              <button type="submit" class="admin-btn admin-btn-primary">保存配置</button>
+              <button type="button" class="admin-btn admin-btn-outline" id="aiTestBtn">测试连接</button>
+            </div>
+          </form>
         </div>
       </div>
 
