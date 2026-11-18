@@ -48,9 +48,11 @@ jobs:
             chmod -R 755 .
             find . -maxdepth 1 -name '*.html' -exec chmod 644 {} \;
             find . -maxdepth 1 -name '*.php' -exec chmod 644 {} \;
-            # 运行时数据与密码哈希只允许属主读写
+            # data/ 里的运行时文件由 PHP-FPM 用户写入，属主通常不是 root。
+            # 这里不能收紧到 640，否则 PHP 读不到 products.json 会导致接口返回空。
+            # 对外开放的拦截交给 nginx（见 deploy/nginx-security.conf）。
             if [ -d data ]; then
-              find data -name '*.json' -exec chmod 640 {} \;
-              find data -name '*.hash' -exec chmod 640 {} \;
+              find data -name '*.json' -exec chmod 644 {} \;
+              find data -name '*.hash' -exec chmod 644 {} \;
             fi
             echo "✅ 部署完成！"
