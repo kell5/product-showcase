@@ -25,6 +25,7 @@ jobs:
             --exclude='.reasonix' \
             --exclude='data/*.json' \
             --exclude='data/*.hash' \
+            --exclude='data/*.php' \
             --exclude='data/*.tmp*' \
             --exclude='uploads/' \
             --exclude='downloads/*.apk' \

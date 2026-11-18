@@ -35,9 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // ─────────── 配置 ───────────
 define('DATA_DIR', __DIR__ . '/data');
 define('PRODUCTS_FILE', DATA_DIR . '/products.json');
-define('PASSWORD_FILE', DATA_DIR . '/password.hash');
-define('TOKENS_FILE', DATA_DIR . '/tokens.json');
-define('LIMIT_FILE', DATA_DIR . '/login-attempts.json');
+// 机密数据统一用 .php 存储：被浏览器直接访问时 PHP 会执行它并输出空内容，
+// 不会像 .json/.hash 那样把哈希和 token 原样吐出来。
+define('PASSWORD_FILE', DATA_DIR . '/password.php');
+define('TOKENS_FILE', DATA_DIR . '/tokens.php');
+define('LIMIT_FILE', DATA_DIR . '/login-attempts.php');
+define('LEGACY_PASSWORD_FILE', DATA_DIR . '/password.hash');
 define('UPLOAD_DIR', __DIR__ . '/uploads');
 
 define('TOKEN_TTL', 86400);                // 登录有效期 24 小时
@@ -65,6 +68,31 @@ function writeJson($file, $data) {
     $tmp = $file . '.tmp' . bin2hex(random_bytes(4));
     if (file_put_contents($tmp, $json, LOCK_EX) === false) return false;
     return rename($tmp, $file);
+}
+
+/**
+ * 读取机密数据（文件内容形如 `<?php return [...];`）。
+ * 直接访问该文件时 PHP 只会执行并返回，不产生任何输出，因此不会泄漏。
+ */
+function readSecret($file, $default = null) {
+    if (!file_exists($file)) return $default;
+    // 改了文件内容后清掉 opcache，避免读到缓存里的旧值
+    if (function_exists('opcache_invalidate')) {
+        @opcache_invalidate($file, true);
+    }
+    $value = @include $file;
+    return $value === false ? $default : $value;
+}
+
+function writeSecret($file, $value) {
+    $code = "<?php\n// 本文件由 api.php 生成，请勿手动编辑，也不要放进 Git\nreturn " . var_export($value, true) . ";\n";
+    $tmp = $file . '.tmp' . bin2hex(random_bytes(4));
+    if (file_put_contents($tmp, $code, LOCK_EX) === false) return false;
+    if (!rename($tmp, $file)) return false;
+    if (function_exists('opcache_invalidate')) {
+        @opcache_invalidate($file, true);
+    }
+    return true;
 }
 
 // ─────────── 通用工具 ───────────
@@ -96,9 +124,8 @@ function textLength($s) {
 
 // ─────────── 密码 ───────────
 function getStoredPassword() {
-    if (!file_exists(PASSWORD_FILE)) return null;
-    $hash = trim((string) file_get_contents(PASSWORD_FILE));
-    return $hash === '' ? null : $hash;
+    $hash = readSecret(PASSWORD_FILE);
+    return (is_string($hash) && trim($hash) !== '') ? trim($hash) : null;
 }
 
 /**
@@ -113,7 +140,7 @@ function verifyPassword($pwd) {
     if (preg_match('/^[a-f0-9]{64}$/i', $stored)) {
         $ok = hash_equals(strtolower($stored), hash('sha256', $pwd));
         if ($ok) {
-            file_put_contents(PASSWORD_FILE, password_hash($pwd, PASSWORD_DEFAULT));
+            setPassword($pwd);
         }
         return $ok;
     }
@@ -121,14 +148,15 @@ function verifyPassword($pwd) {
 }
 
 function setPassword($pwd) {
-    return file_put_contents(PASSWORD_FILE, password_hash($pwd, PASSWORD_DEFAULT), LOCK_EX) !== false;
+    return writeSecret(PASSWORD_FILE, password_hash($pwd, PASSWORD_DEFAULT));
 }
 
 // ─────────── 登录限流 ───────────
 function checkLoginLimit() {
     $ip = clientIp();
     $now = time();
-    $store = readJson(LIMIT_FILE, []);
+    $store = readSecret(LIMIT_FILE, []);
+    if (!is_array($store)) $store = [];
     $entry = $store[$ip] ?? null;
 
     if (is_array($entry) && ($entry['blocked_until'] ?? 0) > $now) {
@@ -140,7 +168,8 @@ function checkLoginLimit() {
 function recordLoginFail() {
     $ip = clientIp();
     $now = time();
-    $store = readJson(LIMIT_FILE, []);
+    $store = readSecret(LIMIT_FILE, []);
+    if (!is_array($store)) $store = [];
 
     // 清理过期记录，避免文件无限增长
     foreach ($store as $k => $v) {
@@ -160,22 +189,24 @@ function recordLoginFail() {
         $entry['first'] = $now;
     }
     $store[$ip] = $entry;
-    writeJson(LIMIT_FILE, $store);
+    writeSecret(LIMIT_FILE, $store);
 }
 
 function clearLoginFail() {
     $ip = clientIp();
-    $store = readJson(LIMIT_FILE, []);
+    $store = readSecret(LIMIT_FILE, []);
+    if (!is_array($store)) $store = [];
     if (isset($store[$ip])) {
         unset($store[$ip]);
-        writeJson(LIMIT_FILE, $store);
+        writeSecret(LIMIT_FILE, $store);
     }
 }
 
 // ─────────── Token（支持多端同时登录） ───────────
 function readTokens() {
     $now = time();
-    $tokens = readJson(TOKENS_FILE, []);
+    $tokens = readSecret(TOKENS_FILE, []);
+    if (!is_array($tokens)) $tokens = [];
     return array_values(array_filter($tokens, function ($t) use ($now) {
         return isset($t['hash'], $t['expires']) && $t['expires'] > $now;
     }));
@@ -188,7 +219,7 @@ function issueToken() {
     if (count($tokens) > 20) {
         $tokens = array_slice($tokens, -20);
     }
-    writeJson(TOKENS_FILE, $tokens);
+    writeSecret(TOKENS_FILE, $tokens);
     return $token;
 }
 
@@ -207,7 +238,7 @@ function revokeToken($token) {
     $tokens = array_values(array_filter(readTokens(), function ($t) use ($target) {
         return !hash_equals($t['hash'], $target);
     }));
-    writeJson(TOKENS_FILE, $tokens);
+    writeSecret(TOKENS_FILE, $tokens);
 }
 
 function bearerToken() {
@@ -252,6 +283,43 @@ function safeUnlinkUpload($relative) {
     if (strpos($target, $root . DIRECTORY_SEPARATOR) !== 0) return;
     if (is_file($target)) @unlink($target);
 }
+
+// ─────────── 旧格式机密文件迁移 ───────────
+/**
+ * 旧版本把密码哈希、token、登录计数存成 .hash / .json，
+ * 这些文件能被浏览器直接下载。这里在每次请求时检查一次，
+ * 搬到 .php 存储（访问时只执行不输出）并删除旧文件。
+ * 迁移完成后这段逻辑没有任何副作用。
+ */
+function migrateLegacySecrets() {
+    // 密码哈希：data/password.hash -> data/password.php
+    if (!file_exists(PASSWORD_FILE) && file_exists(LEGACY_PASSWORD_FILE)) {
+        $legacy = trim((string) file_get_contents(LEGACY_PASSWORD_FILE));
+        if ($legacy !== '') {
+            writeSecret(PASSWORD_FILE, $legacy);
+        }
+    }
+    if (file_exists(PASSWORD_FILE) && file_exists(LEGACY_PASSWORD_FILE)) {
+        @unlink(LEGACY_PASSWORD_FILE);
+    }
+
+    // token 与登录计数：data/*.json -> data/*.php
+    foreach (['tokens', 'login-attempts'] as $name) {
+        $old = DATA_DIR . '/' . $name . '.json';
+        $new = DATA_DIR . '/' . $name . '.php';
+        if (!file_exists($new) && file_exists($old)) {
+            $data = readJson($old, []);
+            if (is_array($data) && $data) {
+                writeSecret($new, $data);
+            }
+        }
+        if (file_exists($old)) {
+            @unlink($old);
+        }
+    }
+}
+
+migrateLegacySecrets();
 
 // ─────────── 路由 ───────────
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
@@ -413,7 +481,7 @@ switch ($action) {
         }
         setPassword($newPwd);
         // 改密后让所有旧会话失效
-        writeJson(TOKENS_FILE, []);
+        writeSecret(TOKENS_FILE, []);
         respond(['success' => true, 'relogin' => true]);
         break;
 

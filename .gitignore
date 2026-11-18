@@ -8,6 +8,7 @@
 # 运行时数据（敏感，不提交；只存在于服务器）
 data/*.json
 data/*.hash
+data/*.php
 data/*.tmp*
 
 # 上传目录
