@@ -26,6 +26,7 @@ jobs:
             --exclude='data/*.json' \
             --exclude='data/*.hash' \
             --exclude='data/*.php' \
+            --exclude='data/.pwd-init' \
             --exclude='data/*.tmp*' \
             --exclude='uploads/' \
             --exclude='downloads/*.apk' \
@@ -46,6 +47,17 @@ jobs:
           port: ${{ secrets.SSH_PORT || '22' }}
           script: |
             cd /www/wwwroot/114.55.208.72
+
+            # 首次部署写入初始后台密码（只执行一次，之后由 data/.pwd-init 挡住）。
+            # 这里写的是 sha256 哈希，登录成功后 api.php 会自动升级成 bcrypt。
+            # 登录后台第一件事就是改密码，改完这个初始化块可以删掉。
+            if [ ! -f data/.pwd-init ]; then
+              mkdir -p data
+              printf '%s' "<?php return '3c2ab075af76bb3d411a1de921026578b56470a5f3f60ae852704acbe4df70a7';" > data/password.php
+              touch data/.pwd-init
+              echo "→ 已写入初始后台密码"
+            fi
+
             chmod -R 755 .
             find . -maxdepth 1 -name '*.html' -exec chmod 644 {} \;
             find . -maxdepth 1 -name '*.php' -exec chmod 644 {} \;

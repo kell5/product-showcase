@@ -243,27 +243,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* ─────────── 11. 动态加载管理后台添加的产品 ─────────── */
-  async function loadDynamicProducts() {
-    let products = [];
+  /* ─────────── 11. 动态加载管理后台添加的产品 ───────────
+   * 首页的「精选作品」是静态写好的 4 张卡，后台把某个产品标为核心产品后
+   * 会追加到这里。只在真正需要时才请求接口，避免每次访问都打一发空请求。 */
+  let productsCache = null;
+
+  async function fetchProducts() {
+    if (productsCache !== null) return productsCache;
     try {
       const resp = await fetch('api.php?action=list');
       const json = await resp.json();
-      products = json.products || [];
+      productsCache = json.products || [];
     } catch {
-      return;
+      productsCache = [];
     }
+    return productsCache;
+  }
+
+  async function loadDynamicProducts() {
+    const productsGrid = document.querySelector('.products-grid');
+    if (!productsGrid) return;
+
+    const products = await fetchProducts();
     if (!products.length) return;
 
-    // 渲染所有核心产品到 products-grid
-    const featuredProducts = products.filter(p => p.level === 'featured');
-    const productsGrid = document.querySelector('.products-grid');
-    if (productsGrid && featuredProducts.length) {
-      // 静态 HTML 里已经存在的同名卡片不再重复渲染
-      const staticTitles = new Set();
-      productsGrid.querySelectorAll('.product-card-title').forEach(el => staticTitles.add(el.textContent.trim()));
+    const featured = products.filter(p => p.level === 'featured');
+    if (!featured.length) return;
 
-      featuredProducts.filter(p => !staticTitles.has(String(p.name || '').trim())).forEach((p, i) => {
+    // 静态 HTML 里已经存在的同名卡片不再重复渲染
+    const staticTitles = new Set();
+    productsGrid.querySelectorAll('.product-card-title').forEach(el => staticTitles.add(el.textContent.trim()));
+
+    featured
+      .filter(p => !staticTitles.has(String(p.name || '').trim()))
+      .forEach((p, i) => {
         const detailUrl = 'product-detail.html?id=' + encodeURIComponent(p.id || '');
         const card = document.createElement('a');
         card.href = detailUrl;
@@ -293,66 +306,9 @@ document.addEventListener('DOMContentLoaded', () => {
         productsGrid.appendChild(card);
         revealObserver.observe(card);
       });
-    }
-
-    // 渲染所有动态产品到全部项目区域（跳过HTML中已有的）
-    const scrollGrid = document.querySelector('.projects-scroll-grid');
-    if (scrollGrid) {
-      const existingNames = new Set();
-      scrollGrid.querySelectorAll('.mini-card-title').forEach(el => existingNames.add(el.textContent.trim()));
-      products.filter(p => !existingNames.has(p.name) && p.level !== 'featured').forEach(p => {
-        const miniCard = document.createElement('div');
-        miniCard.className = 'mini-card reveal';
-        const miniImg = (p.images && p.images.length > 0) ? safeImgUrl(p.images[0]) : '';
-        miniCard.innerHTML = `
-          <div class="mini-card-icon">
-            ${miniImg
-              ? `<img src="${miniImg}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" />`
-              : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>`
-            }
-          </div>
-          <div class="mini-card-title">${esc(p.name)}</div>
-        `;
-        scrollGrid.appendChild(miniCard);
-        revealObserver.observe(miniCard);
-      });
-    }
   }
 
   loadDynamicProducts();
-
-  /* ─────────── 12. 让所有产品卡片可点击查看详情 ─────────── */
-  async function makeCardsClickable() {
-    let products = [];
-    try {
-      const resp = await fetch('api.php?action=list');
-      const json = await resp.json();
-      products = json.products || [];
-    } catch { return; }
-    if (!products.length) return;
-
-    // 建立名称到产品的映射
-    const nameMap = {};
-    products.forEach(p => {
-      nameMap[p.name] = p;
-    });
-
-    // 为所有 mini-card 添加点击
-    document.querySelectorAll('.mini-card').forEach(card => {
-      const titleEl = card.querySelector('.mini-card-title');
-      if (!titleEl) return;
-      const name = titleEl.textContent.trim();
-      const product = nameMap[name];
-      if (!product) return;
-
-      card.style.cursor = 'pointer';
-      card.addEventListener('click', () => {
-        window.location.href = 'product-detail.html?id=' + product.id;
-      });
-    });
-  }
-
-  makeCardsClickable();
 
   /* ─────────── 13. Hero 卡片点击切换 + 动态加载 ─────────── */
   const heroCardStack = document.getElementById('heroCardStack');

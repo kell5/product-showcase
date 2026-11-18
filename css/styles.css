@@ -3452,3 +3452,34 @@ ul, ol { list-style: none; }
   }
   .thesis-banner-stats strong { font-size: 20px; }
 }
+
+/* ──────────────────────── 首页·紧凑关于区 ────────────────────────
+   原来是一整屏（头像 + 简介 + 口号 + 14 个技能 + 三组统计），
+   统计与 Hero 重复、口号不承载信息。收紧成一行图文。 */
+.about-layout--sm {
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: var(--sp-lg);
+  align-items: center;
+}
+
+.about-avatar--sm {
+  width: 140px;
+  height: 140px;
+}
+
+.about-layout--sm .about-bio {
+  margin: 0 0 var(--sp-md);
+  max-width: 720px;
+}
+
+.about-layout--sm .about-avatar-ring {
+  inset: -8px;
+}
+
+@media (max-width: 900px) {
+  .about-layout--sm {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+}

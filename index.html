@@ -14,11 +14,9 @@
   <meta property="og:description" content="STM32 / ESP32 / K210 实战项目与 699 个嵌入式毕设选题，含技术栈与实现思路，适合课程设计、实训与开题参考。" />
   <meta property="og:url" content="https://www.lk-mcu.online/" />
 
-  <!-- Google Fonts: Inter -->
-
   <!-- 主样式表 -->
-  <link rel="stylesheet" href="css/styles.css?v=20261118-3" />
-  <link rel="stylesheet" href="css/guestbook.css?v=20261118-3" />
+  <link rel="stylesheet" href="css/styles.css?v=20261118-4" />
+  <link rel="stylesheet" href="css/guestbook.css?v=20261118-4" />
 
   <!-- 结构化数据 -->
   <script type="application/ld+json">
@@ -34,10 +32,10 @@
         "inLanguage": "zh-CN"
       },
       {
-        "@type": "Person",
-        "@id": "https://www.lk-mcu.online/#person",
-        "name": "刘玉康",
-        "jobTitle": "嵌入式软件工程师",
+        "@type": "Organization",
+        "@id": "https://www.lk-mcu.online/#org",
+        "name": "智能硬件工作室",
+        "description": "独立嵌入式硬件开发与教学项目整理",
         "knowsAbout": ["嵌入式系统", "单片机", "STM32", "ESP32", "物联网", "PCB 设计", "机器视觉"],
         "url": "https://www.lk-mcu.online/"
       }
@@ -61,14 +59,11 @@
         智能硬件工作室
       </a>
       <div class="nav-links">
-        <a href="#about">关于我</a>
-        <a href="#products">核心产品</a>
-        <a href="#all-projects">全部项目</a>
-        <a href="product-lightmesh.html">LightMesh 灯联网</a>
-        <a href="product-gesture-arm.html">体感机械臂</a>
-        <a href="product-vision-tracker.html">视觉追踪臂</a>
-        <a href="thesis-topics.html">毕设题目参考</a>
-        <a href="#contact" class="nav-contact-btn">联系我</a>
+        <a href="#work">作品</a>
+        <a href="thesis-topics.html">毕设选题</a>
+        <a href="#about">关于</a>
+        <a href="#guestbook">留言</a>
+        <a href="#contact" class="nav-contact-btn">联系</a>
       </div>
       <button class="nav-toggle" aria-label="菜单">
         <span></span><span></span><span></span>
@@ -89,41 +84,34 @@
       <div class="hero-content">
         <div class="hero-badge">
           <span class="dot"></span>
-          独立开发者 · 嵌入式 · 全栈硬件
+          独立开发者 · STM32 / ESP32 / K210
         </div>
         <h1 class="hero-title">
-          用代码与电路<br/>构建<span class="gradient-text">智能硬件</span>原型
+          找选题<br/>也看<span class="gradient-text">能跑的原型</span>
         </h1>
         <p class="hero-desc">
-          从体感控制到视觉追踪，从智能家居到工业物联 — 一个人完成需求分析、硬件选型、PCB设计、固件开发与上位机调试的全流程。
-          <br/>
-          <span data-typewriter='["LightMesh 灯联网 ESP32 BLE Mesh 灯控","GesturePilot 体感操控机械臂","SoundCore 嵌入式音频终端","VisionTracker 智能视觉追踪臂"]' style="color:var(--c-accent);font-weight:600;"></span>
-          <span style="display:inline-block;width:2px;height:1.1em;background:var(--c-accent);vertical-align:middle;animation:dotPulse 1s infinite;margin-left:2px;"></span>
+          699 个嵌入式、单片机、物联网毕业设计题目，按 16 个方向整理；
+          另有 4 个从原理图、PCB 到固件的完整实战项目。
         </p>
         <div class="hero-actions">
-          <a href="#products" class="btn btn-primary magnetic-area">
+          <a href="thesis-topics.html" class="btn btn-primary magnetic-area">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16l4-4-4-4"/><path d="M8 12h8"/></svg>
-            核心产品
+            查 699 个选题
           </a>
-          <a href="#all-projects" class="btn btn-outline">
-            全部项目
-          </a>
-          <a href="thesis-topics.html" class="btn btn-outline">
-            毕设题目参考
-          </a>
+          <a href="#work" class="btn btn-outline">看项目</a>
         </div>
         <div class="hero-stats">
           <div>
+            <div class="hero-stat-number gradient-text" data-count="699" data-suffix="">0</div>
+            <div class="hero-stat-label">收录题目</div>
+          </div>
+          <div>
+            <div class="hero-stat-number gradient-text" data-count="16" data-suffix="">0</div>
+            <div class="hero-stat-label">技术方向</div>
+          </div>
+          <div>
             <div class="hero-stat-number gradient-text" data-count="60" data-suffix="+">0</div>
-            <div class="hero-stat-label">工程项目</div>
-          </div>
-          <div>
-            <div class="hero-stat-number gradient-text" data-count="8" data-suffix="+">0</div>
-            <div class="hero-stat-label">技术领域</div>
-          </div>
-          <div>
-            <div class="hero-stat-number gradient-text" data-count="100" data-suffix="%">0</div>
-            <div class="hero-stat-label">独立交付</div>
+            <div class="hero-stat-label">交付项目</div>
           </div>
         </div>
       </div>
@@ -131,85 +119,29 @@
       <div class="hero-visual">
         <div class="hero-card-stack" id="heroCardStack">
           <div class="hero-float-card hero-float-card--1" data-index="0">
-            <img src="images/hero-main.jpg" alt="产品主图" />
+            <img src="images/hero-main.jpg" alt="LightMesh 灯联网原型" />
           </div>
           <div class="hero-float-card hero-float-card--2" data-index="1">
-            <img src="images/vision-tracker-main.jpg" alt="视觉追踪臂" />
+            <img src="images/vision-tracker-main.jpg" alt="智能视觉追踪臂" />
           </div>
           <div class="hero-float-card hero-float-card--3" data-index="2">
-            <img src="images/gesture-arm-board.jpg" alt="控制板" />
+            <img src="images/gesture-arm-board.jpg" alt="体感机械臂控制板" />
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ==================== 关于我 ==================== -->
-  <section class="about-section section" id="about">
-    <div class="container">
-      <div class="about-layout reveal">
-        <div class="about-avatar-wrap">
-          <div class="about-avatar">
-            <img src="images/avatar.jpg" alt="个人头像" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
-          </div>
-          <div class="about-avatar-ring"></div>
-        </div>
-        <div class="about-info">
-          <h2 class="about-name">嵌入式全栈<span class="gradient-text">硬件工程师</span></h2>
-          <div class="about-role">独立开发者 · 从原理图到产品落地</div>
-          <p class="about-bio">
-            专注嵌入式智能硬件开发，独立完成从需求分析、原理图设计、PCB Layout、固件编写到上位机/APP调试的完整产品链路。
-            擅长 STM32 / K210 / ESP32 等主流平台，熟悉传感器融合、无线通信、电机控制、视觉处理等核心技术。
-            累计交付 60+ 项智能硬件项目，覆盖智能家居、工业物联、机器人、医疗辅助等多个领域。
-          </p>
-          <div class="about-motto">
-            "好的硬件产品，是让技术隐于无形，让体验自然而然。"
-          </div>
-          <div class="about-skills">
-            <span class="skill-tag skill-tag--highlight">STM32</span>
-            <span class="skill-tag skill-tag--highlight">K210</span>
-            <span class="skill-tag skill-tag--highlight">ESP32</span>
-            <span class="skill-tag">Arduino</span>
-            <span class="skill-tag">FreeRTOS</span>
-            <span class="skill-tag">PID控制</span>
-            <span class="skill-tag">PCB设计</span>
-            <span class="skill-tag">Keil MDK</span>
-            <span class="skill-tag">MicroPython</span>
-            <span class="skill-tag">MQTT</span>
-            <span class="skill-tag">蓝牙/WiFi</span>
-            <span class="skill-tag">视觉识别</span>
-            <span class="skill-tag">传感器融合</span>
-            <span class="skill-tag">电机驱动</span>
-          </div>
-          <div class="about-stats-row">
-            <div class="about-stat">
-              <div class="about-stat-num">60+</div>
-              <div class="about-stat-label">项目交付</div>
-            </div>
-            <div class="about-stat">
-              <div class="about-stat-num">8+</div>
-              <div class="about-stat-label">技术领域</div>
-            </div>
-            <div class="about-stat">
-              <div class="about-stat-num">100%</div>
-              <div class="about-stat-label">独立完成</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==================== 核心产品 ==================== -->
-  <section class="section" id="products">
+  <!-- ==================== 精选作品 ==================== -->
+  <section class="section" id="work">
     <div class="container">
       <div class="reveal">
-        <span class="section-label">Core Products</span>
-        <h2 class="section-title">核心<span class="gradient-text">产品</span></h2>
-        <p class="section-desc">从交互到控制，从感知到执行，覆盖嵌入式智能硬件的完整技术链路。</p>
+        <span class="section-label">Selected Work</span>
+        <h2 class="section-title">4 个<span class="gradient-text">完整项目</span></h2>
+        <p class="section-desc">每个都能追到原理图、固件和上位机代码，不是渲染图。</p>
       </div>
 
-      <!-- 核心产品由后台动态渲染 -->
+      <!-- 后台标记为「核心产品」的项目会追加到这个网格 -->
       <div class="products-grid">
         <a href="product-lightmesh.html" class="product-card yinghuo-card-link reveal reveal-delay-1">
           <div class="product-card-image">
@@ -309,27 +241,17 @@
     </div>
   </section>
 
-  <!-- ==================== 毕设题目参考入口 ==================== -->
+  <!-- ==================== 毕设选题入口 ==================== -->
   <section class="section" id="thesis-entry">
     <div class="container">
       <a href="thesis-topics.html" class="thesis-banner reveal">
         <div class="thesis-banner-copy">
           <span class="section-label">Thesis Topics</span>
-          <h2 class="thesis-banner-title">毕设<span class="gradient-text">题目参考</span>专栏</h2>
+          <h2 class="thesis-banner-title">699 个<span class="gradient-text">毕设题目</span></h2>
           <p class="thesis-banner-desc">
-            按 16 个技术方向整理的 699 个嵌入式 / 单片机 / 物联网 / 信息系统毕业设计选题，
-            每条附简要技术栈与功能亮点，支持方向筛选与关键词搜索，帮你快速缩小开题范围。
+            按 16 个方向整理，每条标注技术栈与功能亮点，支持方向筛选和关键词搜索。
+            先按方向筛、再用关键词搜，半小时内就能把题目定下来。
           </p>
-          <div class="thesis-banner-tags">
-            <span class="product-card-tag">智慧农业</span>
-            <span class="product-card-tag">环境监测</span>
-            <span class="product-card-tag">医疗健康</span>
-            <span class="product-card-tag">智能家居</span>
-            <span class="product-card-tag">智慧交通</span>
-            <span class="product-card-tag">安防门禁</span>
-            <span class="product-card-tag">机器人</span>
-            <span class="product-card-tag">管理信息系统</span>
-          </div>
           <span class="thesis-banner-link">
             进入选题库
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
@@ -344,92 +266,33 @@
     </div>
   </section>
 
-  <!-- ==================== 全部项目总览 ==================== -->
-  <section class="section all-projects" id="all-projects">
+  <!-- ==================== 关于 ==================== -->
+  <section class="section about-section" id="about">
     <div class="container">
-      <div class="reveal" style="text-align:center;">
-        <span class="section-label">All Projects</span>
-        <h2 class="section-title">全部<span class="gradient-text">工程项目</span></h2>
-        <p class="section-desc" style="margin:0 auto;">涵盖机器人、智能家居、物联网、视觉识别、医疗辅助等多领域的 60+ 项目。</p>
-      </div>
-
-      <div class="projects-scroll-grid">
-        <!-- ★ 核心产品 -->
-        <a href="product-lightmesh.html" class="mini-card reveal"><div class="mini-card-icon"><img src="images/yinghuo-light.webp" alt="LightMesh 灯联网" /></div><div class="mini-card-title">LightMesh 灯联网</div></a>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="mini-card-title">体感操控机械臂</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="mini-card-title">嵌入式音频终端</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div class="mini-card-title">智能视觉追踪臂</div></div>
-
-        <!-- ★ 四月项目 -->
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></div><div class="mini-card-title">ESP物联网项目</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg></div><div class="mini-card-title">手写数字识别</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="mini-card-title">HT32嵌入式控制</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="mini-card-title">智能巡检机器人</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 16V9h14V16"/><rect x="1" y="16" width="22" height="4" rx="1"/></svg></div><div class="mini-card-title">OpenMV视觉小车</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="mini-card-title">果蔬成熟度检测</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></div><div class="mini-card-title">环境监测系统</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div class="mini-card-title">目标视觉追踪</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="mini-card-title">震动检测预警</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="mini-card-title">赛事计时系统</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg></div><div class="mini-card-title">体感模拟手套</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div><div class="mini-card-title">火焰视觉识别</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3l-4 4-4-4"/></svg></div><div class="mini-card-title">无线遥控终端</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg></div><div class="mini-card-title">多端互联智能鱼缸</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div><div class="mini-card-title">图书馆火焰监测</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><div class="mini-card-title">车载防滞留系统</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><div class="mini-card-title">智能停车管理</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="mini-card-title">人脸识别门禁</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div><div class="mini-card-title">RFID仓储管理</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><div class="mini-card-title">智能储物柜</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div><div class="mini-card-title">智能快递分拣</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="mini-card-title">设备状态监测</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></div><div class="mini-card-title">掌上游戏终端</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="mini-card-title">人脸识别快递柜</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2"/><path d="M12 21v2"/><path d="M4.22 4.22l1.42 1.42"/><path d="M18.36 18.36l1.42 1.42"/><path d="M1 12h2"/><path d="M21 12h2"/></svg></div><div class="mini-card-title">远程灯光控制</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M4.93 4.93l4.24 4.24"/></svg></div><div class="mini-card-title">物流定位系统</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2"/><path d="M12 21v2"/></svg></div><div class="mini-card-title">流水灯带控制</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m-7-7h6m6 0h6"/></svg></div><div class="mini-card-title">电机驱动控制</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 16V9h14V16"/><rect x="1" y="16" width="22" height="4" rx="1"/></svg></div><div class="mini-card-title">自动巡检小车</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div class="mini-card-title">区域目标识别</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div><div class="mini-card-title">密码储物柜</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="mini-card-title">微表情识别</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><div class="mini-card-title">车牌智能识别</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></div><div class="mini-card-title">智能测温终端</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div><div class="mini-card-title">自动快递分拣</div></div>
-
-        <!-- ★ 三月项目 -->
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="mini-card-title">自行车电子锁</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></div><div class="mini-card-title">便携式物料计数器</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="mini-card-title">便携式输液报警器</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="mini-card-title">摇杆控制机械臂</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="mini-card-title">人脸识别智能门锁</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="mini-card-title">智能厨房系统</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></div><div class="mini-card-title">智慧热水器控制</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></div><div class="mini-card-title">智慧环境监测站</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="mini-card-title">微型智能保险箱</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="mini-card-title">人脸识别保险箱</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="mini-card-title">智能门锁系统</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div><div class="mini-card-title">电子密码锁</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></div><div class="mini-card-title">PID精准控温系统</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></div><div class="mini-card-title">恒温控制器</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="mini-card-title">K210人脸门锁</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="mini-card-title">视觉巡检小车</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg></div><div class="mini-card-title">STM32H7高性能开发</div></div>
-
-        <!-- ★ 综合项目 -->
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></div><div class="mini-card-title">冷凝水处理系统</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="mini-card-title">智慧护理床</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg></div><div class="mini-card-title">自动喂鱼器</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="mini-card-title">宿舍安防系统</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="mini-card-title">智能心率检测仪</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></div><div class="mini-card-title">智能灌溉系统</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></div><div class="mini-card-title">智能生物培养箱</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="M4.93 4.93l4.24 4.24"/></svg></div><div class="mini-card-title">智能运载定位车</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div><div class="mini-card-title">霉变预警系统</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></div><div class="mini-card-title">桌面电子宠物</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></div><div class="mini-card-title">无障碍饮水终端</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg></div><div class="mini-card-title">盲区雷达监测</div></div>
-        <div class="mini-card reveal"><div class="mini-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg></div><div class="mini-card-title">智慧鱼缸系统</div></div>
+      <div class="about-layout about-layout--sm reveal">
+        <div class="about-avatar-wrap">
+          <div class="about-avatar about-avatar--sm">
+            <img src="images/avatar.jpg" alt="工作室头像" />
+          </div>
+          <div class="about-avatar-ring"></div>
+        </div>
+        <div class="about-info">
+          <h2 class="about-name">一个人的<span class="gradient-text">硬件工作室</span></h2>
+          <p class="about-bio">
+            从需求分析、原理图、PCB Layout 到固件和上位机全部自己写。擅长 STM32 / ESP32 / K210，
+            做过智能家居、工业物联、机器人和视觉辅助类项目，也把这些项目拆成可以照着做的教学案例。
+          </p>
+          <div class="about-skills">
+            <span class="skill-tag skill-tag--highlight">STM32</span>
+            <span class="skill-tag skill-tag--highlight">ESP32</span>
+            <span class="skill-tag skill-tag--highlight">K210</span>
+            <span class="skill-tag">FreeRTOS</span>
+            <span class="skill-tag">PID 控制</span>
+            <span class="skill-tag">PCB 设计</span>
+            <span class="skill-tag">MQTT</span>
+            <span class="skill-tag">视觉识别</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -450,32 +313,23 @@
             <span class="nav-brand-icon"></span>
             智能硬件工作室
           </div>
-          <p class="footer-desc">嵌入式智能硬件独立开发者个人作品集，涵盖机器人、智能家居、物联网、视觉识别、医疗辅助等多领域创新项目。</p>
+          <p class="footer-desc">嵌入式项目与毕设选题整理。项目、技术细节或选题方向的问题，都可以直接在留言板里问。</p>
         </div>
         <div class="footer-links-group">
-          <h4>核心产品</h4>
-          <a href="product-lightmesh.html">LightMesh 灯联网</a>
-          <a href="product-gesture-arm.html">体感操控机械臂</a>
-          <a href="product-sound-core.html">嵌入式音频终端</a>
-          <a href="product-vision-tracker.html">智能视觉追踪臂</a>
+          <h4>导航</h4>
+          <a href="#work">作品</a>
+          <a href="thesis-topics.html">毕设选题</a>
+          <a href="#guestbook">留言</a>
+          <a href="admin.html" style="opacity:0.45;font-size:0.8rem;">后台</a>
         </div>
         <div class="footer-links-group">
-          <h4>快速导航</h4>
-          <a href="#about">关于我</a>
-          <a href="#products">核心产品</a>
-          <a href="#all-projects">全部项目</a>
-          <a href="thesis-topics.html">毕设题目参考</a>
-          <a href="#guestbook">留言板</a>
-        </div>
-        <div class="footer-links-group">
-          <h4>联系方式</h4>
-          <a href="mailto:13393961819@163.com">邮箱: 13393961819@163.com</a>
-          <a href="tel:13393961819">电话: 13393961819</a>
-          <a href="admin.html" style="margin-top:8px;opacity:0.5;font-size:0.75rem;">管理后台</a>
+          <h4>联系</h4>
+          <a href="mailto:13393961819@163.com">13393961819@163.com</a>
+          <a href="tel:13393961819">13393961819</a>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>&copy; 2026 智能硬件工作室 · 个人作品集</span>
+        <span>&copy; 2026 智能硬件工作室</span>
         <span>用代码与电路构建智能硬件原型</span>
         <span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">豫ICP备2026025181号-1</a></span>
       </div>
@@ -483,7 +337,7 @@
   </footer>
 
   <!-- 主脚本 -->
-  <script src="js/main.js?v=20261118-3"></script>
-  <script src="js/guestbook.js?v=20261118-3" defer></script>
+  <script src="js/main.js?v=20261118-4"></script>
+  <script src="js/guestbook.js?v=20261118-4" defer></script>
 </body>
 </html>
