@@ -21,9 +21,22 @@
 - `js/main.js`：首页交互
 - `js/admin.js`：后台管理逻辑
 - `images/`：展示图目录
-- `api.php`：后台接口（产品 CRUD / 图片上传 / 登录鉴权）
+- `api.php`：后台接口（产品 CRUD / 图片上传 / 登录鉴权 / 留言读写）
+- `js/guestbook.js`、`css/guestbook.css`：留言板组件（自包含，页面只放容器）
 - `tools/set-admin-password.php`：在服务器上设置后台密码（命令行执行）
 - `deploy/nginx-security.conf`：服务器安全配置片段（必须手动贴到 nginx）
+
+## 留言板
+
+- 页面里只要有 `<div data-guestbook></div>`，再引入 `js/guestbook.js` 就会渲染出
+  表单 + 留言列表，目前挂在 `index.html` 和 `thesis-topics.html`
+- 接口：`list_messages`（公开，最多取 50 条）、`add_message`（公开）、
+  `delete_message`（需登录）
+- 防刷：昵称 20 字 / 内容 500 字上限；同 IP 20 秒一次、每小时 5 条；
+  隐藏蜜罐字段 `website`（机器人填了就假装成功但不入库）；堆 3 个以上链接直接拒
+- 数据存在 `data/messages.json`，最多保留 500 条；**不存储访客 IP**，
+  限流只按 IP 哈希存一个短期计数
+- 留言提交后立即公开，后台「留言管理」可删除不合适的内容
 
 ## 后台与安全
 

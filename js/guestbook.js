@@ -112,24 +112,27 @@
     var listEl = root.querySelector('[data-list]');
     var hint = root.querySelector('[data-hint]');
     var button = form.querySelector('button[type="submit"]');
+    var nameInput = form.querySelector('[name="name"]');
+    var contentInput = form.querySelector('[name="content"]');
+    var websiteInput = form.querySelector('[name="website"]');
 
     loadMessages(listEl);
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
 
-      var name = form.elements.name.value.trim();
-      var content = form.elements.content.value.trim();
-      var website = form.elements.website.value;
+      var name = (nameInput.value || '').trim();
+      var content = (contentInput.value || '').trim();
+      var website = websiteInput ? websiteInput.value : '';
 
       if (!name) {
         setHint('请先填个昵称', true);
-        form.elements.name.focus();
+        nameInput.focus();
         return;
       }
       if (content.length < 2) {
         setHint('留言内容太短了', true);
-        form.elements.content.focus();
+        contentInput.focus();
         return;
       }
 
@@ -144,7 +147,7 @@
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, data: j }; }); })
         .then(function (res) {
           if (res.ok && res.data.success) {
-            form.elements.content.value = '';
+            contentInput.value = '';
             setHint('留言已发布，谢谢！', false);
             loadMessages(listEl);
           } else {
