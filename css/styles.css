@@ -7,8 +7,6 @@
      4. Hero 区域
      5. 产品卡片 & 网格
      6. 产品详情区
-     7. 技术参数
-     8. 项目总览
      9. 页脚
     10. 动画关键帧
     11. 响应式
@@ -888,68 +886,6 @@ ul, ol { list-style: none; }
 .spec-label {
   font-size: 14px;
   color: var(--c-text-muted);
-}
-
-/* ──────────────────────── 8. 项目总览 ──────────────────────── */
-.all-projects {
-  background: var(--c-bg);
-}
-
-.projects-scroll-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--sp-md);
-  margin-top: var(--sp-xl);
-}
-
-.mini-card {
-  padding: var(--sp-lg);
-  border-radius: var(--r-md);
-  background: var(--c-bg-card);
-  border: 1px solid var(--c-border);
-  transition: transform 0.3s var(--ease-out-expo), border-color 0.3s, background 0.3s;
-  cursor: pointer;
-}
-.mini-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(14, 165, 233, 0.25);
-  background: var(--c-bg-card-hover);
-  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.08);
-}
-
-.mini-card-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(165,180,252,0.12));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: var(--sp-md);
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.mini-card-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.mini-card-icon svg {
-  width: 20px;
-  height: 20px;
-  color: var(--c-primary);
-}
-
-.mini-card-title {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: var(--sp-xs);
-}
-
-.mini-card-code {
-  font-size: 12px;
-  color: var(--c-text-muted);
-  font-family: var(--font-mono);
 }
 
 /* ──────────────────────── 9. 页脚 ──────────────────────── */
@@ -2587,7 +2523,6 @@ ul, ol { list-style: none; }
 
 @media (max-width: 480px) {
   .specs-grid { grid-template-columns: 1fr; }
-  .projects-scroll-grid { grid-template-columns: 1fr; }
   .product-specs-table td { padding: var(--sp-sm); font-size: 13px; }
   .product-specs-table td:first-child { width: 110px; }
   .yinghuo-hero { padding-top: 120px; }
