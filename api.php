@@ -3,15 +3,32 @@
  * 产品管理 API
  * 数据以 JSON 文件形式存储在服务器 data/ 目录
  * 图片以文件形式存储在 uploads/ 目录
+ *
+ * 首次部署请在服务器执行：php tools/set-admin-password.php
  */
 
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+header('Referrer-Policy: same-origin');
+
+// ─────────── CORS ───────────
+// 后台页面与接口同源，默认不需要跨域。
+// 若确实需要被其他域名调用，把域名加进下面数组（例：'https://www.lk-mcu.online'）。
+$ALLOWED_ORIGINS = [];
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$corsOk = ($origin !== '' && in_array($origin, $ALLOWED_ORIGINS, true));
+
+if ($corsOk) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Vary: Origin');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+    http_response_code($corsOk ? 200 : 403);
     exit;
 }
 
@@ -19,31 +36,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 define('DATA_DIR', __DIR__ . '/data');
 define('PRODUCTS_FILE', DATA_DIR . '/products.json');
 define('PASSWORD_FILE', DATA_DIR . '/password.hash');
+define('TOKENS_FILE', DATA_DIR . '/tokens.json');
+define('LIMIT_FILE', DATA_DIR . '/login-attempts.json');
 define('UPLOAD_DIR', __DIR__ . '/uploads');
-define('DEFAULT_PASSWORD', 'admin123');
 
-// 确保目录存在
+define('TOKEN_TTL', 86400);                // 登录有效期 24 小时
+define('MAX_LOGIN_FAILS', 5);              // 窗口内允许的失败次数
+define('LOGIN_WINDOW', 600);               // 失败计数窗口 10 分钟
+define('LOGIN_BLOCK', 900);                // 触发后封禁 15 分钟
+define('MAX_UPLOAD_BYTES', 20 * 1024 * 1024);
+
 if (!is_dir(DATA_DIR)) mkdir(DATA_DIR, 0755, true);
 if (!is_dir(UPLOAD_DIR)) mkdir(UPLOAD_DIR, 0755, true);
 
-// ─────────── 工具函数 ───────────
+// ─────────── JSON 文件读写 ───────────
+function readJson($file, $default = []) {
+    if (!file_exists($file)) return $default;
+    $raw = file_get_contents($file);
+    if ($raw === false || $raw === '') return $default;
+    $data = json_decode($raw, true);
+    return is_array($data) ? $data : $default;
+}
+
+/** 加锁写入，避免并发请求互相覆盖 */
+function writeJson($file, $data) {
+    $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    if ($json === false) return false;
+    $tmp = $file . '.tmp' . bin2hex(random_bytes(4));
+    if (file_put_contents($tmp, $json, LOCK_EX) === false) return false;
+    return rename($tmp, $file);
+}
+
+// ─────────── 通用工具 ───────────
 function getProducts() {
-    if (!file_exists(PRODUCTS_FILE)) return [];
-    $data = json_decode(file_get_contents(PRODUCTS_FILE), true);
-    return is_array($data) ? $data : [];
+    return readJson(PRODUCTS_FILE, []);
 }
 
 function saveProducts($products) {
-    file_put_contents(PRODUCTS_FILE, json_encode($products, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-}
-
-function getPasswordHash() {
-    if (file_exists(PASSWORD_FILE)) {
-        return trim(file_get_contents(PASSWORD_FILE));
-    }
-    $hash = hash('sha256', DEFAULT_PASSWORD);
-    file_put_contents(PASSWORD_FILE, $hash);
-    return $hash;
+    return writeJson(PRODUCTS_FILE, array_values($products));
 }
 
 function respond($data, $code = 200) {
@@ -56,6 +86,173 @@ function generateId() {
     return bin2hex(random_bytes(8));
 }
 
+function clientIp() {
+    return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+}
+
+function strLen($s) {
+    return function_exists('mb_strlen') ? mb_strlen($s) : strlen($s);
+}
+
+// ─────────── 密码 ───────────
+function getStoredPassword() {
+    if (!file_exists(PASSWORD_FILE)) return null;
+    $hash = trim((string) file_get_contents(PASSWORD_FILE));
+    return $hash === '' ? null : $hash;
+}
+
+/**
+ * 校验密码。
+ * 返回 true 通过 / false 不通过 / null 表示后台密码尚未初始化。
+ * 兼容旧的 sha256 哈希，校验通过后自动升级为 bcrypt。
+ */
+function verifyPassword($pwd) {
+    $stored = getStoredPassword();
+    if ($stored === null) return null;
+
+    if (preg_match('/^[a-f0-9]{64}$/i', $stored)) {
+        $ok = hash_equals(strtolower($stored), hash('sha256', $pwd));
+        if ($ok) {
+            file_put_contents(PASSWORD_FILE, password_hash($pwd, PASSWORD_DEFAULT));
+        }
+        return $ok;
+    }
+    return password_verify($pwd, $stored);
+}
+
+function setPassword($pwd) {
+    return file_put_contents(PASSWORD_FILE, password_hash($pwd, PASSWORD_DEFAULT), LOCK_EX) !== false;
+}
+
+// ─────────── 登录限流 ───────────
+function checkLoginLimit() {
+    $ip = clientIp();
+    $now = time();
+    $store = readJson(LIMIT_FILE, []);
+    $entry = $store[$ip] ?? null;
+
+    if (is_array($entry) && ($entry['blocked_until'] ?? 0) > $now) {
+        $wait = (int) ceil(($entry['blocked_until'] - $now) / 60);
+        respond(['success' => false, 'message' => "尝试次数过多，请 {$wait} 分钟后再试"], 429);
+    }
+}
+
+function recordLoginFail() {
+    $ip = clientIp();
+    $now = time();
+    $store = readJson(LIMIT_FILE, []);
+
+    // 清理过期记录，避免文件无限增长
+    foreach ($store as $k => $v) {
+        if ($now - ($v['first'] ?? 0) > LOGIN_WINDOW && ($v['blocked_until'] ?? 0) < $now) {
+            unset($store[$k]);
+        }
+    }
+
+    $entry = $store[$ip] ?? ['count' => 0, 'first' => $now, 'blocked_until' => 0];
+    if ($now - ($entry['first'] ?? 0) > LOGIN_WINDOW) {
+        $entry = ['count' => 0, 'first' => $now, 'blocked_until' => 0];
+    }
+    $entry['count'] = ($entry['count'] ?? 0) + 1;
+    if ($entry['count'] >= MAX_LOGIN_FAILS) {
+        $entry['blocked_until'] = $now + LOGIN_BLOCK;
+        $entry['count'] = 0;
+        $entry['first'] = $now;
+    }
+    $store[$ip] = $entry;
+    writeJson(LIMIT_FILE, $store);
+}
+
+function clearLoginFail() {
+    $ip = clientIp();
+    $store = readJson(LIMIT_FILE, []);
+    if (isset($store[$ip])) {
+        unset($store[$ip]);
+        writeJson(LIMIT_FILE, $store);
+    }
+}
+
+// ─────────── Token（支持多端同时登录） ───────────
+function readTokens() {
+    $now = time();
+    $tokens = readJson(TOKENS_FILE, []);
+    return array_values(array_filter($tokens, function ($t) use ($now) {
+        return isset($t['hash'], $t['expires']) && $t['expires'] > $now;
+    }));
+}
+
+function issueToken() {
+    $token = bin2hex(random_bytes(32));
+    $tokens = readTokens();
+    $tokens[] = ['hash' => hash('sha256', $token), 'expires' => time() + TOKEN_TTL];
+    if (count($tokens) > 20) {
+        $tokens = array_slice($tokens, -20);
+    }
+    writeJson(TOKENS_FILE, $tokens);
+    return $token;
+}
+
+function verifyToken($token) {
+    if (!is_string($token) || strlen($token) !== 64) return false;
+    $target = hash('sha256', $token);
+    foreach (readTokens() as $t) {
+        if (hash_equals($t['hash'], $target)) return true;
+    }
+    return false;
+}
+
+function revokeToken($token) {
+    if (!is_string($token) || strlen($token) !== 64) return;
+    $target = hash('sha256', $token);
+    $tokens = array_values(array_filter(readTokens(), function ($t) use ($target) {
+        return !hash_equals($t['hash'], $target);
+    }));
+    writeJson(TOKENS_FILE, $tokens);
+}
+
+function bearerToken() {
+    $headers = function_exists('getallheaders') ? getallheaders() : [];
+    foreach ($headers as $key => $value) {
+        if (strtolower($key) === 'authorization' && stripos($value, 'bearer ') === 0) {
+            return trim(substr($value, 7));
+        }
+    }
+    return '';
+}
+
+function requireAuth() {
+    if (!verifyToken(bearerToken())) {
+        respond(['success' => false, 'message' => '未授权，请重新登录'], 401);
+    }
+}
+
+// ─────────── 上传相关 ───────────
+/** 按真实文件内容识别图片类型，返回扩展名；非图片返回 null */
+function imageExt($path) {
+    $map = [
+        IMAGETYPE_JPEG => 'jpg',
+        IMAGETYPE_PNG  => 'png',
+        IMAGETYPE_GIF  => 'gif',
+    ];
+    // IMAGETYPE_WEBP 需要 PHP 7.1+，低版本直接不支持 webp
+    if (defined('IMAGETYPE_WEBP')) {
+        $map[IMAGETYPE_WEBP] = 'webp';
+    }
+    $info = @getimagesize($path);
+    if (!$info || !isset($info[2])) return null;
+    return $map[$info[2]] ?? null;
+}
+
+/** 只允许删除 uploads/ 目录内的文件，防止路径穿越 */
+function safeUnlinkUpload($relative) {
+    $root = realpath(UPLOAD_DIR);
+    if ($root === false) return;
+    $target = realpath(UPLOAD_DIR . '/' . basename($relative));
+    if ($target === false) return;
+    if (strpos($target, $root . DIRECTORY_SEPARATOR) !== 0) return;
+    if (is_file($target)) @unlink($target);
+}
+
 // ─────────── 路由 ───────────
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
@@ -63,29 +260,43 @@ switch ($action) {
 
     // 登录验证
     case 'login':
-        $input = json_decode(file_get_contents('php://input'), true);
-        $pwd = $input['password'] ?? '';
-        $inputHash = hash('sha256', $pwd);
-        $storedHash = getPasswordHash();
-        if ($inputHash === $storedHash) {
-            // 生成简单 token（有效期24小时）
-            $token = bin2hex(random_bytes(32));
-            $tokenData = ['token' => $token, 'expires' => time() + 86400];
-            file_put_contents(DATA_DIR . '/token.json', json_encode($tokenData));
-            respond(['success' => true, 'token' => $token]);
-        } else {
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
+        $pwd = (string) ($input['password'] ?? '');
+
+        checkLoginLimit();
+
+        if ($pwd === '') {
+            respond(['success' => false, 'message' => '请输入密码'], 400);
+        }
+
+        $result = verifyPassword($pwd);
+        if ($result === null) {
+            respond([
+                'success' => false,
+                'message' => '后台密码未初始化，请在服务器执行：php tools/set-admin-password.php',
+            ], 503);
+        }
+        if ($result === false) {
+            recordLoginFail();
             respond(['success' => false, 'message' => '密码错误'], 401);
         }
+
+        clearLoginFail();
+        respond(['success' => true, 'token' => issueToken(), 'expiresIn' => TOKEN_TTL]);
+        break;
+
+    // 退出登录（吊销当前 token）
+    case 'logout':
+        revokeToken(bearerToken());
+        respond(['success' => true]);
         break;
 
     // 验证 token
     case 'verify':
-        $token = $_GET['token'] ?? '';
-        if (verifyToken($token)) {
+        if (verifyToken(bearerToken())) {
             respond(['valid' => true]);
-        } else {
-            respond(['valid' => false], 401);
         }
+        respond(['valid' => false], 401);
         break;
 
     // 获取产品列表（公开）
@@ -96,8 +307,11 @@ switch ($action) {
     // 添加产品（需认证）
     case 'add':
         requireAuth();
-        $input = json_decode(file_get_contents('php://input'), true);
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
         $product = buildProduct($input);
+        if ($product['name'] === '') {
+            respond(['success' => false, 'message' => '产品名称不能为空'], 400);
+        }
         $product['id'] = generateId();
         $product['createdAt'] = date('c');
         $product['updatedAt'] = date('c');
@@ -110,7 +324,7 @@ switch ($action) {
     // 更新产品（需认证）
     case 'update':
         requireAuth();
-        $input = json_decode(file_get_contents('php://input'), true);
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
         $id = $input['id'] ?? '';
         $products = getProducts();
         $found = false;
@@ -138,21 +352,19 @@ switch ($action) {
     // 删除产品（需认证）
     case 'delete':
         requireAuth();
-        $input = json_decode(file_get_contents('php://input'), true);
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
         $id = $input['id'] ?? '';
         $products = getProducts();
-        $newProducts = array_values(array_filter($products, function($p) use ($id) {
-            return $p['id'] !== $id;
-        }));
-        // 删除关联的图片文件
         foreach ($products as $p) {
             if ($p['id'] === $id && !empty($p['images'])) {
                 foreach ($p['images'] as $img) {
-                    $path = __DIR__ . '/' . $img;
-                    if (file_exists($path)) unlink($path);
+                    safeUnlinkUpload($img);
                 }
             }
         }
+        $newProducts = array_values(array_filter($products, function ($p) use ($id) {
+            return $p['id'] !== $id;
+        }));
         saveProducts($newProducts);
         respond(['success' => true]);
         break;
@@ -164,37 +376,45 @@ switch ($action) {
             respond(['success' => false, 'message' => '未收到文件'], 400);
         }
         $file = $_FILES['image'];
-        $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        if (!in_array($file['type'], $allowed)) {
-            respond(['success' => false, 'message' => '不支持的图片格式'], 400);
+        if (!empty($file['error'])) {
+            respond(['success' => false, 'message' => '文件上传失败（错误码 ' . (int) $file['error'] . '）'], 400);
         }
-        if ($file['size'] > 20 * 1024 * 1024) {
-            respond(['success' => false, 'message' => '图片不能超过20MB'], 400);
+        if (!is_uploaded_file($file['tmp_name'])) {
+            respond(['success' => false, 'message' => '非法的上传请求'], 400);
         }
-        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+        if ($file['size'] > MAX_UPLOAD_BYTES) {
+            respond(['success' => false, 'message' => '图片不能超过 20MB'], 400);
+        }
+        // 用文件真实内容判断类型，不信任客户端传来的 MIME / 文件名
+        $ext = imageExt($file['tmp_name']);
+        if ($ext === null) {
+            respond(['success' => false, 'message' => '仅支持 JPG / PNG / GIF / WEBP 图片'], 400);
+        }
         $filename = generateId() . '.' . $ext;
-        $targetPath = UPLOAD_DIR . '/' . $filename;
-        if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+        if (move_uploaded_file($file['tmp_name'], UPLOAD_DIR . '/' . $filename)) {
             respond(['success' => true, 'url' => 'uploads/' . $filename]);
-        } else {
-            respond(['success' => false, 'message' => '上传失败'], 500);
         }
+        respond(['success' => false, 'message' => '上传失败'], 500);
         break;
 
     // 修改密码（需认证）
     case 'change_password':
         requireAuth();
-        $input = json_decode(file_get_contents('php://input'), true);
-        $oldPwd = $input['oldPassword'] ?? '';
-        $newPwd = $input['newPassword'] ?? '';
-        $oldHash = hash('sha256', $oldPwd);
-        $storedHash = getPasswordHash();
-        if ($oldHash !== $storedHash) {
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
+        $oldPwd = (string) ($input['oldPassword'] ?? '');
+        $newPwd = (string) ($input['newPassword'] ?? '');
+
+        if (strLen($newPwd) < 8) {
+            respond(['success' => false, 'message' => '新密码至少 8 位'], 400);
+        }
+        if (verifyPassword($oldPwd) !== true) {
+            recordLoginFail();
             respond(['success' => false, 'message' => '当前密码错误'], 400);
         }
-        $newHash = hash('sha256', $newPwd);
-        file_put_contents(PASSWORD_FILE, $newHash);
-        respond(['success' => true]);
+        setPassword($newPwd);
+        // 改密后让所有旧会话失效
+        writeJson(TOKENS_FILE, []);
+        respond(['success' => true, 'relogin' => true]);
         break;
 
     // 导出数据
@@ -206,7 +426,7 @@ switch ($action) {
     // 导入数据（需认证）
     case 'import':
         requireAuth();
-        $input = json_decode(file_get_contents('php://input'), true);
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
         $data = $input['products'] ?? [];
         if (!is_array($data)) respond(['success' => false, 'message' => '格式错误'], 400);
         saveProducts($data);
@@ -222,60 +442,35 @@ switch ($action) {
 
     // 获取 Hero 图片（公开）
     case 'get_hero':
-        $heroFile = DATA_DIR . '/hero.json';
-        if (file_exists($heroFile)) {
-            $heroData = json_decode(file_get_contents($heroFile), true);
-            respond(['success' => true, 'images' => $heroData['images'] ?? []]);
-        } else {
-            respond(['success' => true, 'images' => []]);
-        }
+        $hero = readJson(DATA_DIR . '/hero.json', []);
+        respond(['success' => true, 'images' => $hero['images'] ?? []]);
         break;
 
     // 保存 Hero 图片（需认证）
     case 'set_hero':
         requireAuth();
-        $input = json_decode(file_get_contents('php://input'), true);
-        $images = $input['images'] ?? [];
-        file_put_contents(DATA_DIR . '/hero.json', json_encode(['images' => $images], JSON_UNESCAPED_UNICODE));
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
+        writeJson(DATA_DIR . '/hero.json', ['images' => $input['images'] ?? []]);
         respond(['success' => true]);
         break;
 
     default:
-        respond(['message' => 'Smart Hardware Lab API', 'actions' => ['list','login','add','update','delete','upload','get_hero','set_hero']], 200);
+        respond([
+            'message' => 'Smart Hardware Lab API',
+            'actions' => ['list', 'login', 'logout', 'verify', 'add', 'update', 'delete', 'upload', 'get_hero', 'set_hero'],
+        ]);
 }
 
 // ─────────── 辅助函数 ───────────
-function verifyToken($token) {
-    $tokenFile = DATA_DIR . '/token.json';
-    if (!file_exists($tokenFile)) return false;
-    $data = json_decode(file_get_contents($tokenFile), true);
-    return $data && $data['token'] === $token && $data['expires'] > time();
-}
-
-function requireAuth() {
-    $headers = getallheaders();
-    $token = '';
-    if (isset($headers['Authorization'])) {
-        $token = str_replace('Bearer ', '', $headers['Authorization']);
-    } elseif (isset($headers['authorization'])) {
-        $token = str_replace('Bearer ', '', $headers['authorization']);
-    } elseif (isset($_GET['token'])) {
-        $token = $_GET['token'];
-    }
-    if (!verifyToken($token)) {
-        respond(['success' => false, 'message' => '未授权，请重新登录'], 401);
-    }
-}
-
 function buildProduct($input) {
     return [
         'name'        => trim($input['name'] ?? ''),
         'subtitle'    => trim($input['subtitle'] ?? ''),
         'category'    => trim($input['category'] ?? '其他'),
-        'tags'        => $input['tags'] ?? [],
+        'tags'        => is_array($input['tags'] ?? null) ? array_slice($input['tags'], 0, 20) : [],
         'description' => trim($input['description'] ?? ''),
         'specs'       => trim($input['specs'] ?? ''),
-        'level'       => in_array($input['level'] ?? '', ['featured','normal']) ? $input['level'] : 'normal',
-        'images'      => $input['images'] ?? [],
+        'level'       => in_array($input['level'] ?? '', ['featured', 'normal'], true) ? $input['level'] : 'normal',
+        'images'      => is_array($input['images'] ?? null) ? array_slice($input['images'], 0, 10) : [],
     ];
 }

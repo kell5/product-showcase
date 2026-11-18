@@ -4,11 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>管理后台 | Smart Hardware Lab</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
-  <link rel="stylesheet" href="css/admin.css" />
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="stylesheet" href="css/styles.css?v=20261118-1" />
+  <link rel="stylesheet" href="css/admin.css?v=20261118-1" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" />
 </head>
 <body class="admin-body">
@@ -32,7 +30,6 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           登录
         </button>
-        <p class="admin-login-hint">默认密码: admin123</p>
       </form>
       <div id="loginError" class="admin-error" style="display:none;"></div>
     </div>
@@ -195,11 +192,11 @@
             </div>
             <div class="admin-input-group">
               <label for="newPassword">新密码</label>
-              <input type="password" id="newPassword" required minlength="4" />
+              <input type="password" id="newPassword" required minlength="8" />
             </div>
             <div class="admin-input-group">
               <label for="confirmPassword">确认新密码</label>
-              <input type="password" id="confirmPassword" required minlength="4" />
+              <input type="password" id="confirmPassword" required minlength="8" />
             </div>
             <button type="submit" class="admin-btn admin-btn-primary">更新密码</button>
           </form>
@@ -294,6 +291,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
-  <script src="js/admin.js"></script>
+  <script src="js/admin.js?v=20261118-1"></script>
 </body>
 </html>

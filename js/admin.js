@@ -28,7 +28,7 @@
     }
     const resp = await fetch(url, options);
     const json = await resp.json();
-    if (resp.status === 401 && action !== 'login') {
+    if (resp.status === 401 && action !== 'login' && action !== 'verify') {
       showToast('登录已过期，请重新登录', 'error');
       logout();
       throw new Error('Unauthorized');
@@ -103,9 +103,8 @@
   async function checkAuth() {
     if (!authToken) return;
     try {
-      const resp = await fetch(`${API_BASE}?action=verify&token=${authToken}`);
-      const json = await resp.json();
-      if (json.valid) {
+      const res = await apiCall('verify', null, 'GET');
+      if (res.data && res.data.valid) {
         loginPanel.style.display = 'none';
         adminPanel.style.display = 'flex';
         renderProductList();
@@ -119,6 +118,13 @@
 
   // 退出登录
   function logout() {
+    // 通知服务端吊销当前 token（失败也不影响本地登出）
+    if (authToken) {
+      fetch(`${API_BASE}?action=logout`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      }).catch(() => {});
+    }
     authToken = '';
     sessionStorage.removeItem('shlab_token');
     loginPanel.style.display = '';
@@ -472,8 +478,9 @@
     try {
       const res = await apiCall('change_password', { oldPassword: oldPwd, newPassword: newPwd });
       if (res.ok && res.data.success) {
-        showToast('密码已更新');
+        showToast('密码已更新，请重新登录');
         document.getElementById('passwordForm').reset();
+        setTimeout(logout, 1200);
       } else {
         showToast(res.data.message || '修改失败', 'error');
       }
