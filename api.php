@@ -542,9 +542,15 @@ function aiFallbackConfig($cfg) {
     $url   = trim((string) $cfg['fallback_url']);
     $model = trim((string) $cfg['fallback_model']);
     if ($url === '' || $model === '' || !aiUrlAllowed($url)) return null;
+
+    // 备用通道往往是同一个厂商的另一个模型（比如 4.7 被限流时退到 4-flash），
+    // 这时不用让用户再填一遍 Key。本地服务没设 --api-key 时多带一个头也无害。
+    $fbKey = trim((string) $cfg['fallback_key']);
+    if ($fbKey === '') $fbKey = trim((string) $cfg['api_key']);
+
     return [
         'base_url'    => rtrim($url, '/'),
-        'api_key'     => trim((string) $cfg['fallback_key']),
+        'api_key'     => $fbKey,
         'model'       => $model,
         'temperature' => $cfg['temperature'],
         // 小模型话多就慢，备用通道强制压短
@@ -1164,7 +1170,7 @@ function aiCallModel($cfg, $messages, $maxTokens = null, $conf = null) {
     if ($detail === '') $detail = '接口返回 HTTP ' . $code;
 
     if ($code === 401) $detail = 'API Key 无效或已过期';
-    elseif ($code === 429) $detail = '调用频率超限，请稍后再试';
+    elseif ($code === 429) $detail = '上游模型排队或限流了，稍等几秒再试';
     elseif ($code === 404) $detail = '模型名不存在（' . $conf['model'] . '），请在后台换一个';
     elseif ($code === 0) $detail = '连不上接口地址（服务没启动或端口不对）';
     elseif ($code >= 500) $detail = '模型服务暂时不可用，请稍后再试';
