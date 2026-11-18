@@ -479,6 +479,19 @@ function aiIsLocalUrl($url) {
     return (bool) preg_match('/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)/', $host);
 }
 
+/**
+ * 智谱 GLM-4.5 及以上默认开「思考模式」，思考 token 计入 max_tokens。
+ * 结果就是：max_tokens=900 时思考能吃掉 800+，message.content 直接是空字符串，
+ * 前端只看到「模型返回了空内容」。这个站只让它组织语言，不需要它推理，
+ * 所以对这些模型显式关掉思考。
+ */
+function aiNeedsNoThinking($conf) {
+    $host = strtolower((string) parse_url((string) $conf['base_url'], PHP_URL_HOST));
+    if ($host === '') return false;
+    if (strpos($host, 'bigmodel.cn') === false && strpos($host, 'zhipu') === false) return false;
+    return (bool) preg_match('/^glm-(4\.[5-9]|5|[6-9]\d?)/', strtolower((string) $conf['model']));
+}
+
 function aiLower($s) {
     return function_exists('mb_strtolower') ? mb_strtolower((string) $s, 'UTF-8') : strtolower((string) $s);
 }
@@ -1070,9 +1083,12 @@ function aiCallModel($cfg, $messages, $maxTokens = null, $conf = null) {
         'max_tokens'  => $maxTokens === null ? (int) $conf['max_tokens'] : (int) $maxTokens,
         'stream'      => false,
     ];
+    // 关掉思考模式：否则思考 token 会把 max_tokens 吃光，content 返回空字符串
+    if (aiNeedsNoThinking($conf)) {
+        $payload['thinking'] = ['type' => 'disabled'];
+    }
     $body = json_encode($payload, JSON_UNESCAPED_UNICODE);
     if ($body === false) return [false, '', '请求体编码失败', 0];
-
     $headers = [
         'Content-Type: application/json',
         'Accept: application/json',
@@ -1088,10 +1104,29 @@ function aiCallModel($cfg, $messages, $maxTokens = null, $conf = null) {
 
     $json = json_decode($raw, true);
     if ($code >= 200 && $code < 300 && is_array($json)) {
-        $text = (string) ($json['choices'][0]['message']['content'] ?? '');
+        $choice = $json['choices'][0] ?? [];
+        $msg    = $choice['message'] ?? [];
+        $text   = (string) ($msg['content'] ?? '');
+        $reason = (string) ($msg['reasoning_content'] ?? '');
+        $finish = (string) ($choice['finish_reason'] ?? '');
         $tokens = (int) ($json['usage']['total_tokens'] ?? 0);
-        if (trim($text) === '') return [false, '', '模型返回了空内容', $tokens];
-        return [true, trim($text), '', $tokens];
+        $rt     = (int) ($json['usage']['completion_tokens_details']['reasoning_tokens'] ?? 0);
+
+        if (trim($text) !== '') return [true, trim($text), '', $tokens];
+
+        // content 空：优先怀疑思考模式吃光了额度，这比「空内容」有用得多
+        if (trim($reason) !== '' || $rt > 0) {
+            return [false, '', '模型把 ' . max($rt, 1) . ' 个 token 全用在思考上了，没留下正文。'
+                . '后台把模型换成 glm-4-flash，或把 max_tokens 调到 1500 以上再试', $tokens];
+        }
+        if ($finish === 'length') {
+            return [false, '', '回答被 max_tokens 截断，请把上限调大（当前 '
+                . ($maxTokens === null ? (int) $conf['max_tokens'] : (int) $maxTokens) . '）', $tokens];
+        }
+        if ($finish === 'sensitive' || $finish === 'content_filter') {
+            return [false, '', '这个问题被模型的内容安全策略拦下了，换个问法试试', $tokens];
+        }
+        return [false, '', '模型返回了空内容（finish_reason=' . ($finish !== '' ? $finish : 'unknown') . '）', $tokens];
     }
 
     $detail = '';
