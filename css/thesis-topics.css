@@ -327,3 +327,50 @@
   font-size: 14px;
   color: var(--c-primary);
 }
+
+/* ═══════════════ 怎么用这个库（教学向引导） ═══════════════ */
+.thesis-howto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--sp-lg);
+  margin-top: var(--sp-lg);
+}
+
+.thesis-howto-card {
+  position: relative;
+  padding: 28px 24px 24px;
+  border-radius: var(--r-md);
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border);
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+
+.thesis-howto-card:hover {
+  background: var(--c-bg-card-hover);
+  border-color: rgba(56, 189, 248, 0.3);
+  transform: translateY(-2px);
+}
+
+.thesis-howto-num {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--c-primary);
+  margin-bottom: 10px;
+}
+
+.thesis-howto-card h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 10px;
+  color: var(--c-text);
+}
+
+.thesis-howto-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: var(--c-text-muted);
+}

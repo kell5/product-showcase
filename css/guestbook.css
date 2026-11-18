@@ -1,0 +1,241 @@
+/* ============================================================
+   留言板组件样式（配合 js/guestbook.js）
+   依赖 css/styles.css 里的 CSS 变量
+   ============================================================ */
+
+[data-guestbook] {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+/* ─────────── 标题 ─────────── */
+.gb-head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-md);
+  margin-bottom: var(--sp-lg);
+}
+
+.gb-icon {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-md);
+  color: var(--c-primary);
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+}
+
+.gb-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.gb-head .section-title {
+  margin: 0 0 6px;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.gb-sub {
+  color: var(--c-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ─────────── 表单 ─────────── */
+.gb-form {
+  padding: var(--sp-lg);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  margin-bottom: var(--sp-lg);
+}
+
+.gb-row {
+  display: flex;
+  gap: var(--sp-md);
+}
+
+.gb-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 0 180px;
+}
+
+.gb-field--grow {
+  flex: 1 1 auto;
+}
+
+.gb-field > span {
+  font-size: 0.8rem;
+  color: var(--c-text-muted);
+  letter-spacing: 0.02em;
+}
+
+.gb-field input,
+.gb-field textarea {
+  width: 100%;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--c-text);
+  background: rgba(6, 9, 18, 0.6);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  resize: vertical;
+}
+
+.gb-field input::placeholder,
+.gb-field textarea::placeholder {
+  color: rgba(148, 163, 184, 0.55);
+}
+
+.gb-field input:focus,
+.gb-field textarea:focus {
+  border-color: rgba(56, 189, 248, 0.55);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+}
+
+.gb-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-md);
+  margin-top: var(--sp-md);
+  flex-wrap: wrap;
+}
+
+.gb-hint {
+  font-size: 0.82rem;
+  color: var(--c-text-muted);
+}
+
+.gb-hint.is-error {
+  color: #fca5a5;
+}
+
+.gb-hint.is-loading {
+  color: var(--c-primary);
+}
+
+.gb-form .btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 蜜罐字段：视觉上彻底隐藏，但保留在 DOM 里给机器人填 */
+.gb-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ─────────── 列表 ─────────── */
+.gb-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-md);
+}
+
+.gb-item {
+  display: flex;
+  gap: var(--sp-md);
+  padding: var(--sp-md) 20px;
+  border-radius: var(--r-md);
+  background: var(--c-bg-card);
+  border: 1px solid var(--c-border);
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.gb-item:hover {
+  background: var(--c-bg-card-hover);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.gb-avatar {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--c-bg);
+  background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
+}
+
+.gb-body {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.gb-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.gb-meta strong {
+  font-size: 0.92rem;
+  color: var(--c-text);
+  font-weight: 600;
+}
+
+.gb-meta time {
+  font-size: 0.76rem;
+  color: var(--c-text-muted);
+}
+
+.gb-text {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.7;
+  color: var(--c-text);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.gb-empty {
+  padding: var(--sp-lg);
+  text-align: center;
+  color: var(--c-text-muted);
+  font-size: 0.9rem;
+  border: 1px dashed var(--c-border);
+  border-radius: var(--r-md);
+}
+
+/* ─────────── 响应式 ─────────── */
+@media (max-width: 720px) {
+  .gb-form {
+    padding: 20px;
+  }
+
+  .gb-row {
+    flex-direction: column;
+  }
+
+  .gb-field {
+    flex: 1 1 auto;
+  }
+
+  .gb-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gb-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

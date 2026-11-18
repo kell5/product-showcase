@@ -41,7 +41,15 @@ define('PASSWORD_FILE', DATA_DIR . '/password.php');
 define('TOKENS_FILE', DATA_DIR . '/tokens.php');
 define('LIMIT_FILE', DATA_DIR . '/login-attempts.php');
 define('LEGACY_PASSWORD_FILE', DATA_DIR . '/password.hash');
+define('MESSAGES_FILE', DATA_DIR . '/messages.json');
+define('MSG_LIMIT_FILE', DATA_DIR . '/msg-limit.php');
 define('UPLOAD_DIR', __DIR__ . '/uploads');
+
+define('MSG_MAX_KEEP', 500);        // 最多保留多少条留言
+define('MSG_NAME_MAX', 20);         // 昵称长度上限
+define('MSG_BODY_MAX', 500);        // 留言长度上限
+define('MSG_INTERVAL', 20);         // 同一 IP 两次留言最小间隔（秒）
+define('MSG_HOURLY', 5);            // 同一 IP 每小时最多留言数
 
 define('TOKEN_TTL', 86400);                // 登录有效期 24 小时
 define('MAX_LOGIN_FAILS', 5);              // 窗口内允许的失败次数
@@ -300,6 +308,78 @@ function safeUnlinkUpload($relative) {
     if (is_file($target)) @unlink($target);
 }
 
+// ─────────── 留言 ───────────
+function getMessages() {
+    $list = readJson(MESSAGES_FILE, []);
+    return is_array($list) ? $list : [];
+}
+
+function saveMessages($list) {
+    return writeJson(MESSAGES_FILE, array_values($list));
+}
+
+function clipText($s, $max) {
+    $s = (string) $s;
+    if (function_exists('mb_substr')) {
+        return mb_substr($s, 0, $max, 'UTF-8');
+    }
+    return substr($s, 0, $max);
+}
+
+/** 明显的垃圾留言：堆链接 */
+function looksLikeSpam($text) {
+    return preg_match_all('#(https?://|www\.)#i', $text) >= 3;
+}
+
+/**
+ * 留言频率限制。返回 null 表示通过，返回字符串表示应拒绝并给出提示。
+ * 只在这里记录 IP 的哈希，不写进留言数据本身。
+ */
+function messageRateLimit() {
+    $now = time();
+    $key = substr(hash('sha256', clientIp() . '|guestbook'), 0, 16);
+    $store = readSecret(MSG_LIMIT_FILE, []);
+    if (!is_array($store)) $store = [];
+
+    $entry = $store[$key] ?? ['last' => 0, 'times' => []];
+    $times = array_filter((array) ($entry['times'] ?? []), function ($t) use ($now) {
+        return $now - (int) $t < 3600;
+    });
+    $times = array_values($times);
+
+    $last = (int) ($entry['last'] ?? 0);
+    if ($last > 0 && $now - $last < MSG_INTERVAL) {
+        return '留言太快了，请 ' . (MSG_INTERVAL - ($now - $last)) . ' 秒后再提交';
+    }
+    if (count($times) >= MSG_HOURLY) {
+        return '这段时间留言有点多，请稍后再试';
+    }
+
+    $times[] = $now;
+    $store[$key] = ['last' => $now, 'times' => $times];
+
+    // 清理一天前的记录，避免文件无限增长
+    foreach ($store as $k => $v) {
+        $raw = array_filter((array) ($v['times'] ?? []), 'is_numeric');
+        if (!$raw || $now - max(array_map('intval', $raw)) > 86400) {
+            unset($store[$k]);
+        }
+    }
+
+    writeSecret(MSG_LIMIT_FILE, $store);
+    return null;
+}
+
+/** 对外只暴露展示需要的字段 */
+function publicMessage($m) {
+    return [
+        'id'        => $m['id'] ?? '',
+        'name'      => $m['name'] ?? '',
+        'content'   => $m['content'] ?? '',
+        'createdAt' => $m['createdAt'] ?? '',
+    ];
+}
+
 // ─────────── 旧格式机密文件迁移 ───────────
 /**
  * 旧版本把密码哈希、token、登录计数存成 .hash / .json，
@@ -529,6 +609,82 @@ switch ($action) {
         respond(['success' => true]);
         break;
 
+    // 获取留言（公开，最多 50 条，新的在前）
+    case 'list_messages':
+        $all = getMessages();
+        $out = [];
+        foreach (array_slice($all, 0, 50) as $m) {
+            $out[] = publicMessage($m);
+        }
+        respond(['success' => true, 'messages' => $out, 'total' => count($all)]);
+        break;
+
+    // 提交留言（公开，带频率限制与蜜罐）
+    case 'add_message':
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
+
+        // 蜜罐字段：真人看不到，机器人会填。填了就假装成功但不入库。
+        if (!empty($input['website'])) {
+            respond(['success' => true, 'message' => '留言已提交']);
+        }
+
+        $name = trim((string) ($input['name'] ?? ''));
+        $body = trim((string) ($input['content'] ?? ''));
+        $name = clipText(preg_replace('/\s+/u', ' ', $name), MSG_NAME_MAX);
+        $body = clipText($body, MSG_BODY_MAX);
+
+        if ($name === '') {
+            respond(['success' => false, 'message' => '请填写昵称'], 400);
+        }
+        if (textLength($body) < 2) {
+            respond(['success' => false, 'message' => '留言内容太短了'], 400);
+        }
+        if (looksLikeSpam($body)) {
+            respond(['success' => false, 'message' => '留言内容包含过多链接，已拒绝'], 400);
+        }
+
+        $limited = messageRateLimit();
+        if ($limited !== null) {
+            respond(['success' => false, 'message' => $limited], 429);
+        }
+
+        $message = [
+            'id'        => generateId(),
+            'name'      => $name,
+            'content'   => $body,
+            'createdAt' => date('c'),
+        ];
+
+        $messages = getMessages();
+        array_unshift($messages, $message);
+        if (count($messages) > MSG_MAX_KEEP) {
+            $messages = array_slice($messages, 0, MSG_MAX_KEEP);
+        }
+        if (!saveMessages($messages)) {
+            respond(['success' => false, 'message' => '留言保存失败，请稍后再试'], 500);
+        }
+        respond(['success' => true, 'message' => publicMessage($message)]);
+        break;
+
+    // 删除留言（需认证）
+    case 'delete_message':
+        requireAuth();
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
+        $id = (string) ($input['id'] ?? '');
+        if ($id === '') {
+            respond(['success' => false, 'message' => '缺少留言 ID'], 400);
+        }
+        $messages = getMessages();
+        $left = array_values(array_filter($messages, function ($m) use ($id) {
+            return ($m['id'] ?? '') !== $id;
+        }));
+        if (count($left) === count($messages)) {
+            respond(['success' => false, 'message' => '留言不存在'], 404);
+        }
+        saveMessages($left);
+        respond(['success' => true, 'deleted' => $id]);
+        break;
+
     // 获取 Hero 图片（公开）
     case 'get_hero':
         $hero = readJson(DATA_DIR . '/hero.json', []);
@@ -546,7 +702,7 @@ switch ($action) {
     default:
         respond([
             'message' => 'Smart Hardware Lab API',
-            'actions' => ['list', 'login', 'logout', 'verify', 'add', 'update', 'delete', 'upload', 'get_hero', 'set_hero'],
+            'actions' => ['list', 'login', 'logout', 'verify', 'add', 'update', 'delete', 'upload', 'get_hero', 'set_hero', 'list_messages', 'add_message', 'delete_message'],
         ]);
 }
 

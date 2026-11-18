@@ -866,3 +866,58 @@
     justify-content: center;
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   留言管理
+   ═══════════════════════════════════════════════════ */
+
+.admin-message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-message-item {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  padding: 16px 20px;
+  transition: border-color 0.2s ease;
+}
+
+.admin-message-item:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.admin-message-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.admin-message-head strong {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--admin-text);
+}
+
+.admin-message-head time {
+  font-size: 0.75rem;
+  color: var(--admin-text-muted);
+}
+
+.admin-message-head .admin-msg-del {
+  margin-left: auto;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+}
+
+.admin-message-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--admin-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

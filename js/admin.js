@@ -146,6 +146,7 @@
     navItems.forEach(item => item.classList.toggle('active', item.dataset.tab === tabName));
     tabs.forEach(tab => tab.classList.toggle('active', tab.id === `tab-${tabName}`));
     if (tabName === 'products') renderProductList();
+    if (tabName === 'messages') renderMessageList();
   }
 
   navItems.forEach(item => {
@@ -164,6 +165,74 @@
     resetForm();
     switchTab('products');
   });
+
+  // ─────────── 留言管理 ───────────
+  function escHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function formatMsgTime(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    const p = n => (n < 10 ? '0' + n : n);
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  async function renderMessageList() {
+    const box = document.getElementById('adminMessageList');
+    if (!box) return;
+    box.innerHTML = '<div class="admin-empty">正在加载…</div>';
+
+    try {
+      const res = await apiCall('list_messages', null, 'GET');
+      const messages = (res.data && res.data.messages) || [];
+
+      if (!messages.length) {
+        box.innerHTML = '<div class="admin-empty">还没有留言</div>';
+        return;
+      }
+
+      box.innerHTML = messages.map(m => `
+        <div class="admin-message-item" data-id="${escHtml(m.id)}">
+          <div class="admin-message-head">
+            <strong>${escHtml(m.name)}</strong>
+            <time>${escHtml(formatMsgTime(m.createdAt))}</time>
+            <button class="admin-btn admin-btn-danger admin-msg-del" data-id="${escHtml(m.id)}">删除</button>
+          </div>
+          <p class="admin-message-text">${escHtml(m.content)}</p>
+        </div>
+      `).join('');
+
+      box.querySelectorAll('.admin-msg-del').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm('确定删除这条留言？删除后不可恢复。')) return;
+          try {
+            const del = await apiCall('delete_message', { id: btn.dataset.id });
+            if (del.ok && del.data.success) {
+              showToast('已删除');
+              renderMessageList();
+            } else {
+              showToast((del.data && del.data.message) || '删除失败', 'error');
+            }
+          } catch {
+            showToast('删除失败', 'error');
+          }
+        });
+      });
+    } catch {
+      box.innerHTML = '<div class="admin-empty">加载失败，请重新登录后再试</div>';
+    }
+  }
+
+  const reloadMessagesBtn = document.getElementById('reloadMessagesBtn');
+  if (reloadMessagesBtn) {
+    reloadMessagesBtn.addEventListener('click', renderMessageList);
+  }
 
   // ─────────── 产品列表渲染 ───────────
   let cachedProducts = [];
