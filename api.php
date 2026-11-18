@@ -946,16 +946,24 @@ function aiSearchProjects($query, $limit = 2) {
     $terms = aiTerms($query);
     if (!$terms) return [];
 
+    // 这 5 个项目页全都写着 STM32，只靠通用主控词命中就返回，会出现
+    // 「问温湿度、却推体感机械臂」这种驴唇不对马嘴的卡片。
+    // 所以除通用词外，必须再命中至少一个内容词才算相关。
+    $generic = ['stm32', 'esp32', 'k210', 'arduino', 'stm8', 'gd32', '单片机', '嵌入式', '微控制器', 'linux'];
+
     $out = [];
     foreach (aiSiteProjects() as $p) {
         $hay = aiLower($p['title'] . ' ' . $p['desc'] . ' ' . $p['stack']);
         $score = 0.0;
+        $contentHit = false;
         foreach ($terms as $term => $w) {
             if ($term === '') continue;
+            if (strpos($hay, $term) === false) continue;
             if (strpos(aiLower($p['title']), $term) !== false) $score += 6 * $w;
-            if (strpos($hay, $term) !== false) $score += 2 * $w;
+            else $score += 2 * $w;
+            if (!in_array($term, $generic, true)) $contentHit = true;
         }
-        if ($score > 0) {
+        if ($score > 0 && $contentHit) {
             $p['score'] = $score;
             $out[] = $p;
         }
@@ -965,6 +973,26 @@ function aiSearchProjects($query, $limit = 2) {
         return ($a['score'] < $b['score']) ? 1 : -1;
     });
     return array_slice($out, 0, $limit);
+}
+
+/**
+ * 纯寒暄 / 能力询问直接本地应答，不烧 token。
+ * 之前「你好」也会走一遍检索 + 模型，既慢又答得机械（「暂未检索到与你好相关的题目」）。
+ */
+function aiGreetingReply($q) {
+    $t = aiLower(trim((string) $q));
+    $t = preg_replace('/[\s\x{3000}，。！？、,.!?~～]+/u', '', $t);
+    if ($t === '' || textLength($t) > 8) return null;
+    $greets = [
+        '你好', '您好', '你好呀', '您好呀', '在吗', '在不在',
+        'hi', 'hello', 'hey', '嗨', '哈喽', '哈啰',
+        '早上好', '中午好', '下午好', '晚上好',
+        '测试', 'test', '你是谁', '你能做什么', '你会什么', '怎么用',
+    ];
+    if (!in_array($t, $greets, true)) return null;
+    return "你好，我是站内助手，只根据站里的 699 个选题和 5 个可跑原型回答。\n\n"
+        . "说说你手上的主控（STM32 / 51 / ESP32 / K210）、想做哪个方向，或者直接问某个题目怎么做，"
+        . "我帮你挑几条两周内能收尾的。";
 }
 
 function aiSystemPrompt() {
@@ -1491,6 +1519,18 @@ switch ($action) {
         $limited = aiQuotaError($cfg);
         if ($limited !== null) {
             respond(['success' => false, 'message' => $limited], 429);
+        }
+
+        // 寒暄不值得花一次模型调用
+        $greeting = aiGreetingReply($question);
+        if ($greeting !== null) {
+            aiUsageBump(0, false);
+            respond([
+                'success' => true,
+                'answer'  => $greeting,
+                'sources' => [],
+                'via'     => 'local',
+            ]);
         }
 
         $history = aiCleanHistory($input['history'] ?? []);
