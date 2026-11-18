@@ -53,7 +53,8 @@ define('TOPICS_DATA_FILE', __DIR__ . '/js/thesis-topics.data.js');
 
 define('AI_MAX_QUESTION', 200);      // 单次提问长度上限
 define('AI_CONTEXT_TOPICS', 8);      // 送给模型的题目条数
-define('AI_TIMEOUT', 40);            // 上游超时（秒）
+define('AI_TIMEOUT', 40);            // 云端上游超时（秒）
+define('AI_TIMEOUT_LOCAL', 150);     // 自建模型超时（CPU 推理慢，要放宽）
 define('AI_MIN_INTERVAL', 3);        // 同一 IP 两次提问的最小间隔
 define('AI_CACHE_TTL', 604800);      // 问答缓存有效期 7 天
 define('AI_CACHE_MAX', 400);         // 缓存条目上限
@@ -443,7 +444,39 @@ migrateLegacySecrets();
  */
 
 function aiModels() {
-    return ['glm-4.7-flash', 'glm-4.5-flash', 'glm-4-flash', 'glm-4-air', 'glm-4.6'];
+    return [
+        // 云端（智谱开放平台，OpenAI 兼容）
+        'glm-4.7-flash', 'glm-4.5-flash', 'glm-4-flash', 'glm-4-air', 'glm-4.6',
+        // 自建（llama.cpp / Ollama / vLLM 的模型名，按你实际拉取的写）
+        'qwen3-1.7b', 'qwen3-0.6b', 'qwen2.5-1.5b-instruct', 'local-model',
+    ];
+}
+
+/**
+ * 接口地址白名单。
+ * https 任意域名放行；http 只允许本机与内网段 —— 自建模型基本都跑在
+ * 127.0.0.1:xxxx/v1，用 https 会多一层没必要的证书麻烦，但公网 http 不能放。
+ */
+function aiUrlAllowed($url) {
+    $url = trim((string) $url);
+    if (!preg_match('#^(https?)://([a-z0-9\.\-]+)(:[0-9]{1,5})?(/[a-z0-9\.\-/_]*)?$#i', $url, $m)) {
+        return false;
+    }
+    if (strtolower($m[1]) === 'https') return true;
+    $host = strtolower($m[2]);
+    if ($host === 'localhost' || $host === '127.0.0.1' || $host === '0.0.0.0') return true;
+    if (preg_match('/^10\./', $host)) return true;
+    if (preg_match('/^192\.168\./', $host)) return true;
+    if (preg_match('/^172\.(1[6-9]|2[0-9]|3[01])\./', $host)) return true;
+    return false;
+}
+
+/** 是否指向本机/内网自建服务（决定超时与是否强制要 Key） */
+function aiIsLocalUrl($url) {
+    if (!preg_match('#^https?://([a-z0-9\.\-]+)#i', trim((string) $url), $m)) return false;
+    $host = strtolower($m[1]);
+    if ($host === 'localhost' || $host === '127.0.0.1' || $host === '0.0.0.0') return true;
+    return (bool) preg_match('/^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)/', $host);
 }
 
 function aiLower($s) {
@@ -460,6 +493,11 @@ function aiConfig() {
         'per_total'   => 800,
         'temperature' => 0.6,
         'max_tokens'  => 900,
+        // 备用通道：主通道（云端）挂了/超限时自动改走自建模型
+        'fallback_enabled' => false,
+        'fallback_url'     => '',
+        'fallback_key'     => '',
+        'fallback_model'   => '',
     ];
     $saved = readSecret(AI_CONFIG_FILE, []);
     if (!is_array($saved)) $saved = [];
@@ -474,12 +512,31 @@ function aiConfig() {
     $cfg['per_ip']      = max(1, min(200, (int) $cfg['per_ip']));
     $cfg['per_total']   = max(10, min(20000, (int) $cfg['per_total']));
     $cfg['temperature'] = max(0, min(1.2, (float) $cfg['temperature']));
-    $cfg['max_tokens']  = max(200, min(2000, (int) $cfg['max_tokens']));
+    $cfg['max_tokens']  = max(120, min(2000, (int) $cfg['max_tokens']));
     return $cfg;
 }
 
 function aiReady($cfg) {
-    return !empty($cfg['enabled']) && trim((string) $cfg['api_key']) !== '';
+    if (empty($cfg['enabled'])) return false;
+    if (trim((string) $cfg['api_key']) !== '') return true;
+    // 指向本机自建服务时允许不带 Key（llama-server 默认不校验）
+    return aiIsLocalUrl((string) $cfg['base_url']);
+}
+
+/** 取出可用的备用通道配置，不可用返回 null */
+function aiFallbackConfig($cfg) {
+    if (empty($cfg['fallback_enabled'])) return null;
+    $url   = trim((string) $cfg['fallback_url']);
+    $model = trim((string) $cfg['fallback_model']);
+    if ($url === '' || $model === '' || !aiUrlAllowed($url)) return null;
+    return [
+        'base_url'    => rtrim($url, '/'),
+        'api_key'     => trim((string) $cfg['fallback_key']),
+        'model'       => $model,
+        'temperature' => $cfg['temperature'],
+        // 小模型话多就慢，备用通道强制压短
+        'max_tokens'  => min(500, (int) $cfg['max_tokens']),
+    ];
 }
 
 function aiIpKey() {
@@ -1002,14 +1059,15 @@ function aiHttpPost($url, $headers, $body, $timeout) {
     return [$code, (string) $raw, ''];
 }
 
-/** 返回 [ok, text, error, tokens] */
-function aiCallModel($cfg, $messages, $maxTokens = null) {
-    $url = rtrim((string) $cfg['base_url'], '/') . '/chat/completions';
+/** 返回 [ok, text, error, tokens]；$conf 不为空时用它替代主配置（走备用通道） */
+function aiCallModel($cfg, $messages, $maxTokens = null, $conf = null) {
+    $conf = $conf === null ? $cfg : $conf;
+    $url = rtrim((string) $conf['base_url'], '/') . '/chat/completions';
     $payload = [
-        'model'       => $cfg['model'],
+        'model'       => $conf['model'],
         'messages'    => $messages,
-        'temperature' => (float) $cfg['temperature'],
-        'max_tokens'  => $maxTokens === null ? (int) $cfg['max_tokens'] : (int) $maxTokens,
+        'temperature' => (float) $conf['temperature'],
+        'max_tokens'  => $maxTokens === null ? (int) $conf['max_tokens'] : (int) $maxTokens,
         'stream'      => false,
     ];
     $body = json_encode($payload, JSON_UNESCAPED_UNICODE);
@@ -1018,9 +1076,14 @@ function aiCallModel($cfg, $messages, $maxTokens = null) {
     $headers = [
         'Content-Type: application/json',
         'Accept: application/json',
-        'Authorization: Bearer ' . $cfg['api_key'],
     ];
-    list($code, $raw, $err) = aiHttpPost($url, $headers, $body, AI_TIMEOUT);
+    // 自建服务可能不配 Key，此时不要发一个空的 Authorization
+    if (trim((string) $conf['api_key']) !== '') {
+        $headers[] = 'Authorization: Bearer ' . $conf['api_key'];
+    }
+
+    $timeout = aiIsLocalUrl((string) $conf['base_url']) ? AI_TIMEOUT_LOCAL : AI_TIMEOUT;
+    list($code, $raw, $err) = aiHttpPost($url, $headers, $body, $timeout);
     if ($err !== '') return [false, '', $err, 0];
 
     $json = json_decode($raw, true);
@@ -1039,10 +1102,50 @@ function aiCallModel($cfg, $messages, $maxTokens = null) {
 
     if ($code === 401) $detail = 'API Key 无效或已过期';
     elseif ($code === 429) $detail = '调用频率超限，请稍后再试';
-    elseif ($code === 404) $detail = '模型名不存在（' . $cfg['model'] . '），请在后台换一个';
+    elseif ($code === 404) $detail = '模型名不存在（' . $conf['model'] . '），请在后台换一个';
+    elseif ($code === 0) $detail = '连不上接口地址（服务没启动或端口不对）';
     elseif ($code >= 500) $detail = '模型服务暂时不可用，请稍后再试';
 
     return [false, '', $detail, 0];
+}
+
+/**
+ * 主通道优先，失败自动降级到自建备用通道。
+ * 返回 [ok, text, error, tokens, via]，via 为 'primary' | 'fallback'
+ */
+function aiCallWithFallback($cfg, $messages) {
+    // 主通道也可能就是本地 Qwen3，同样要关思考链，否则 900 token 全被它吃掉
+    $primaryMsgs = aiIsLocalUrl((string) $cfg['base_url']) ? aiNoThink($messages) : $messages;
+    list($ok, $text, $err, $tokens) = aiCallModel($cfg, $primaryMsgs);
+    if ($ok) return [true, aiStripThink($text), '', $tokens, 'primary'];
+
+    $fb = aiFallbackConfig($cfg);
+    if ($fb === null) return [false, '', $err, 0, 'primary'];
+
+    // 本地这类小模型（Qwen3 系）默认会先输出思考链，900 token 全被它吃掉，
+    // 用户看到的反而是一个「...」。加 /no_think 关掉，再兜底清理残留。
+    list($ok2, $text2, $err2, $tok2) = aiCallModel($cfg, aiNoThink($messages), null, $fb);
+    if ($ok2) return [true, aiStripThink($text2), '', $tok2, 'fallback'];
+
+    return [false, '', $err . '；本地备用也没起来：' . $err2, 0, 'primary'];
+}
+
+/** 给 system 消息补一个 /no_think（Qwen3 系认这个开关） */
+function aiNoThink($messages) {
+    foreach ($messages as $i => $m) {
+        if (($m['role'] ?? '') === 'system') {
+            $messages[$i]['content'] = rtrim((string) $m['content']) . "\n/no_think";
+            return $messages;
+        }
+    }
+    array_unshift($messages, ['role' => 'system', 'content' => '/no_think']);
+    return $messages;
+}
+
+/** 清掉  thinking...<｜end▁of▁thinking｜> 残留，避免前端直接把思考过程显示给用户 */
+function aiStripThink($text) {
+    $text = preg_replace('/\s*<think\b[^>]*>.*?<\/think>\s*/su', '', (string) $text);
+    return trim((string) $text);
 }
 
 // ─────────── 路由 ───────────
@@ -1333,6 +1436,8 @@ switch ($action) {
 
     // 提问（公开，带限流与缓存）
     case 'ai_chat':
+        // 自建模型 CPU 推理慢，别被 PHP 默认 30 秒执行上限掐断
+        @set_time_limit(AI_TIMEOUT_LOCAL + 30);
         $cfg = aiConfig();
         if (!aiReady($cfg)) {
             respond(['success' => false, 'message' => '站内助手还没有开启'], 503);
@@ -1404,7 +1509,7 @@ switch ($action) {
             ]);
         }
 
-        list($ok, $answer, $error, $tokens) = aiCallModel(
+        list($ok, $answer, $error, $tokens, $via) = aiCallWithFallback(
             $cfg,
             aiBuildMessages($question, $topics, $projects, $history)
         );
@@ -1421,6 +1526,7 @@ switch ($action) {
             'answer'  => $answer,
             'sources' => $sources,
             'tokens'  => $tokens,
+            'via'     => $via,
         ]);
         break;
 
@@ -1430,6 +1536,7 @@ switch ($action) {
         $cfg = aiConfig();
         $raw = readSecret(AI_CONFIG_FILE, []);
         $savedKey = is_array($raw) ? trim((string) ($raw['api_key'] ?? '')) : '';
+        $savedFb  = is_array($raw) ? trim((string) ($raw['fallback_key'] ?? '')) : '';
         respond([
             'success'     => true,
             'enabled'     => (bool) $cfg['enabled'],
@@ -1444,6 +1551,11 @@ switch ($action) {
             'keyFromEnv'  => $savedKey === '' && trim((string) $cfg['api_key']) !== '',
             'models'      => aiModels(),
             'usage'       => aiPublicUsage(),
+            'fallbackEnabled' => (bool) $cfg['fallback_enabled'],
+            'fallbackUrl'     => (string) $cfg['fallback_url'],
+            'fallbackModel'   => (string) $cfg['fallback_model'],
+            'fallbackHasKey'  => $savedFb !== '',
+            'fallbackKeyMask' => aiMaskKey($savedFb),
         ]);
         break;
 
@@ -1455,25 +1567,48 @@ switch ($action) {
         if (!is_array($cur)) $cur = [];
 
         $model = trim((string) ($input['model'] ?? ($cur['model'] ?? 'glm-4.7-flash')));
-        if (!preg_match('/^[A-Za-z0-9._\-]{3,40}$/', $model)) {
+        if (!preg_match('/^[A-Za-z0-9._:\-]{3,60}$/', $model)) {
             respond(['success' => false, 'message' => '模型名格式不正确'], 400);
         }
+
+        $baseUrl = trim((string) ($input['baseUrl'] ?? ($cur['base_url'] ?? 'https://open.bigmodel.cn/api/paas/v4')));
+        if (!aiUrlAllowed($baseUrl)) {
+            respond(['success' => false, 'message' => '接口地址不合法：云端要 https://，自建只允许 http://127.0.0.1 或内网地址'], 400);
+        }
+        $isLocal = aiIsLocalUrl($baseUrl);
 
         $key = trim((string) ($input['apiKey'] ?? ''));
         if ($key === '') {
             $key = trim((string) ($cur['api_key'] ?? ''));
-        } elseif (!preg_match('/^[A-Za-z0-9._\-]{16,200}$/', $key)) {
-            respond(['success' => false, 'message' => 'API Key 看起来不对（智谱的 Key 形如 xxxxxxxx.yyyyyyyy）'], 400);
+        } elseif (!preg_match('/^[A-Za-z0-9._\-]{8,200}$/', $key)) {
+            respond(['success' => false, 'message' => 'API Key 看起来不对（只允许字母数字和 . _ -，至少 8 位）'], 400);
         }
 
         $enabled = !empty($input['enabled']);
-        if ($enabled && $key === '') {
+        if ($enabled && $key === '' && !$isLocal) {
             respond(['success' => false, 'message' => '先填 API Key 再启用'], 400);
         }
 
-        $baseUrl = trim((string) ($input['baseUrl'] ?? ($cur['base_url'] ?? 'https://open.bigmodel.cn/api/paas/v4')));
-        if (!preg_match('#^https://[a-z0-9\.\-]+(/[a-z0-9\.\-/_]*)?$#i', $baseUrl)) {
-            respond(['success' => false, 'message' => '接口地址必须是 https:// 开头的合法地址'], 400);
+        // ── 备用通道（自建模型）──
+        $fbEnabled = !empty($input['fallbackEnabled']);
+        $fbUrl   = trim((string) ($input['fallbackUrl'] ?? ($cur['fallback_url'] ?? '')));
+        $fbModel = trim((string) ($input['fallbackModel'] ?? ($cur['fallback_model'] ?? '')));
+        $fbKey   = trim((string) ($input['fallbackKey'] ?? ''));
+        if ($fbKey === '') {
+            $fbKey = trim((string) ($cur['fallback_key'] ?? ''));
+        } elseif (!preg_match('/^[A-Za-z0-9._\-]{8,200}$/', $fbKey)) {
+            respond(['success' => false, 'message' => '备用通道的 Key 格式不对'], 400);
+        }
+        if ($fbEnabled) {
+            if ($fbUrl === '' || $fbModel === '') {
+                respond(['success' => false, 'message' => '启用备用通道前，要填自建服务的地址和模型名'], 400);
+            }
+            if (!aiUrlAllowed($fbUrl)) {
+                respond(['success' => false, 'message' => '备用地址不合法：只能是 http://127.0.0.1:端口/v1 或内网地址'], 400);
+            }
+            if (!preg_match('/^[A-Za-z0-9._:\-]{3,60}$/', $fbModel)) {
+                respond(['success' => false, 'message' => '备用模型名格式不正确'], 400);
+            }
         }
 
         $next = [
@@ -1484,31 +1619,67 @@ switch ($action) {
             'per_ip'      => max(1, min(200, (int) ($input['perIp'] ?? 30))),
             'per_total'   => max(10, min(20000, (int) ($input['perTotal'] ?? 800))),
             'temperature' => max(0, min(1.2, (float) ($input['temperature'] ?? 0.6))),
-            'max_tokens'  => max(200, min(2000, (int) ($input['maxTokens'] ?? 900))),
+            'max_tokens'  => max(120, min(2000, (int) ($input['maxTokens'] ?? 900))),
+            'fallback_enabled' => $fbEnabled,
+            'fallback_url'     => rtrim($fbUrl, '/'),
+            'fallback_key'     => $fbKey,
+            'fallback_model'   => $fbModel,
             'updatedAt'   => date('c'),
         ];
 
         if (!writeSecret(AI_CONFIG_FILE, $next)) {
             respond(['success' => false, 'message' => '保存失败：data/ 目录不可写，请检查属主与权限'], 500);
         }
-        respond(['success' => true, 'enabled' => $next['enabled'], 'model' => $next['model']]);
+        respond([
+            'success'  => true,
+            'enabled'  => $next['enabled'],
+            'model'    => $next['model'],
+            'fallback' => $next['fallback_enabled'],
+        ]);
         break;
 
     // 测试连通性（需认证）
     case 'ai_test':
         requireAuth();
-        $input = json_decode(file_get_contents('php://input'), true) ?: [];
         $cfg = aiConfig();
-        if (trim((string) ($input['apiKey'] ?? '')) !== '') {
-            $cfg['api_key'] = trim((string) $input['apiKey']);
+        $input = json_decode(file_get_contents('php://input'), true) ?: [];
+
+        $useFb = !empty($input['useFallback']);
+        if ($useFb) {
+            $fb = [
+                'base_url'    => trim((string) ($input['fallbackUrl'] ?? ($cfg['fallback_url'] ?? ''))),
+                'api_key'     => trim((string) ($input['fallbackKey'] ?? '')) ?: trim((string) ($cfg['fallback_key'] ?? '')),
+                'model'       => trim((string) ($input['fallbackModel'] ?? ($cfg['fallback_model'] ?? ''))),
+                'temperature' => $cfg['temperature'],
+                'max_tokens'  => 120,
+            ];
+            if ($fb['base_url'] === '' || $fb['model'] === '') {
+                respond(['success' => false, 'message' => '备用通道还没填地址或模型名'], 400);
+            }
+            if (!aiUrlAllowed($fb['base_url'])) {
+                respond(['success' => false, 'message' => '地址不合法'], 400);
+            }
+            $cfg = array_merge($cfg, $fb);
+        } else {
+            if (trim((string) ($input['apiKey'] ?? '')) !== '') {
+                $cfg['api_key'] = trim((string) $input['apiKey']);
+            }
+            if (trim((string) ($input['baseUrl'] ?? '')) !== '') {
+                if (!aiUrlAllowed((string) $input['baseUrl'])) {
+                    respond(['success' => false, 'message' => '地址不合法'], 400);
+                }
+                $cfg['base_url'] = rtrim(trim((string) $input['baseUrl']), '/');
+            }
+            $m = trim((string) ($input['model'] ?? ''));
+            if ($m !== '' && preg_match('/^[A-Za-z0-9._:\-]{3,60}$/', $m)) {
+                $cfg['model'] = $m;
+            }
+            if (trim((string) $cfg['api_key']) === '' && !aiIsLocalUrl((string) $cfg['base_url'])) {
+                respond(['success' => false, 'message' => '还没有填 API Key'], 400);
+            }
         }
-        $m = trim((string) ($input['model'] ?? ''));
-        if ($m !== '' && preg_match('/^[A-Za-z0-9._\-]{3,40}$/', $m)) {
-            $cfg['model'] = $m;
-        }
-        if (trim((string) $cfg['api_key']) === '') {
-            respond(['success' => false, 'message' => '还没有填 API Key'], 400);
-        }
+
+        @set_time_limit(AI_TIMEOUT_LOCAL + 30);
 
         $start = microtime(true);
         list($ok, $text, $error, $tokens) = aiCallModel(
@@ -1527,7 +1698,7 @@ switch ($action) {
         respond([
             'success'  => true,
             'message'  => '连接成功',
-            'reply'    => clipText($text, 60),
+            'reply'    => clipText(aiStripThink($text), 60),
             'model'    => $cfg['model'],
             'ms'       => $ms,
             'tokens'   => $tokens,

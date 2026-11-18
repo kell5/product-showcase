@@ -969,6 +969,23 @@
   color: var(--admin-text-muted);
 }
 
+/* 行内小按钮：用在字段提示里做「一键填入」 */
+.admin-link-btn {
+  padding: 0;
+  margin-left: 4px;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--admin-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.admin-link-btn:hover {
+  opacity: 0.8;
+}
+
 .admin-switch {
   display: flex;
   align-items: center;

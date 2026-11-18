@@ -750,21 +750,35 @@
 
       document.getElementById('aiEnabled').checked = !!d.enabled;
       document.getElementById('aiModel').value = d.model || '';
+      document.getElementById('aiBaseUrl').value = d.baseUrl || '';
       document.getElementById('aiPerIp').value = d.perIp;
       document.getElementById('aiPerTotal').value = d.perTotal;
 
       const keyEl = document.getElementById('aiApiKey');
       keyEl.value = '';
-      keyEl.placeholder = d.hasKey ? '已配置（' + d.keyMask + '），留空不修改' : '粘贴智谱 API Key';
+      keyEl.placeholder = d.hasKey ? '已配置（' + d.keyMask + '），留空不修改' : '粘贴 API Key';
 
       const hint = document.getElementById('aiKeyHint');
       if (d.hasKey) {
         hint.textContent = '当前 Key：' + d.keyMask + '（只显示首尾各 4 位）';
       } else if (d.keyFromEnv) {
         hint.textContent = '当前使用服务器环境变量里的 Key';
+      } else if (String(d.baseUrl || '').indexOf('http://') === 0) {
+        hint.textContent = '走本机自建服务时可以留空';
       } else {
         hint.textContent = '尚未配置 Key，助手不会工作';
       }
+
+      // 备用通道
+      document.getElementById('aiFbEnabled').checked = !!d.fallbackEnabled;
+      document.getElementById('aiFbUrl').value = d.fallbackUrl || '';
+      document.getElementById('aiFbModel').value = d.fallbackModel || '';
+      const fbKeyEl = document.getElementById('aiFbKey');
+      fbKeyEl.value = '';
+      fbKeyEl.placeholder = d.fallbackHasKey ? '已配置（' + d.fallbackKeyMask + '），留空不修改' : '留空表示不校验';
+      document.getElementById('aiFbKeyHint').textContent = d.fallbackHasKey
+        ? '当前 Key：' + d.fallbackKeyMask
+        : '未设置，服务端开启 --api-key 时再填';
 
       const list = document.getElementById('aiModelList');
       list.innerHTML = (d.models || [])
@@ -781,10 +795,16 @@
     e.preventDefault();
     const payload = {
       apiKey: document.getElementById('aiApiKey').value.trim(),
+      baseUrl: document.getElementById('aiBaseUrl').value.trim(),
       model: document.getElementById('aiModel').value.trim(),
       perIp: Number(document.getElementById('aiPerIp').value) || 30,
       perTotal: Number(document.getElementById('aiPerTotal').value) || 800,
       enabled: document.getElementById('aiEnabled').checked,
+      // 主表单保存时带上备用通道的现有值，避免被覆盖
+      fallbackEnabled: document.getElementById('aiFbEnabled').checked,
+      fallbackUrl: document.getElementById('aiFbUrl').value.trim(),
+      fallbackModel: document.getElementById('aiFbModel').value.trim(),
+      fallbackKey: document.getElementById('aiFbKey').value.trim(),
     };
     if (payload.enabled && !payload.apiKey) {
       // 后端会自动沿用已保存的 Key，这里不拦，只提示一下
@@ -817,6 +837,7 @@
     try {
       const res = await apiCall('ai_test', {
         apiKey: document.getElementById('aiApiKey').value.trim(),
+        baseUrl: document.getElementById('aiBaseUrl').value.trim(),
         model: document.getElementById('aiModel').value.trim(),
       });
       if (res.ok && res.data.success) {
@@ -830,6 +851,80 @@
     btn.disabled = false;
     btn.textContent = label;
   });
+
+  // 一键填入本地自建模型的默认参数
+  const localPresetBtn = document.getElementById('aiLocalPreset');
+  if (localPresetBtn) {
+    localPresetBtn.addEventListener('click', () => {
+      document.getElementById('aiBaseUrl').value = 'http://127.0.0.1:8080/v1';
+      document.getElementById('aiModel').value = 'qwen3-1.7b';
+      document.getElementById('aiApiKey').value = '';
+      document.getElementById('aiKeyHint').textContent =
+        '走本机自建服务，Key 可留空（服务端开了 --api-key 才需要填）';
+      showToast('已填入本地模型默认值，改完记得保存');
+    });
+  }
+
+  // 保存备用通道
+  const fbForm = document.getElementById('aiFbForm');
+  if (fbForm) {
+    fbForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        enabled: document.getElementById('aiEnabled').checked,
+        model: document.getElementById('aiModel').value.trim(),
+        baseUrl: document.getElementById('aiBaseUrl').value.trim(),
+        apiKey: document.getElementById('aiApiKey').value.trim(),
+        perIp: Number(document.getElementById('aiPerIp').value) || 30,
+        perTotal: Number(document.getElementById('aiPerTotal').value) || 800,
+        fallbackEnabled: document.getElementById('aiFbEnabled').checked,
+        fallbackUrl: document.getElementById('aiFbUrl').value.trim(),
+        fallbackModel: document.getElementById('aiFbModel').value.trim(),
+        fallbackKey: document.getElementById('aiFbKey').value.trim(),
+      };
+      try {
+        const res = await apiCall('set_ai_config', payload);
+        if (res.ok && res.data.success) {
+          showToast('备用通道已保存');
+          document.getElementById('aiFbKey').value = '';
+          document.getElementById('aiApiKey').value = '';
+          aiLoaded = false;
+          loadAiConfig(true);
+        } else {
+          showToast(res.data.message || '保存失败', 'error');
+        }
+      } catch {
+        showToast('保存失败', 'error');
+      }
+    });
+  }
+
+  // 测试备用通道
+  const fbTestBtn = document.getElementById('aiFbTestBtn');
+  if (fbTestBtn) {
+    fbTestBtn.addEventListener('click', async () => {
+      const label = fbTestBtn.textContent;
+      fbTestBtn.disabled = true;
+      fbTestBtn.textContent = '测试中…';
+      try {
+        const res = await apiCall('ai_test', {
+          useFallback: true,
+          fallbackUrl: document.getElementById('aiFbUrl').value.trim(),
+          fallbackModel: document.getElementById('aiFbModel').value.trim(),
+          fallbackKey: document.getElementById('aiFbKey').value.trim(),
+        });
+        if (res.ok && res.data.success) {
+          showToast('备用通道连通 · ' + res.data.model + ' · ' + res.data.ms + 'ms');
+        } else {
+          showToast((res.data && res.data.message) || '备用通道连不上', 'error');
+        }
+      } catch {
+        showToast('备用通道连不上', 'error');
+      }
+      fbTestBtn.disabled = false;
+      fbTestBtn.textContent = label;
+    });
+  }
 
   // 进入设置页时加载 Hero 图片
   const origSwitchTab = switchTab;

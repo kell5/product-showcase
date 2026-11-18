@@ -235,11 +235,20 @@
         <div class="admin-settings-card">
           <h3>模型接入</h3>
           <p class="admin-settings-desc">
-            在 <a href="https://open.bigmodel.cn/usercenter/apikeys" target="_blank" rel="noopener noreferrer">智谱开放平台</a>
-            创建 API Key（形如 <code>xxxxxxxx.yyyyyyyy</code>）。免费档选 <code>glm-4.7-flash</code> 就够用。
+            默认用<a href="https://open.bigmodel.cn/usercenter/apikeys" target="_blank" rel="noopener noreferrer">智谱开放平台</a>
+            的 <code>glm-4.7-flash</code>（免费，速度快）。如果换成服务器上自建的模型，把地址改成
+            <code>http://127.0.0.1:8080/v1</code> 就行 —— 只要是 OpenAI 兼容接口都能接。
             Key 只写进服务器的 <code>data/ai-config.php</code>，浏览器端拿不到完整值。
           </p>
           <form id="aiForm" class="admin-form">
+            <div class="admin-input-group">
+              <label for="aiBaseUrl">接口地址（Base URL）</label>
+              <input type="text" id="aiBaseUrl" placeholder="https://open.bigmodel.cn/api/paas/v4" autocomplete="off" spellcheck="false" />
+              <p class="admin-field-hint">
+                云端用 https；自建模型只允许 http://127.0.0.1:端口/v1 或内网地址。
+                <button type="button" class="admin-link-btn" id="aiLocalPreset">一键填入本地模型</button>
+              </p>
+            </div>
             <div class="admin-input-group">
               <label for="aiApiKey">API Key</label>
               <input type="password" id="aiApiKey" placeholder="粘贴 API Key" autocomplete="off" spellcheck="false" />
@@ -268,6 +277,37 @@
             <div class="admin-btn-row">
               <button type="submit" class="admin-btn admin-btn-primary">保存配置</button>
               <button type="button" class="admin-btn admin-btn-outline" id="aiTestBtn">测试连接</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="admin-settings-card">
+          <h3>备用通道（可选）</h3>
+          <p class="admin-settings-desc">
+            主通道超时、限流或报错时，自动改走这里。通常填服务器上自建的 llama.cpp 服务，
+            这样云端额度用完网站也不会哑掉。
+          </p>
+          <form id="aiFbForm" class="admin-form">
+            <label class="admin-switch">
+              <input type="checkbox" id="aiFbEnabled" />
+              <span>启用备用通道</span>
+            </label>
+            <div class="admin-input-group">
+              <label for="aiFbUrl">备用地址</label>
+              <input type="text" id="aiFbUrl" placeholder="http://127.0.0.1:8080/v1" autocomplete="off" spellcheck="false" />
+            </div>
+            <div class="admin-input-group">
+              <label for="aiFbModel">备用模型</label>
+              <input type="text" id="aiFbModel" list="aiModelList" placeholder="qwen3-1.7b" autocomplete="off" spellcheck="false" />
+            </div>
+            <div class="admin-input-group">
+              <label for="aiFbKey">备用 Key（服务端没设可留空）</label>
+              <input type="password" id="aiFbKey" placeholder="留空表示不校验" autocomplete="off" spellcheck="false" />
+              <p class="admin-field-hint" id="aiFbKeyHint">未设置</p>
+            </div>
+            <div class="admin-btn-row">
+              <button type="submit" class="admin-btn admin-btn-primary">保存备用通道</button>
+              <button type="button" class="admin-btn admin-btn-outline" id="aiFbTestBtn">测试备用通道</button>
             </div>
           </form>
         </div>
