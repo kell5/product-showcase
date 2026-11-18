@@ -61,13 +61,17 @@ function readJson($file, $default = []) {
     return is_array($data) ? $data : $default;
 }
 
-/** 加锁写入，避免并发请求互相覆盖 */
+/** 加锁写入，避免并发请求互相覆盖。写不进去只返回 false，不抛 warning。 */
 function writeJson($file, $data) {
     $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     if ($json === false) return false;
     $tmp = $file . '.tmp' . bin2hex(random_bytes(4));
-    if (file_put_contents($tmp, $json, LOCK_EX) === false) return false;
-    return rename($tmp, $file);
+    if (@file_put_contents($tmp, $json, LOCK_EX) === false) return false;
+    if (!@rename($tmp, $file)) {
+        @unlink($tmp);
+        return false;
+    }
+    return true;
 }
 
 /**
@@ -87,8 +91,12 @@ function readSecret($file, $default = null) {
 function writeSecret($file, $value) {
     $code = "<?php\n// 本文件由 api.php 生成，请勿手动编辑，也不要放进 Git\nreturn " . var_export($value, true) . ";\n";
     $tmp = $file . '.tmp' . bin2hex(random_bytes(4));
-    if (file_put_contents($tmp, $code, LOCK_EX) === false) return false;
-    if (!rename($tmp, $file)) return false;
+    if (@file_put_contents($tmp, $code, LOCK_EX) === false) return false;
+    if (!@rename($tmp, $file)) {
+        @unlink($tmp);
+        return false;
+    }
+    @chmod($file, 0644);
     if (function_exists('opcache_invalidate')) {
         @opcache_invalidate($file, true);
     }
@@ -125,7 +133,15 @@ function textLength($s) {
 // ─────────── 密码 ───────────
 function getStoredPassword() {
     $hash = readSecret(PASSWORD_FILE);
-    return (is_string($hash) && trim($hash) !== '') ? trim($hash) : null;
+    if (is_string($hash) && trim($hash) !== '') return trim($hash);
+
+    // 兜底：迁移还没成功（例如 data/ 目录不可写）时继续读旧文件，
+    // 保证后台至少还能登录，不会因为迁移失败而整体不可用。
+    if (file_exists(LEGACY_PASSWORD_FILE)) {
+        $legacy = trim((string) @file_get_contents(LEGACY_PASSWORD_FILE));
+        if ($legacy !== '') return $legacy;
+    }
+    return null;
 }
 
 /**
@@ -292,30 +308,35 @@ function safeUnlinkUpload($relative) {
  * 迁移完成后这段逻辑没有任何副作用。
  */
 function migrateLegacySecrets() {
-    // 密码哈希：data/password.hash -> data/password.php
-    if (!file_exists(PASSWORD_FILE) && file_exists(LEGACY_PASSWORD_FILE)) {
-        $legacy = trim((string) file_get_contents(LEGACY_PASSWORD_FILE));
-        if ($legacy !== '') {
-            writeSecret(PASSWORD_FILE, $legacy);
-        }
-    }
-    if (file_exists(PASSWORD_FILE) && file_exists(LEGACY_PASSWORD_FILE)) {
-        @unlink(LEGACY_PASSWORD_FILE);
-    }
-
-    // token 与登录计数：data/*.json -> data/*.php
-    foreach (['tokens', 'login-attempts'] as $name) {
-        $old = DATA_DIR . '/' . $name . '.json';
-        $new = DATA_DIR . '/' . $name . '.php';
-        if (!file_exists($new) && file_exists($old)) {
-            $data = readJson($old, []);
-            if (is_array($data) && $data) {
-                writeSecret($new, $data);
+    try {
+        // 密码哈希：data/password.hash -> data/password.php
+        if (!file_exists(PASSWORD_FILE) && file_exists(LEGACY_PASSWORD_FILE)) {
+            $legacy = trim((string) @file_get_contents(LEGACY_PASSWORD_FILE));
+            if ($legacy !== '') {
+                writeSecret(PASSWORD_FILE, $legacy);
             }
         }
-        if (file_exists($old)) {
-            @unlink($old);
+        // 只有新文件确实写成功，才删除可被下载的旧文件
+        if (file_exists(PASSWORD_FILE) && file_exists(LEGACY_PASSWORD_FILE)) {
+            @unlink(LEGACY_PASSWORD_FILE);
         }
+
+        // token 与登录计数：data/*.json -> data/*.php
+        foreach (['tokens', 'login-attempts'] as $name) {
+            $old = DATA_DIR . '/' . $name . '.json';
+            $new = DATA_DIR . '/' . $name . '.php';
+            if (!file_exists($new) && file_exists($old)) {
+                $data = readJson($old, []);
+                if (is_array($data) && $data) {
+                    writeSecret($new, $data);
+                }
+            }
+            if (file_exists($new) && file_exists($old)) {
+                @unlink($old);
+            }
+        }
+    } catch (Throwable $e) {
+        // 迁移是尽力而为，失败绝不能影响接口本身
     }
 }
 

@@ -49,11 +49,17 @@ jobs:
             chmod -R 755 .
             find . -maxdepth 1 -name '*.html' -exec chmod 644 {} \;
             find . -maxdepth 1 -name '*.php' -exec chmod 644 {} \;
-            # data/ 里的运行时文件由 PHP-FPM 用户写入，属主通常不是 root。
-            # 这里不能收紧到 640，否则 PHP 读不到 products.json 会导致接口返回空。
-            # 对外开放的拦截交给 nginx（见 deploy/nginx-security.conf）。
+            # rsync 以 root 身份建目录，data/ 会变成 root 属主，
+            # PHP-FPM 用户（宝塔默认 www）就写不进新文件了 —— 接口会报
+            # "Failed to open stream"。这里把 data/ 交给 web 用户。
             if [ -d data ]; then
-              find data -name '*.json' -exec chmod 644 {} \;
-              find data -name '*.hash' -exec chmod 644 {} \;
+              chown -R www:www data 2>/dev/null || true
+              chmod 775 data
+              find data -maxdepth 1 -type f -exec chmod 664 {} \; 2>/dev/null || true
+            fi
+            # 上传目录同理，否则后台传图会失败
+            if [ -d uploads ]; then
+              chown -R www:www uploads 2>/dev/null || true
+              chmod -R 775 uploads
             fi
             echo "✅ 部署完成！"
