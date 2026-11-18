@@ -15,6 +15,28 @@
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
+  /* ─────────── 0. 安全工具 ───────────
+   * 后台录入的内容在拼接 innerHTML 前必须转义，
+   * 否则产品名里写入 <img onerror=...> 就能在访客浏览器执行脚本。 */
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // 只放行站内相对路径的图片地址，挡掉 javascript: / data: 等协议
+  function safeImgUrl(value) {
+    const url = String(value == null ? '' : value).trim();
+    if (!url) return '';
+    if (/^(https?:)?\/\//i.test(url) || /^[a-z0-9_\-\/\.]+\.(jpe?g|png|gif|webp|svg)$/i.test(url)) {
+      return esc(url);
+    }
+    return '';
+  }
+
   /* ─────────── 1. 滚动显现动画 ─────────── */
   const revealElements = document.querySelectorAll(
     '.reveal, .reveal-left, .reveal-right, .reveal-scale'
@@ -237,25 +259,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const featuredProducts = products.filter(p => p.level === 'featured');
     const productsGrid = document.querySelector('.products-grid');
     if (productsGrid && featuredProducts.length) {
-      featuredProducts.forEach((p, i) => {
-        const detailUrl = 'product-detail.html?id=' + p.id;
+      // 静态 HTML 里已经存在的同名卡片不再重复渲染
+      const staticTitles = new Set();
+      productsGrid.querySelectorAll('.product-card-title').forEach(el => staticTitles.add(el.textContent.trim()));
+
+      featuredProducts.filter(p => !staticTitles.has(String(p.name || '').trim())).forEach((p, i) => {
+        const detailUrl = 'product-detail.html?id=' + encodeURIComponent(p.id || '');
         const card = document.createElement('a');
         card.href = detailUrl;
         card.className = 'product-card reveal reveal-delay-' + (i % 3 + 1);
+        const img = (p.images && p.images.length > 0) ? safeImgUrl(p.images[0]) : '';
+        const desc = p.subtitle || (p.description ? String(p.description).substring(0, 80) : '');
         card.innerHTML = `
           <div class="product-card-image">
-            ${p.images && p.images.length > 0
-              ? `<img src="${p.images[0]}" alt="${p.name}" />`
-              : `<div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>${p.name}</span></div>`
+            ${img
+              ? `<img src="${img}" alt="${esc(p.name)}" />`
+              : `<div class="placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>${esc(p.name)}</span></div>`
             }
             <div class="product-card-overlay"></div>
-            <span class="product-card-badge">${p.category || ''}</span>
+            <span class="product-card-badge">${esc(p.category || '')}</span>
           </div>
           <div class="product-card-body">
-            <h3 class="product-card-title">${p.name}</h3>
-            <p class="product-card-desc">${p.subtitle || (p.description ? p.description.substring(0, 80) : '')}</p>
+            <h3 class="product-card-title">${esc(p.name)}</h3>
+            <p class="product-card-desc">${esc(desc)}</p>
             <div class="product-card-tags">
-              ${(p.tags || []).slice(0, 4).map(t => `<span class="product-card-tag">${t}</span>`).join('')}
+              ${(Array.isArray(p.tags) ? p.tags : []).slice(0, 4).map(t => `<span class="product-card-tag">${esc(t)}</span>`).join('')}
             </div>
           </div>
           <div class="product-card-arrow">
@@ -275,14 +303,15 @@ document.addEventListener('DOMContentLoaded', () => {
       products.filter(p => !existingNames.has(p.name) && p.level !== 'featured').forEach(p => {
         const miniCard = document.createElement('div');
         miniCard.className = 'mini-card reveal';
+        const miniImg = (p.images && p.images.length > 0) ? safeImgUrl(p.images[0]) : '';
         miniCard.innerHTML = `
           <div class="mini-card-icon">
-            ${p.images && p.images.length > 0
-              ? `<img src="${p.images[0]}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" />`
+            ${miniImg
+              ? `<img src="${miniImg}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;" />`
               : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>`
             }
           </div>
-          <div class="mini-card-title">${p.name}</div>
+          <div class="mini-card-title">${esc(p.name)}</div>
         `;
         scrollGrid.appendChild(miniCard);
         revealObserver.observe(miniCard);

@@ -47,8 +47,10 @@
   --r-xl: 32px;
 
   /* 字体 */
-  --font-sans: "Inter", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  /* 字体栈：不依赖 Google Fonts（国内访问会超时阻塞渲染）。
+     本机装了 Inter 就用，否则回落到各系统的默认黑体。 */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, "Courier New", monospace;
 
   /* 过渡 */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -545,7 +547,8 @@ ul, ol { list-style: none; }
 /* ──────────────────────── 5. 产品卡片 & 网格 ──────────────────────── */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* 自适应列数：3 个产品显示 3 列，4 个显示 4 列，后台新增也不会留空位 */
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   gap: var(--sp-lg);
   margin-top: var(--sp-xl);
 }
@@ -2741,7 +2744,7 @@ ul, ol { list-style: none; }
 }
 
 .doorbell-page {
-  font-family: Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
 }
 
 .doorbell-page .yinghuo-title {

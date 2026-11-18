@@ -15,12 +15,9 @@
   <meta property="og:url" content="https://www.lk-mcu.online/" />
 
   <!-- Google Fonts: Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
   <!-- 主样式表 -->
-  <link rel="stylesheet" href="css/styles.css?v=20260820-1" />
+  <link rel="stylesheet" href="css/styles.css?v=20261118-1" />
 </head>
 <body>
 
@@ -182,7 +179,7 @@
     <div class="container">
       <div class="reveal">
         <span class="section-label">Core Products</span>
-        <h2 class="section-title">三大<span class="gradient-text">核心产品</span></h2>
+        <h2 class="section-title">核心<span class="gradient-text">产品</span></h2>
         <p class="section-desc">从交互到控制，从感知到执行，覆盖嵌入式智能硬件的完整技术链路。</p>
       </div>
 
@@ -205,6 +202,77 @@
               <span class="product-card-tag">Flutter</span>
               <span class="product-card-tag">MQTT</span>
               <span class="product-card-tag">OTA</span>
+            </div>
+          </div>
+          <div class="product-card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </div>
+        </a>
+
+        <a href="product-gesture-arm.html" class="product-card reveal reveal-delay-2">
+          <div class="product-card-image">
+            <div class="placeholder">
+              <img src="images/gesture-arm-main.jpg" alt="体感操控机械臂" />
+              <span>MPU6050 + NRF24L01 手势操控</span>
+            </div>
+            <div class="product-card-overlay"></div>
+            <span class="product-card-badge">STM32 / 无线</span>
+          </div>
+          <div class="product-card-body">
+            <h3 class="product-card-title">体感操控机械臂</h3>
+            <p class="product-card-desc">戴上体感手套挥动手臂，六轴姿态数据经 2.4G 无线传输，驱动多路舵机完成抬升、旋转与夹取。</p>
+            <div class="product-card-tags">
+              <span class="product-card-tag">STM32</span>
+              <span class="product-card-tag">MPU6050</span>
+              <span class="product-card-tag">NRF24L01</span>
+              <span class="product-card-tag">SG90</span>
+            </div>
+          </div>
+          <div class="product-card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </div>
+        </a>
+
+        <a href="product-sound-core.html" class="product-card reveal reveal-delay-3">
+          <div class="product-card-image">
+            <div class="placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              <span>嵌入式音频终端</span>
+            </div>
+            <div class="product-card-overlay"></div>
+            <span class="product-card-badge">音频 / 显示</span>
+          </div>
+          <div class="product-card-body">
+            <h3 class="product-card-title">嵌入式音频终端</h3>
+            <p class="product-card-desc">自研音频播放与控制终端，整合解码、LCD 显示与人机交互，用于教学演示与设备状态播报。</p>
+            <div class="product-card-tags">
+              <span class="product-card-tag">STM32</span>
+              <span class="product-card-tag">音频解码</span>
+              <span class="product-card-tag">LCD</span>
+            </div>
+          </div>
+          <div class="product-card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+          </div>
+        </a>
+
+        <a href="product-vision-tracker.html" class="product-card reveal reveal-delay-1">
+          <div class="product-card-image">
+            <div class="placeholder">
+              <img src="images/vision-tracker-main.jpg" alt="智能视觉追踪臂" />
+              <span>K210 视觉识别 + 云台跟随</span>
+            </div>
+            <div class="product-card-overlay"></div>
+            <span class="product-card-badge">视觉 / 边缘 AI</span>
+          </div>
+          <div class="product-card-body">
+            <h3 class="product-card-title">智能视觉追踪臂</h3>
+            <p class="product-card-desc">K210 端侧识别目标并输出坐标，经串口驱动云台与机械臂实时跟随，实现颜色与目标追踪。</p>
+            <div class="product-card-tags">
+              <span class="product-card-tag">K210</span>
+              <span class="product-card-tag">OpenMV</span>
+              <span class="product-card-tag">云台</span>
+              <span class="product-card-tag">边缘 AI</span>
             </div>
           </div>
           <div class="product-card-arrow">
@@ -381,6 +449,6 @@
   </footer>
 
   <!-- 主脚本 -->
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=20261118-1"></script>
 </body>
 </html>
