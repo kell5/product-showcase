@@ -43,6 +43,7 @@ jobs:
             --exclude='nginx-config-snippet.conf' \
             --exclude='deploy/' \
             --exclude='docs/' \
+            --exclude='tools/' \
             --exclude='*.zip' \
             --exclude='.gitignore' \
             --exclude='.github/' \
