@@ -3,21 +3,21 @@
    ═══════════════════════════════════════════════════ */
 
 :root {
-  --admin-bg: #0a0a0f;
-  --admin-surface: #12121a;
-  --admin-surface-2: #1a1a26;
-  --admin-border: rgba(255,255,255,0.08);
-  --admin-text: #e4e4e7;
-  --admin-text-muted: #8b8b9e;
-  --admin-primary: #6366f1;
-  --admin-primary-hover: #818cf8;
-  --admin-danger: #ef4444;
-  --admin-danger-hover: #f87171;
-  --admin-warning: #f59e0b;
-  --admin-success: #10b981;
+  --admin-bg: #FAF8F2;
+  --admin-surface: #FFFFFF;
+  --admin-surface-2: #F6F3EB;
+  --admin-border: rgba(16, 28, 22, 0.10);
+  --admin-text: #14201A;
+  --admin-text-muted: #6B7A6E;
+  --admin-primary: #2F7447;
+  --admin-primary-hover: #245C38;
+  --admin-danger: #B42318;
+  --admin-danger-hover: #8F1B12;
+  --admin-warning: #A15C07;
+  --admin-success: #2F7447;
   --admin-radius: 12px;
   --admin-radius-sm: 8px;
-  --admin-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --admin-shadow: 0 6px 24px rgba(48, 62, 50, 0.09);
 }
 
 .admin-body {
@@ -35,7 +35,7 @@
   justify-content: center;
   min-height: 100vh;
   padding: 24px;
-  background: radial-gradient(ellipse at 50% 30%, rgba(99,102,241,0.08) 0%, transparent 60%);
+  background: radial-gradient(ellipse at 50% 26%, rgba(47,116,71,0.10) 0%, transparent 62%);
 }
 
 .admin-login-card {
@@ -56,7 +56,7 @@
 .admin-login-icon {
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, var(--admin-primary), #a78bfa);
+  background: #101C16;
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -64,10 +64,9 @@
   margin: 0 auto 16px;
 }
 
-.admin-login-icon svg {
-  width: 28px;
-  height: 28px;
-  stroke: white;
+.admin-login-icon img {
+  width: 26px;
+  height: 26px;
 }
 
 .admin-login-header h1 {
@@ -133,7 +132,7 @@
 .admin-input-group textarea:focus,
 .admin-input-group select:focus {
   border-color: var(--admin-primary);
-  box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+  box-shadow: 0 0 0 3px rgba(47,116,71,0.15);
 }
 
 .admin-input-group textarea {
@@ -209,7 +208,7 @@
 .admin-btn-icon:hover {
   border-color: var(--admin-primary);
   color: var(--admin-primary);
-  background: rgba(99,102,241,0.08);
+  background: rgba(47,116,71,0.08);
 }
 .admin-btn-icon--danger:hover {
   border-color: var(--admin-danger);
@@ -342,7 +341,7 @@
 .admin-stat-num {
   font-size: 2rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--admin-primary), #a78bfa);
+  background: linear-gradient(135deg, #348050, #245C38);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -372,7 +371,7 @@
   transition: border-color 0.2s;
 }
 .admin-product-item:hover {
-  border-color: rgba(99,102,241,0.3);
+  border-color: rgba(47,116,71,0.30);
 }
 
 .admin-product-thumb {
@@ -443,9 +442,9 @@
   border: 1px solid var(--admin-border);
 }
 .admin-badge--primary {
-  background: rgba(99,102,241,0.12);
+  background: rgba(47,116,71,0.12);
   color: var(--admin-primary-hover);
-  border-color: rgba(99,102,241,0.3);
+  border-color: rgba(47,116,71,0.30);
 }
 .admin-badge--tag {
   background: rgba(16,185,129,0.1);
@@ -521,7 +520,7 @@
 .admin-upload-area:hover,
 .admin-upload-area.dragover {
   border-color: var(--admin-primary);
-  background: rgba(99,102,241,0.04);
+  background: rgba(47,116,71,0.04);
 }
 .admin-upload-area svg {
   margin-bottom: 8px;
@@ -701,7 +700,7 @@
 .crop-modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.75);
+  background: rgba(16,28,22,0.42);
   backdrop-filter: blur(4px);
 }
 .crop-modal-content {
@@ -709,7 +708,7 @@
   background: var(--admin-surface);
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius);
-  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  box-shadow: 0 24px 64px rgba(48,62,50,0.22);
   width: 100%;
   max-width: 800px;
   max-height: 90vh;
@@ -789,13 +788,13 @@
   gap: 8px;
 }
 
-/* Cropper.js 深色主题覆盖 */
+/* Cropper.js 画布覆盖层 */
 .cropper-modal {
-  background: rgba(0,0,0,0.6);
+  background: rgba(16,28,22,0.38);
 }
 .cropper-view-box {
   outline: 2px solid var(--admin-primary);
-  outline-color: rgba(99,102,241,0.75);
+  outline-color: rgba(47,116,71,0.75);
 }
 .cropper-line {
   background-color: var(--admin-primary);
@@ -807,7 +806,7 @@
   opacity: 1;
 }
 .cropper-dashed {
-  border-color: rgba(255,255,255,0.3);
+  border-color: rgba(255,255,255,0.55);
 }
 
 /* Hero 图片管理 */
@@ -886,7 +885,7 @@
 }
 
 .admin-message-item:hover {
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: var(--admin-border);
 }
 
 .admin-message-head {
@@ -937,7 +936,7 @@
   padding: 12px 14px;
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--admin-surface-2);
 }
 
 .ai-status-item span {
@@ -1007,14 +1006,14 @@
 .admin-settings-desc code {
   padding: 1px 5px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(16, 28, 22, 0.06);
   font-family: var(--font-mono, monospace);
   font-size: 0.82em;
-  color: #a5b4fc;
+  color: var(--admin-primary);
 }
 
 .admin-settings-desc a {
-  color: #818cf8;
+  color: var(--admin-primary);
 }
 
 @media (max-width: 640px) {

@@ -3,9 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>产品详情 | Smart Hardware Lab</title>
-  <link rel="stylesheet" href="css/styles.css?v=20261118-6" />
-  <link rel="stylesheet" href="css/ai-assistant.css?v=20261118-6" />
+  <link rel="icon" href="images/brand/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="images/brand/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="images/brand/apple-touch-icon.png" />
+  <meta name="theme-color" content="#FAF8F2" />
+  <title>产品详情 | 智能硬件工作室</title>
+  <link rel="stylesheet" href="css/styles.css?v=20261124-1" />
+  <link rel="stylesheet" href="css/ai-assistant.css?v=20261124-1" />
 </head>
 <body>
 
@@ -17,12 +21,12 @@
     <div class="container">
       <a href="index.html" class="nav-brand">
         <span class="nav-brand-icon"></span>
-        Smart Hardware Lab
+        智能硬件工作室
       </a>
       <div class="nav-links">
         <a href="index.html">首页</a>
-        <a href="index.html#products">核心产品</a>
-        <a href="index.html#all-projects">全部项目</a>
+        <a href="index.html#work">核心产品</a>
+        <a href="index.html#work">全部项目</a>
         <a href="index.html#contact" class="nav-contact-btn">联系我</a>
       </div>
       <button class="nav-toggle" aria-label="菜单">
@@ -42,7 +46,7 @@
       <div class="page-hero-breadcrumb">
         <a href="index.html">首页</a>
         <span class="sep">/</span>
-        <a href="index.html#all-projects">全部项目</a>
+        <a href="index.html#work">全部项目</a>
         <span class="sep">/</span>
         <span id="breadcrumbName">加载中...</span>
       </div>
@@ -77,8 +81,8 @@
     <div class="container reveal">
       <h2 class="section-title">查看<span class="gradient-text">更多产品</span></h2>
       <p class="section-desc">探索更多嵌入式智能硬件项目。</p>
-      <a href="index.html#products" class="btn btn-primary">核心产品</a>
-      <a href="index.html#all-projects" class="btn btn-outline">全部项目</a>
+      <a href="index.html#work" class="btn btn-primary">核心产品</a>
+      <a href="index.html#work" class="btn btn-outline">全部项目</a>
     </div>
   </section>
 
@@ -89,15 +93,15 @@
         <div>
           <div class="footer-brand">
             <span class="nav-brand-icon"></span>
-            Smart Hardware Lab
+            智能硬件工作室
           </div>
           <p class="footer-desc">嵌入式项目与毕设选题整理。</p>
         </div>
         <div class="footer-links-group">
           <h4>快速导航</h4>
           <a href="index.html">首页</a>
-          <a href="index.html#products">核心产品</a>
-          <a href="index.html#all-projects">全部项目</a>
+          <a href="index.html#work">核心产品</a>
+          <a href="index.html#work">全部项目</a>
         </div>
         <div class="footer-links-group">
           <h4>联系方式</h4>
@@ -113,7 +117,7 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=20261118-6"></script>
+  <script src="js/main.js?v=20261124-1"></script>
   <script>
     (function() {
       const params = new URLSearchParams(window.location.search);
@@ -133,7 +137,7 @@
             return;
           }
 
-          document.title = p.name + ' | Smart Hardware Lab';
+          document.title = p.name + ' | 智能硬件工作室';
           document.getElementById('breadcrumbName').textContent = p.name;
           document.getElementById('detailName').textContent = p.name;
           document.getElementById('detailCategory').textContent = p.category || '';
@@ -201,6 +205,6 @@
         });
     })();
   </script>
-  <script src="js/ai-assistant.js?v=20261118-6" defer></script>
+  <script src="js/ai-assistant.js?v=20261124-1" defer></script>
 </body>
 </html>

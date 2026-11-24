@@ -24,8 +24,8 @@
   place-items: center;
   border-radius: var(--r-md);
   color: var(--c-primary);
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px solid rgba(56, 189, 248, 0.22);
+  background: rgba(47, 116, 71, 0.1);
+  border: 1px solid rgba(47, 116, 71, 0.22);
 }
 
 .gb-icon svg {
@@ -83,7 +83,7 @@
   font-family: inherit;
   font-size: 0.95rem;
   color: var(--c-text);
-  background: rgba(6, 9, 18, 0.6);
+  background: #FFFDF8;
   border: 1px solid var(--c-border);
   border-radius: var(--r-sm);
   outline: none;
@@ -93,13 +93,13 @@
 
 .gb-field input::placeholder,
 .gb-field textarea::placeholder {
-  color: rgba(148, 163, 184, 0.55);
+  color: rgba(16, 28, 22, 0.42);
 }
 
 .gb-field input:focus,
 .gb-field textarea:focus {
-  border-color: rgba(56, 189, 248, 0.55);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+  border-color: rgba(47, 116, 71, 0.55);
+  box-shadow: 0 0 0 3px rgba(47, 116, 71, 0.12);
 }
 
 .gb-actions {
@@ -117,7 +117,7 @@
 }
 
 .gb-hint.is-error {
-  color: #fca5a5;
+  color: #B42318;
 }
 
 .gb-hint.is-loading {
@@ -157,7 +157,7 @@
 
 .gb-item:hover {
   background: var(--c-bg-card-hover);
-  border-color: rgba(148, 163, 184, 0.2);
+  border-color: rgba(16, 28, 22, 0.16);
 }
 
 .gb-avatar {

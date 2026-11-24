@@ -12,28 +12,28 @@
   align-items: center;
   gap: 8px;
   padding: 12px 18px 12px 14px;
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  border: 1px solid rgba(47, 116, 71, 0.28);
   border-radius: 999px;
-  background: linear-gradient(135deg, #0b1220 0%, #101c33 100%);
-  color: #e2e8f0;
+  background: linear-gradient(135deg, #FFFFFF 0%, #FBF9F3 100%);
+  color: #14201A;
   font-family: inherit;
   font-size: 0.88rem;
   font-weight: 600;
   letter-spacing: 0.01em;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(2, 8, 20, 0.55), 0 0 0 1px rgba(56, 189, 248, 0.08) inset;
+  box-shadow: 0 12px 30px rgba(48, 62, 50, 0.14), 0 0 0 1px rgba(47, 116, 71, 0.04) inset;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, opacity 0.2s ease;
 }
 
 .aiw-launcher:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 40px rgba(2, 8, 20, 0.6), 0 0 24px rgba(56, 189, 248, 0.18);
+  box-shadow: 0 18px 40px rgba(48, 62, 50, 0.18), 0 0 20px rgba(47, 116, 71, 0.10);
 }
 
 .aiw-launcher svg {
   width: 18px;
   height: 18px;
-  color: #38bdf8;
+  color: #2F7447;
   flex: none;
 }
 
@@ -54,17 +54,17 @@
   width: 392px;
   max-width: calc(100vw - 32px);
   height: min(620px, calc(100vh - 128px));
-  background: #0a1120;
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: #FFFFFF;
+  border: 1px solid rgba(16, 28, 22, 0.10);
   border-radius: 22px;
-  box-shadow: 0 24px 60px rgba(2, 8, 20, 0.65);
+  box-shadow: 0 28px 70px rgba(48, 62, 50, 0.20);
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
   transform: translateY(14px) scale(0.98);
   transition: opacity 0.24s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  color: #e2e8f0;
+  color: #14201A;
 }
 
 .aiw-panel.is-open {
@@ -80,8 +80,8 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-  background: linear-gradient(180deg, rgba(56, 189, 248, 0.06), transparent);
+  border-bottom: 1px solid rgba(16, 28, 22, 0.08);
+  background: linear-gradient(180deg, rgba(47, 116, 71, 0.06), transparent);
   flex: none;
 }
 
@@ -103,8 +103,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #34d399;
-  box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.14);
+  background: #2F7447;
+  box-shadow: 0 0 0 4px rgba(47, 116, 71, 0.14);
   flex: none;
 }
 
@@ -112,7 +112,7 @@
   display: block;
   font-family: "JetBrains Mono", Consolas, monospace;
   font-size: 0.66rem;
-  color: #64748b;
+  color: #5F6E63;
   letter-spacing: 0.02em;
 }
 
@@ -124,16 +124,16 @@
   height: 30px;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  color: #94a3b8;
+  background: rgba(16, 28, 22, 0.04);
+  color: #5F6E63;
   cursor: pointer;
   flex: none;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
 .aiw-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #e2e8f0;
+  background: rgba(16, 28, 22, 0.07);
+  color: #14201A;
 }
 
 .aiw-close svg {
@@ -150,7 +150,7 @@
   flex-direction: column;
   gap: 12px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.25) transparent;
+  scrollbar-color: rgba(16, 28, 22, 0.18) transparent;
 }
 
 .aiw-body::-webkit-scrollbar {
@@ -158,7 +158,7 @@
 }
 
 .aiw-body::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.22);
+  background: rgba(16, 28, 22, 0.16);
   border-radius: 999px;
 }
 
@@ -181,23 +181,23 @@
 }
 
 .aiw-msg--bot .aiw-bubble {
-  background: rgba(255, 255, 255, 0.045);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: #F4F1E9;
+  border: 1px solid rgba(16, 28, 22, 0.08);
   border-bottom-left-radius: 6px;
-  color: #dbe4f0;
+  color: #14201A;
 }
 
 .aiw-msg--user .aiw-bubble {
-  background: linear-gradient(135deg, #38bdf8, #6366f1);
-  color: #04121f;
+  background: linear-gradient(135deg, #348050, #245C38);
+  color: #fff;
   font-weight: 500;
   border-bottom-right-radius: 6px;
 }
 
 .aiw-bubble--warn {
-  background: rgba(248, 113, 113, 0.1) !important;
-  border-color: rgba(248, 113, 113, 0.3) !important;
-  color: #fca5a5 !important;
+  background: rgba(180, 35, 24, 0.07) !important;
+  border-color: rgba(180, 35, 24, 0.24) !important;
+  color: #B42318 !important;
 }
 
 .aiw-bubble p {
@@ -218,7 +218,7 @@
 }
 
 .aiw-bubble strong {
-  color: #f1f5f9;
+  color: #14201A;
   font-weight: 600;
 }
 
@@ -228,8 +228,8 @@
   margin: 0 1px;
   padding: 0 3px;
   border-radius: 4px;
-  background: rgba(56, 189, 248, 0.16);
-  color: #7dd3fc;
+  background: rgba(47, 116, 71, 0.10);
+  color: #245C38;
   font-family: "JetBrains Mono", Consolas, monospace;
   font-size: 0.68rem;
   line-height: 1.4;
@@ -249,7 +249,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #38bdf8;
+  background: #2F7447;
   opacity: 0.35;
   animation: aiw-bounce 1.15s infinite;
 }
@@ -270,7 +270,7 @@
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #64748b;
+  color: #5F6E63;
 }
 
 .aiw-source {
@@ -278,17 +278,17 @@
   align-items: flex-start;
   gap: 8px;
   padding: 8px 10px;
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(16, 28, 22, 0.08);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.025);
+  background: #FFFDF8;
   text-decoration: none;
   color: inherit;
   transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 
 .aiw-source:hover {
-  border-color: rgba(56, 189, 248, 0.4);
-  background: rgba(56, 189, 248, 0.06);
+  border-color: rgba(47, 116, 71, 0.35);
+  background: rgba(47, 116, 71, 0.06);
   transform: translateX(2px);
 }
 
@@ -297,8 +297,8 @@
   min-width: 18px;
   padding: 1px 4px;
   border-radius: 4px;
-  background: rgba(56, 189, 248, 0.16);
-  color: #7dd3fc;
+  background: rgba(47, 116, 71, 0.10);
+  color: #245C38;
   font-family: "JetBrains Mono", Consolas, monospace;
   font-size: 0.66rem;
   text-align: center;
@@ -315,12 +315,12 @@
 .aiw-source-title {
   font-size: 0.79rem;
   line-height: 1.45;
-  color: #cbd5e1;
+  color: #3F4E44;
 }
 
 .aiw-source-meta {
   font-size: 0.68rem;
-  color: #64748b;
+  color: #5F6E63;
 }
 
 /* ─────────── 预设问题 ─────────── */
@@ -333,10 +333,10 @@
 
 .aiw-chip {
   padding: 7px 11px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  border: 1px solid rgba(16, 28, 22, 0.13);
   border-radius: 999px;
-  background: transparent;
-  color: #94a3b8;
+  background: #FBF9F3;
+  color: #4C5B51;
   font-family: inherit;
   font-size: 0.74rem;
   line-height: 1.4;
@@ -346,9 +346,9 @@
 }
 
 .aiw-chip:hover {
-  border-color: rgba(56, 189, 248, 0.45);
-  background: rgba(56, 189, 248, 0.07);
-  color: #bae6fd;
+  border-color: rgba(47, 116, 71, 0.40);
+  background: rgba(47, 116, 71, 0.07);
+  color: #245C38;
 }
 
 /* ─────────── 输入区 ─────────── */
@@ -357,7 +357,7 @@
   align-items: flex-end;
   gap: 8px;
   padding: 12px 14px 10px;
-  border-top: 1px solid rgba(148, 163, 184, 0.12);
+  border-top: 1px solid rgba(16, 28, 22, 0.08);
   flex: none;
 }
 
@@ -366,10 +366,10 @@
   min-height: 40px;
   max-height: 120px;
   padding: 10px 12px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid rgba(16, 28, 22, 0.12);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  color: #e2e8f0;
+  background: #FFFDF8;
+  color: #14201A;
   font-family: inherit;
   font-size: 0.85rem;
   line-height: 1.5;
@@ -379,12 +379,12 @@
 }
 
 .aiw-input::placeholder {
-  color: #5b6b82;
+  color: #7A887C;
 }
 
 .aiw-input:focus {
-  border-color: rgba(56, 189, 248, 0.5);
-  background: rgba(56, 189, 248, 0.04);
+  border-color: rgba(47, 116, 71, 0.45);
+  background: rgba(47, 116, 71, 0.04);
 }
 
 .aiw-send {
@@ -396,8 +396,8 @@
   flex: none;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #38bdf8, #6366f1);
-  color: #04121f;
+  background: linear-gradient(135deg, #348050, #245C38);
+  color: #fff;
   cursor: pointer;
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
@@ -423,12 +423,12 @@
   gap: 8px;
   padding: 0 16px 12px;
   font-size: 0.68rem;
-  color: #5b6b82;
+  color: #7A887C;
   flex: none;
 }
 
 .aiw-foot a {
-  color: #7dd3fc;
+  color: #245C38;
   text-decoration: none;
   white-space: nowrap;
 }

@@ -2,7 +2,7 @@
    毕设题目参考专栏样式（配合 css/styles.css 使用）
    ============================================================ */
 
-.nav-links a.active { color: #fff; }
+.nav-links a.active { color: var(--c-text); }
 .nav-links a.active::after { width: 100%; }
 
 .thesis-hero { min-height: 52vh; }
@@ -41,7 +41,7 @@
   transition: border-color 0.25s, background 0.25s;
 }
 .thesis-search:focus-within {
-  border-color: rgba(56, 189, 248, 0.55);
+  border-color: rgba(47, 116, 71, 0.55);
   background: var(--c-bg-card-hover);
 }
 .thesis-search svg { width: 18px; height: 18px; color: var(--c-text-muted); flex: none; }
@@ -55,7 +55,7 @@
   font-family: var(--font-sans);
   font-size: 15px;
 }
-.thesis-search input::placeholder { color: rgba(148, 163, 184, 0.75); }
+.thesis-search input::placeholder { color: rgba(16, 28, 22, 0.42); }
 
 .thesis-toolbar-meta {
   display: flex;
@@ -75,7 +75,7 @@
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
 }
-.thesis-reset:hover { color: #fff; border-color: rgba(56, 189, 248, 0.5); }
+.thesis-reset:hover { color: var(--c-primary-dark); border-color: rgba(47, 116, 71, 0.5); }
 
 /* ──────────── 方向筛选 ──────────── */
 .thesis-filters {
@@ -100,19 +100,19 @@
 }
 .thesis-chip:hover { color: var(--c-text); transform: translateY(-1px); }
 .thesis-chip.active {
-  color: #041018;
-  background: linear-gradient(135deg, var(--c-primary), var(--c-accent));
+  color: #fff;
+  background: linear-gradient(135deg, #348050, var(--c-primary-dark));
   border-color: transparent;
   font-weight: 600;
 }
 .thesis-chip-num {
   padding: 1px 7px;
   border-radius: 999px;
-  background: rgba(148, 163, 184, 0.18);
+  background: rgba(16, 28, 22, 0.08);
   font-size: 11px;
   font-family: var(--font-mono);
 }
-.thesis-chip.active .thesis-chip-num { background: rgba(4, 16, 24, 0.18); }
+.thesis-chip.active .thesis-chip-num { background: rgba(255, 255, 255, 0.24); }
 
 /* ──────────── 题目卡片 ──────────── */
 .thesis-grid {
@@ -135,10 +135,10 @@
 }
 .thesis-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(56, 189, 248, 0.4);
+  border-color: rgba(47, 116, 71, 0.4);
   background: var(--c-bg-card-hover);
 }
-.thesis-card.copied { border-color: rgba(56, 189, 248, 0.75); }
+.thesis-card.copied { border-color: rgba(47, 116, 71, 0.75); }
 
 .thesis-card-top {
   display: flex;
@@ -155,7 +155,7 @@
 .thesis-card-no {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: rgba(148, 163, 184, 0.7);
+  color: rgba(16, 28, 22, 0.42);
 }
 
 .thesis-card-title {
@@ -184,14 +184,14 @@
   padding: 4px 10px;
   border-radius: 999px;
   border: 1px solid var(--c-border);
-  background: rgba(56, 189, 248, 0.07);
-  color: #cbd5e1;
+  background: rgba(47, 116, 71, 0.07);
+  color: #3F4E44;
   font-size: 11px;
 }
 
 .thesis-card-copy {
   font-size: 11px;
-  color: rgba(148, 163, 184, 0.55);
+  color: rgba(16, 28, 22, 0.4);
   opacity: 0;
   transition: opacity 0.25s;
 }
@@ -243,7 +243,7 @@
 .thesis-disclaimer {
   margin-top: var(--sp-lg);
   font-size: 12px;
-  color: rgba(148, 163, 184, 0.65);
+  color: rgba(16, 28, 22, 0.5);
 }
 
 /* ──────────── 响应式 ──────────── */
@@ -305,9 +305,9 @@
 }
 .thesis-cat-expand:hover,
 .thesis-cat-all:hover {
-  color: #fff;
-  border-color: rgba(56, 189, 248, 0.45);
-  background: rgba(56, 189, 248, 0.08);
+  color: var(--c-primary-dark);
+  border-color: rgba(47, 116, 71, 0.45);
+  background: rgba(47, 116, 71, 0.08);
 }
 
 .thesis-cat-grid {
@@ -347,7 +347,7 @@
 
 .thesis-howto-card:hover {
   background: var(--c-bg-card-hover);
-  border-color: rgba(56, 189, 248, 0.3);
+  border-color: rgba(47, 116, 71, 0.3);
   transform: translateY(-2px);
 }
 
@@ -378,12 +378,12 @@
 /* ─────────── 助手入口按钮 ─────────── */
 .thesis-ai-btn {
   color: var(--c-primary);
-  border-color: rgba(56, 189, 248, 0.35);
-  background: rgba(56, 189, 248, 0.06);
+  border-color: rgba(47, 116, 71, 0.35);
+  background: rgba(47, 116, 71, 0.06);
 }
 
 .thesis-ai-btn:hover {
   color: #fff;
-  background: rgba(56, 189, 248, 0.14);
-  border-color: rgba(56, 189, 248, 0.6);
+  background: var(--c-primary);
+  border-color: var(--c-primary);
 }
