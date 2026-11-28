@@ -2,6 +2,8 @@
 
 机器人 / 边缘 AI / AI 教程 / 创客开发团队官网：项目展示、选题库、留言板与后台管理。
 
+> 📌 **接续开发先读 [`docs/DEV-PROGRESS.md`](docs/DEV-PROGRESS.md)** —— 当前进度、设计系统、已踩的坑、待办清单都在里面。
+
 ## 在线入口
 
 - LightMesh 灯联网展示页：<https://www.lk-mcu.online/product-lightmesh.html>
