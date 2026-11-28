@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/favicon.ico?v=20261128-1" sizes="any" />
+  <link rel="icon" href="images/brand/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="images/brand/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="images/brand/apple-touch-icon.png" />
+  <meta name="theme-color" content="#FAF8F2" />
+  <title>智能电机控制板 · MotoDrive | 励磁实验室</title>
+  <meta name="description" content="基于 STM32G474 的双向电机控制板，支持正反转、编码器调速、固定输出、惯性减速与定时反转，配备中文 OLED 菜单与 500V/48V/5V 三路电压监测。" />
+  <link rel="canonical" href="https://www.lk-mcu.online/product-motor-ctrl.html" />
+  <link rel="stylesheet" href="css/styles.css?v=20261128-1" />
+  <link rel="stylesheet" href="css/ai-assistant.css?v=20261128-1" />
+</head>
+<body>
+
+  <div class="scroll-progress"></div>
+  <div class="cursor-glow"></div>
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-brand">
+        <span class="nav-brand-icon"></span>
+        励磁实验室
+      </a>
+      <div class="nav-links">
+        <a href="index.html">首页</a>
+        <a href="index.html#boards">在售板卡</a>
+        <a href="index.html#work">项目案例</a>
+        <a href="thesis-topics.html">毕设题目</a>
+        <a href="index.html#contact" class="nav-contact-btn">联系我们</a>
+      </div>
+      <button class="nav-toggle" aria-label="菜单">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <div class="hero-bg">
+      <div class="hero-glow hero-glow--1"></div>
+      <div class="hero-glow hero-glow--2"></div>
+      <div class="hero-grid-lines"></div>
+    </div>
+    <div class="container">
+      <div class="page-hero-breadcrumb">
+        <a href="index.html">首页</a>
+        <span class="sep">/</span>
+        <a href="index.html#boards">在售板卡</a>
+        <span class="sep">/</span>
+        <span>智能电机控制板</span>
+      </div>
+      <h1 class="page-hero-title">
+        <span class="gradient-text">MotoDrive</span><br/>智能电机控制板
+      </h1>
+      <p class="page-hero-subtitle">一块板覆盖五种运行模式：正反转、编码器调速、固定输出、惯性减速与定时反转。中文 OLED 菜单实时显示三路电压，双路自动泄放与急停保护在手，参数掉电不丢。</p>
+      <div class="page-hero-tags">
+        <span class="page-hero-tag">STM32G474</span>
+        <span class="page-hero-tag">双 H 桥</span>
+        <span class="page-hero-tag">编码器调速</span>
+        <span class="page-hero-tag">中文 OLED</span>
+        <span class="page-hero-tag">500V 监测</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="product-gallery">
+    <div class="container">
+      <div class="product-gallery-wrap reveal">
+        <figure class="product-shot">
+          <img src="images/products/motor-ctrl-1.jpg?v=20261128-1" alt="STM32G474 智能电机控制板实物，OLED 显示运行状态与 26.2V 设定值" />
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="product-features">
+    <div class="container">
+      <div class="reveal" style="text-align:center;">
+        <span class="section-label">Capabilities</span>
+        <h2 class="section-title">这块板<span class="gradient-text">能做什么</span></h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-block reveal">
+          <div class="feature-block-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 7 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H1a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 3 7a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 8 3h.1A1.7 1.7 0 0 0 9 1.1V1a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 15 3a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.7 1.7 0 0 0 21 8v.1a1.7 1.7 0 0 0 1.9.9H23a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+          </div>
+          <h3>五种运行模式</h3>
+          <p>正转、反转、固定输出、惯性减速、定时反转，旋钮一键切换，不用重新烧固件。</p>
+        </div>
+        <div class="feature-block reveal">
+          <div class="feature-block-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l3-8 4 16 3-8h6"/></svg>
+          </div>
+          <h3>编码器无级调速</h3>
+          <p>板载旋钮编码器调节转速，PWM 载频 1–5 kHz 可调，低速大扭矩场景也能压住噪声。</p>
+        </div>
+        <div class="feature-block reveal">
+          <div class="feature-block-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+          </div>
+          <h3>中文 OLED 菜单</h3>
+          <p>128×64 屏直接显示模式、状态与故障码，同时监测 500V 母线、48V 与 5V 三路电压。</p>
+        </div>
+        <div class="feature-block reveal">
+          <div class="feature-block-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/></svg>
+          </div>
+          <h3>三种 H 桥驱动兼容</h3>
+          <p>同一套固件适配双 PWM、双 IO 与 PWM + 方向三种驱动方式，换驱动板不用改代码。</p>
+        </div>
+        <div class="feature-block reveal">
+          <div class="feature-block-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <h3>双路自动泄放与急停</h3>
+          <p>母线电容断电后自动泄放，急停按钮直接切断输出，调试时不会带着高压上手。</p>
+        </div>
+        <div class="feature-block reveal">
+          <div class="feature-block-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
+          </div>
+          <h3>参数掉电保存</h3>
+          <p>设定值写入片内 Flash，断电重启后仍是上次的参数，现场恢复不用重新调。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="product-specs">
+    <div class="container">
+      <div class="reveal" style="text-align:center;">
+        <span class="section-label">Specs</span>
+        <h2 class="section-title">技术<span class="gradient-text">参数</span></h2>
+      </div>
+      <table class="product-specs-table reveal">
+        <tr><td>主控</td><td>STM32G474</td></tr>
+        <tr><td>驱动方式</td><td>双 PWM / 双 IO / PWM + 方向（三种兼容）</td></tr>
+        <tr><td>PWM 载频</td><td>1–5 kHz 可调</td></tr>
+        <tr><td>运行模式</td><td>正转 / 反转 / 固定输出 / 惯性减速 / 定时反转</td></tr>
+        <tr><td>电压监测</td><td>500V 母线 / 48V / 5V 三路</td></tr>
+        <tr><td>人机交互</td><td>旋钮编码器 + 中文 OLED 菜单 + 按键</td></tr>
+        <tr><td>保护</td><td>急停保护、双路自动泄放</td></tr>
+        <tr><td>参数保存</td><td>掉电保存（片内 Flash）</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section class="product-cta">
+    <div class="container reveal">
+      <h2 class="section-title">看<span class="gradient-text">另外两块</span></h2>
+      <p class="section-desc">需要改接口、换芯片或做整机，也可以直接聊。</p>
+      <a href="product-esp32-board.html" class="btn btn-primary">多协议联网开发板</a>
+      <a href="product-servo-ctrl.html" class="btn btn-outline">舵机定时控制板</a>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand">
+            <span class="nav-brand-icon"></span>
+            励磁实验室
+          </div>
+          <p class="footer-desc">电机控制、联网开发与低功耗定时三类控制板的自研与定制，原理图与固件随板交付。</p>
+        </div>
+        <div class="footer-links-group">
+          <h4>在售板卡</h4>
+          <a href="product-motor-ctrl.html">智能电机控制板</a>
+          <a href="product-esp32-board.html">多协议联网开发板</a>
+          <a href="product-servo-ctrl.html">舵机定时控制板</a>
+        </div>
+        <div class="footer-links-group">
+          <h4>快速导航</h4>
+          <a href="index.html">首页</a>
+          <a href="index.html#work">项目案例</a>
+          <a href="thesis-topics.html">毕设题目</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 励磁实验室. All rights reserved.</span>
+        <span>Designed with passion for embedded systems.</span>
+        <span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">豫ICP备2026025181号-1</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js?v=20261128-1"></script>
+  <script src="js/ai-assistant.js?v=20261128-1" defer></script>
+</body>
+</html>

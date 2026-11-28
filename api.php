@@ -916,6 +916,27 @@ function aiSearchTopics($query, $limit = 8) {
 function aiSiteProjects() {
     return [
         [
+            'title' => '智能电机控制板 MotoDrive',
+            'url'   => 'product-motor-ctrl.html',
+            'stack' => 'STM32G474 / 双 H 桥 / 编码器 / 中文 OLED',
+            'desc'  => '在售板卡。正反转、编码器调速、固定输出、惯性减速、定时反转五种模式，PWM 1–5 kHz 可调，'
+                     . '监测 500V / 48V / 5V 三路电压，兼容双 PWM、双 IO、PWM+方向三种 H 桥驱动，带急停保护、双路自动泄放与参数掉电保存。',
+        ],
+        [
+            'title' => '多协议联网开发板',
+            'url'   => 'product-esp32-board.html',
+            'stack' => 'ESP32 / Wi-Fi + BLE / TF 卡 / MQTT',
+            'desc'  => '在售板卡。Wi-Fi 与 BLE 双模，板载 TF 卡槽做本地存储，多路独立按键，IO 全引出，'
+                     . '支持 MQTT / HTTP / WebSocket 等协议，Type-C 单线完成供电、烧录与串口日志。',
+        ],
+        [
+            'title' => '舵机定时控制板 ServoTimer',
+            'url'   => 'product-servo-ctrl.html',
+            'stack' => 'CH32V003 / RTC / 锂电池管理 / 低功耗',
+            'desc'  => '在售板卡。按预设时间自动驱动舵机，板载 RTC 独立走时与锂电池充放电管理，'
+                     . '舵机电源独立通断，适合喂食器、定时开合、展示装置等长期值守场景，整板原理图随板提供。',
+        ],
+        [
             'title' => 'LightMesh 灯联网',
             'url'   => 'product-lightmesh.html',
             'stack' => 'ESP32-S3 / BLE Mesh / MQTT / Flutter / FastAPI / OTA',
@@ -996,12 +1017,12 @@ function aiGreetingReply($q) {
         '测试', 'test', '你是谁', '你能做什么', '你会什么', '怎么用',
     ];
     if (!in_array($t, $greets, true)) return null;
-    return "你好，我是智能硬件工作室的站内助手，只根据站里的项目页和 699 个选题回答。\n\n"
+    return "你好，我是励磁实验室的站内助手，只根据站里的项目页和 699 个选题回答。\n\n"
         . "可以问：机器人 / 边缘 AI 项目的实现思路、手上主控适合做什么方向，或者直接让我从选题库里挑几条。";
 }
 
 function aiSystemPrompt() {
-    return "你是一支硬件团队「智能硬件工作室」（lk-mcu.online）的站内助手。这支团队做机器人、边缘 AI 与智能硬件，"
+    return "你是一支硬件团队「励磁实验室」（lk-mcu.online）的站内助手。这支团队做机器人、边缘 AI 与智能硬件，"
         . "覆盖 STM32 / ESP32 / K210 全链路开发，并把项目整理成 AI 教程与创客开发实例。\n"
         . "你主要服务准备毕业设计、课程设计的本科生，也回答关于团队项目的技术问题。\n"
         . "你只能依据下面给出的站内信息回答，不要编造站外事实、价格、排名、就业数据或别人的项目。\n"
@@ -1016,9 +1037,11 @@ function aiSystemPrompt() {
 function aiBuildMessages($question, $topics, $projects, $history) {
     $ctx = "【站点概况】一支做机器人、边缘 AI 与智能硬件的工程团队，覆盖 STM32 / ESP32 / K210 全链路自研，"
         . "同时输出 AI 教程与创客开发实例；"
+        . "在售板卡三块：智能电机控制板（STM32G474）、多协议联网开发板（ESP32）、舵机定时控制板（CH32V003），原理图与固件齐全；"
         . "站内收录 699 个嵌入式/单片机/物联网毕业设计题目，分 16 个方向"
         . "（智慧农业、环境监测、医疗健康、智能家居、智慧交通、安防门禁、新能源电源、机器人、工业控制、智慧校园、宠物硬件、仪器仪表、娱乐文体、信息系统、AI 视觉等）；"
-        . "另有 5 个项目详情页和一个留言板。题目库页面：thesis-topics.html，支持按方向筛选与关键词搜索。\n";
+        . "另有 8 个项目详情页和一个留言板。题目库页面：thesis-topics.html，支持按方向筛选与关键词搜索；"
+        . "板卡汇总在首页 index.html#boards。\n";
 
     if ($projects) {
         $ctx .= "\n【项目】\n";
@@ -1805,7 +1828,7 @@ switch ($action) {
 
     default:
         respond([
-            'message' => 'Smart Hardware Lab API',
+            'message' => 'LICI LAB API',
             'actions' => ['list', 'login', 'logout', 'verify', 'add', 'update', 'delete', 'upload', 'get_hero', 'set_hero', 'list_messages', 'add_message', 'delete_message', 'ai_status', 'ai_chat', 'get_ai_config', 'set_ai_config', 'ai_test'],
         ]);
 }

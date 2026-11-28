@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.ico?v=20261128-1" sizes="any" />
   <link rel="icon" href="images/brand/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="images/brand/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="apple-touch-icon" href="images/brand/apple-touch-icon.png" />
   <meta name="theme-color" content="#FAF8F2" />
-  <title>项目详情 | 智能硬件工作室</title>
-  <link rel="stylesheet" href="css/styles.css?v=20261124-2" />
-  <link rel="stylesheet" href="css/ai-assistant.css?v=20261124-2" />
+  <title>项目详情 | 励磁实验室</title>
+  <link rel="stylesheet" href="css/styles.css?v=20261128-1" />
+  <link rel="stylesheet" href="css/ai-assistant.css?v=20261128-1" />
 </head>
 <body>
 
@@ -22,12 +22,13 @@
     <div class="container">
       <a href="index.html" class="nav-brand">
         <span class="nav-brand-icon"></span>
-        智能硬件工作室
+        励磁实验室
       </a>
       <div class="nav-links">
         <a href="index.html">首页</a>
-        <a href="index.html#work">代表项目</a>
-        <a href="index.html#work">全部项目</a>
+        <a href="index.html#boards">在售板卡</a>
+        <a href="index.html#work">项目案例</a>
+        <a href="thesis-topics.html">毕设题目</a>
         <a href="index.html#contact" class="nav-contact-btn">联系我们</a>
       </div>
       <button class="nav-toggle" aria-label="菜单">
@@ -94,7 +95,7 @@
         <div>
           <div class="footer-brand">
             <span class="nav-brand-icon"></span>
-            智能硬件工作室
+            励磁实验室
           </div>
           <p class="footer-desc">嵌入式项目与毕设选题整理。</p>
         </div>
@@ -111,14 +112,14 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>&copy; 2026 智能硬件工作室</span>
+        <span>&copy; 2026 励磁实验室</span>
         <span>用代码与电路构建智能硬件原型</span>
         <span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">豫ICP备2026025181号-1</a></span>
       </div>
     </div>
   </footer>
 
-  <script src="js/main.js?v=20261124-2"></script>
+  <script src="js/main.js?v=20261128-1"></script>
   <script>
     (function() {
       const params = new URLSearchParams(window.location.search);
@@ -138,7 +139,7 @@
             return;
           }
 
-          document.title = p.name + ' | 智能硬件工作室';
+          document.title = p.name + ' | 励磁实验室';
           document.getElementById('breadcrumbName').textContent = p.name;
           document.getElementById('detailName').textContent = p.name;
           document.getElementById('detailCategory').textContent = p.category || '';
@@ -206,6 +207,6 @@
         });
     })();
   </script>
-  <script src="js/ai-assistant.js?v=20261124-2" defer></script>
+  <script src="js/ai-assistant.js?v=20261128-1" defer></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.ico?v=20261128-1" sizes="any" />
   <link rel="icon" href="images/brand/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="images/brand/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="apple-touch-icon" href="images/brand/apple-touch-icon.png" />
@@ -14,12 +14,12 @@
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://www.lk-mcu.online/product-lightmesh.html" />
   <meta property="og:type" content="article" />
-  <meta property="og:site_name" content="智能硬件工作室" />
+  <meta property="og:site_name" content="励磁实验室" />
   <meta property="og:title" content="LightMesh 灯联网 | ESP32 BLE Mesh 灯控与 OTA 开源项目" />
   <meta property="og:description" content="一个从 ESP32 设备、BLE Mesh 网关、Flutter App 到云端 OTA 的完整设备联网闭环。" />
   <meta property="og:url" content="https://www.lk-mcu.online/product-lightmesh.html" />
-  <link rel="stylesheet" href="css/styles.css?v=20261124-2" />
-  <link rel="stylesheet" href="css/ai-assistant.css?v=20261124-2" />
+  <link rel="stylesheet" href="css/styles.css?v=20261128-1" />
+  <link rel="stylesheet" href="css/ai-assistant.css?v=20261128-1" />
 </head>
 <body class="yinghuo-page">
 
@@ -30,19 +30,14 @@
     <div class="container">
       <a href="index.html" class="nav-brand">
         <span class="nav-brand-icon"></span>
-        智能硬件工作室
+        励磁实验室
       </a>
       <div class="nav-links">
         <a href="index.html">首页</a>
-        <a href="#intro">项目介绍</a>
-        <a href="#architecture">系统架构</a>
-        <a href="product-lightmesh-doorbell.html">可视门铃</a>
-        <a href="#engineering">开发细节</a>
-        <a href="#debug-notes">调试记录</a>
-        <a href="#roadmap">后续更新</a>
-        <a href="#download">下载开源</a>
-        <a href="thesis-topics.html">毕设题目参考</a>
-        <a href="admin.html" class="nav-contact-btn">管理后台</a>
+        <a href="index.html#boards">在售板卡</a>
+        <a href="index.html#work">项目案例</a>
+        <a href="thesis-topics.html">毕设题目</a>
+        <a href="index.html#contact" class="nav-contact-btn">联系我们</a>
       </div>
       <button class="nav-toggle" aria-label="菜单">
         <span></span><span></span><span></span>
@@ -99,22 +94,22 @@
               <div class="phone-title">我的设备</div>
               <div class="device-grid">
                 <div class="device-tile offline">
-                  <img src="images/yinghuo-doorbell.webp?v=20261124-3" alt="智能门铃" />
+                  <img src="images/yinghuo-doorbell.webp?v=20261128-1" alt="智能门铃" />
                   <strong>智能门铃</strong>
                   <span>离线</span>
                 </div>
                 <div class="device-tile offline">
-                  <img src="images/yinghuo-gateway.webp?v=20261124-3" alt="Mesh 网关" />
+                  <img src="images/yinghuo-gateway.webp?v=20261128-1" alt="Mesh 网关" />
                   <strong>Mesh 网关</strong>
                   <span>离线</span>
                 </div>
                 <div class="device-tile">
-                  <img src="images/yinghuo-light.webp?v=20261124-3" alt="智能灯泡" />
+                  <img src="images/yinghuo-light.webp?v=20261128-1" alt="智能灯泡" />
                   <strong>智能灯泡</strong>
                   <span>已关闭</span>
                 </div>
                 <div class="device-tile">
-                  <img src="images/yinghuo-light.webp?v=20261124-3" alt="RGB 灯泡" />
+                  <img src="images/yinghuo-light.webp?v=20261128-1" alt="RGB 灯泡" />
                   <strong>RGB 灯泡</strong>
                   <span>在线</span>
                 </div>
@@ -122,7 +117,7 @@
             </div>
           </div>
           <div class="device-detail-card">
-            <img src="images/yinghuo-light.webp?v=20261124-3" alt="智能灯泡详情" />
+            <img src="images/yinghuo-light.webp?v=20261128-1" alt="智能灯泡详情" />
             <div class="detail-row"><span>设备 ID</span><strong>rgb-F53324</strong></div>
             <div class="detail-row"><span>当前版本</span><strong>v1.1.0</strong></div>
             <div class="detail-row"><span>在线状态</span><strong>在线</strong></div>
@@ -355,7 +350,7 @@ Cloud/App   → farmely/light/{id}/down/cmd</code></pre>
         </div>
         <div class="doorbell-teaser-visual">
           <figure class="doorbell-teaser-phone">
-            <img src="images/doorbell-app-device.jpg?v=20261124-3" alt="LightMesh App 可视化门铃设备页" loading="lazy" />
+            <img src="images/doorbell-app-device.jpg?v=20261128-1" alt="LightMesh App 可视化门铃设备页" loading="lazy" />
           </figure>
           <div><strong>LightMesh Doorbell</strong><span>统一设备入口 · 独立视频链路</span></div>
         </div>
@@ -420,7 +415,7 @@ Cloud/App   → farmely/light/{id}/down/cmd</code></pre>
         <div>
           <div class="footer-brand">
             <span class="nav-brand-icon"></span>
-            智能硬件工作室
+            励磁实验室
           </div>
           <p class="footer-desc">LightMesh 灯联网是 ESP32 设备联网闭环项目的一次产品化整理：从设备、云端、App 到 OTA，尽量让每个新产品都能复用同一套骨架。</p>
         </div>
@@ -443,15 +438,15 @@ Cloud/App   → farmely/light/{id}/down/cmd</code></pre>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>&copy; 2026 智能硬件工作室 · LightMesh 灯联网</span>
+        <span>&copy; 2026 励磁实验室 · LightMesh 灯联网</span>
         <span>ESP32 · Flutter · MQTT · OTA</span>
         <span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;">豫ICP备2026025181号-1</a></span>
       </div>
     </div>
   </footer>
 
-  <script src="js/main.js?v=20261124-2"></script>
-  <script src="js/ai-assistant.js?v=20261124-2" defer></script>
+  <script src="js/main.js?v=20261128-1"></script>
+  <script src="js/ai-assistant.js?v=20261128-1" defer></script>
 </body>
 </html>
 
