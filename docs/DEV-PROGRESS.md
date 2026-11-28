@@ -76,7 +76,7 @@ repo-product-showcase/
 ├─ css/  styles.css(3783) admin.css ai-assistant.css guestbook.css thesis-topics.css
 ├─ js/   main.js admin.js ai-assistant.js guestbook.js thesis-topics.js(+data)
 ├─ images/
-│   ├─ hero/hero-card.jpg        ★首页横幅左侧板卡画面（prep-hero.py 生成）
+│   ├─ hero/slide-1~3.jpg        ★首屏轮播三张（prep-hero-slides.py 生成，16:9 竖幅）
 │   ├─ products/                 板卡实拍（motor-ctrl-1 / esp32-board-1 /
 │   │                              servo-ctrl-1 / servo-ctrl-schematic / hero-board-1~3）
 │   ├─ brand/                    logo：mark.svg / favicon.svg / icon-192 / apple-touch-icon
@@ -86,7 +86,8 @@ repo-product-showcase/
 ├─ tools/                        生成脚本（不进部署）
 │   ├─ gen-board-pages.py        ★三块板卡详情页生成器（数据驱动，改内容改这里再重跑）
 │   ├─ prep-product-photos.py    ★实拍图裁切/调色（参数表 JOBS）
-│   ├─ prep-hero.py              ★首页横幅图：桌面换深蓝、板体羽化、边缘压暗
+│   ├─ prep-hero-slides.py       ★首屏轮播：ImageGen 渲染图裁切/调色/边缘渐隐，
+│   │                              顺带切出首页三张 1:1 卡片图 board-card-1~3
 │   ├─ make-logo.py              ★生成 logo svg/png/ico（含手写 ICO 容器）
 │   ├─ make-favicon.py           按矢量坐标重绘 16/32/48/64 并打包 ICO
 │   ├─ process-gen-images.py     AI 图去水印/调色
@@ -135,6 +136,11 @@ repo-product-showcase/
 **风格定位**：冷白 + 科技蓝 + 青色点缀，实拍为主、没必要的插画不上。
 深色首屏用 `#080F1E`，浅色区用 `#F6F8FC`，两段落差明显。
 
+**首屏（2026-11-28 晚第二次改版）**：参考同行那张 16:9 板卡 banner，做成
+整屏舞台——板卡实拍直接摆在版面上、左侧出血，右侧是标题/胶囊/口号，
+底部是「已交付 · 型号」标签和三段切换点。三张图走同一个构图规则：
+板高不超过画面 92%、板宽不超过画面 63%，切换时才不会忽大忽小。
+
 > 11-28 晚间改版：配色从「森林绿 + 金」整体换成蓝，因为主推的电机板是蓝色阻焊，
 > 绿底配蓝板互相打架。改色时先把 `#2F7447` 一类全站映射替换，
 > **注意还有一批写成 `rgba(47,116,71, ...)` 无空格的变体**，肉眼 grep 会漏，
@@ -146,6 +152,15 @@ repo-product-showcase/
 ---
 
 ## 6. 已经踩过的坑（**这一节最值钱**）
+
+- **ImageGen 出的图右下角固定有「AI生成 WORKBUDDY」水印**（约在 x>1400 或 y>950 的区域）。
+  裁切框只要卡在 y≤985 且 x≤1400 之内就自然切掉，不用修补
+- **三块板的宽高比差很多**（电机板近方形、ESP32 是宽板）。首屏如果统一 `height:100%`，
+  宽板会一路铺到文字区、把标题压住；要按「板卡落在左侧 45% 以内」反推每张图的显示高度
+- **图的自带底色和页面底色对不上会露出矩形边**。与其在 CSS 里叠 mask，不如在生成脚本里
+  把右缘/底部/顶部直接渐变到 `#060C18`，铺多宽都不会有接缝
+- **headless 截图的显示尺寸不是原图尺寸**。判断「有没有被裁切」必须按 1:1 裁出来看，
+  按缩放后的截图目测会把正常的板边误判成裁切
 
 ### 缓存
 
@@ -199,6 +214,7 @@ repo-product-showcase/
 | 11-18 | 站点搭建：静态展示 + PHP 接口 + 后台 + 留言板 + AI 站内助手；上阿里云 ECS，GitHub Actions 自动化部署跑通 |
 | 11-24 | 切 LK Studio 暖色亮色主题；团队化改造（机器人/AI/创客定位）；图片加版本号修缓存；根目录 favicon.ico 修 Bing 地球图标；IndexNow 接入 |
 | 11-28 | **改名励磁实验室 LICI LAB**；新 logo + 全套 favicon；三块实拍板卡上线；团队照改无人工作室场景；品牌名 48 处统一替换 |
+| 11-28 | **首屏改成整屏轮播**：三块板卡的影棚渲染图铺满左侧版面（不再套卡片边框），右下角切换点 + 6.5s 自动轮播；首页三张卡片图同步换成同一批渲染的方图 |
 | 11-28 | **配色转蓝 + 首屏换电机板**：全站绿金映射为科技蓝（含 rgba 无空格变体）；logo/favicon 底改 `#0D1A2E`；横幅图换 STM32G474 实拍，桌面转深蓝台面、板体羽化；移动端首屏恢复实物图 |
 | 11-28 | **定位改为需求交付**：全站去掉「自研 / 在售」，首页重排为 深色横幅 → 四条交付线 → 交付样例 → 项目案例 → 学生指导 → 合作流程；`#boards` 改名 `#deliverables`；新增 `tools/prep-hero.py` |
 
@@ -236,8 +252,9 @@ python tools/gen-board-pages.py
 # 处理新实拍图（改 JOBS 里的文件名与裁切参数）
 python tools/prep-product-photos.py
 
-# 重新生成首页横幅图（换板卡或换裁切框时）
-python tools/prep-hero.py
+# 重新生成首屏轮播图（换板卡或改裁切框时，同时产出首页卡片方图）
+# 源图在 ../preview-2026-11-28/gen/，改 JOBS 里的裁切框
+python tools/prep-hero-slides.py
 
 # 重新生成 logo / favicon
 python tools/make-logo.py

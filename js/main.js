@@ -310,7 +310,79 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadDynamicProducts();
 
-  /* 首页横幅改为深色静态图，原浮动卡片堆栈与 get_hero 拉取已下线 */
+  /* ─────────── 14. 首屏板卡轮播 ───────────
+   * 三块板卡的实拍图叠在一起，靠 is-active 切透明度。
+   * 自动播放会在鼠标悬停 / 键盘聚焦 / 切到后台标签页时暂停，
+   * 用户手动点过切换点之后就不再自动轮播，免得打断他看。 */
+  (function initHeroSlides() {
+    const root = document.querySelector('[data-hero]');
+    if (!root) return;
+
+    const slides = Array.from(root.querySelectorAll('.banner-slide'));
+    const dots = Array.from(root.querySelectorAll('[data-hero-dot]'));
+    const tag = root.querySelector('[data-hero-tag]');
+    if (slides.length < 2 || dots.length !== slides.length) return;
+
+    const DELAY = 6500;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let index = 0;
+    let timer = null;
+    let paused = false;
+    let locked = false;   // 用户手动切过，停止自动轮播
+
+    function render(next) {
+      index = (next + slides.length) % slides.length;
+      slides.forEach((el, i) => el.classList.toggle('is-active', i === index));
+      dots.forEach((el, i) => {
+        const on = i === index;
+        el.classList.toggle('is-active', on);
+        if (on) el.setAttribute('aria-current', 'true');
+        else el.removeAttribute('aria-current');
+      });
+      if (tag && dots[index].dataset.tag) tag.textContent = dots[index].dataset.tag;
+    }
+
+    function stop() {
+      if (timer) { window.clearInterval(timer); timer = null; }
+    }
+
+    function start() {
+      stop();
+      if (reduceMotion || locked || paused || document.hidden) return;
+      timer = window.setInterval(() => render(index + 1), DELAY);
+    }
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        locked = true;
+        render(i);
+        stop();
+      });
+      dot.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        e.preventDefault();
+        const next = i + (e.key === 'ArrowRight' ? 1 : -1);
+        locked = true;
+        render(next);
+        stop();
+        dots[(next + dots.length) % dots.length].focus();
+      });
+    });
+
+    const stage = root.querySelector('.banner-stage');
+    if (stage) {
+      stage.addEventListener('pointerenter', () => { paused = true; stop(); });
+      stage.addEventListener('pointerleave', () => { paused = false; start(); });
+    }
+    root.addEventListener('focusin', () => { paused = true; stop(); });
+    root.addEventListener('focusout', () => { paused = false; start(); });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop(); else start();
+    });
+
+    render(0);
+    start();
+  })();
 
   console.log('✨ 产品展示网站已加载');
 });

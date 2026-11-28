@@ -230,7 +230,7 @@ ul, ol { list-style: none; }
   color: #F3F7FE;
 }
 .has-dark-hero .navbar:not(.scrolled) .nav-brand-icon {
-  background-image: url("../images/brand/mark-reverse.svg?v=20261129-1");
+  background-image: url("../images/brand/mark-reverse.svg?v=20261129-2");
 }
 .has-dark-hero .navbar:not(.scrolled) .nav-links a {
   color: rgba(234, 240, 251, 0.74);
@@ -261,7 +261,7 @@ ul, ol { list-style: none; }
   width: 34px;
   height: 34px;
   flex: 0 0 auto;
-  background: url("../images/brand/mark.svg?v=20261129-1") center / contain no-repeat;
+  background: url("../images/brand/mark.svg?v=20261129-2") center / contain no-repeat;
 }
 
 .nav-links {
@@ -376,151 +376,184 @@ ul, ol { list-style: none; }
 /* ── 首页深色横幅 ──
    左侧板卡实拍、右侧文案：底色压到近黑，实拍图边缘本来就是暗的，
    用一层横向渐变把图融进底色，不靠抠图。 */
+/* 首屏是整块深色舞台：板卡实拍直接摆在版面上，不套卡片边框 */
 .banner {
   position: relative;
   display: flex;
   align-items: center;
   overflow: hidden;
-  min-height: 660px;
-  padding: 120px 0 76px;
-  background: #080F1E;
+  min-height: 700px;
+  padding: 152px 0 84px;
+  background:
+    radial-gradient(ellipse 90% 118% at 6% 44%, #12294F 0%, rgba(12, 30, 58, 0) 64%),
+    radial-gradient(ellipse 66% 88% at 92% 92%, rgba(26, 78, 156, 0.42) 0%, rgba(26, 78, 156, 0) 72%),
+    #060C18;
   color: #EAF0FB;
 }
 
-.banner-bg {
+/* ── 首屏舞台：三张板卡实拍叠放，靠透明度切换 ── */
+.banner-stage {
   position: absolute;
   inset: 0;
   z-index: 0;
 }
-.banner-bg img {
+.banner-slides {
+  position: absolute;
+  inset: 0;
+}
+/* 每张图的高度单独调：三块板的宽高比差很多，统一按 height:100% 铺，
+   宽板（ESP32）会一路铺到文字区，所以它要缩一点，让三块板在屏幕上
+   的宽度都落在左侧 45% 以内 */
+.banner-slides img:nth-child(1) { --slide-h: 92%; }
+.banner-slides img:nth-child(2) { --slide-h: 80%; }
+.banner-slides img:nth-child(3) { --slide-h: 82%; }
+
+/* 宽板（ESP32）高度只有画布的一半多，贴底会显得空，单独做垂直居中 */
+.banner-slides img:nth-child(2) {
+  top: calc((100% - var(--slide-h)) / 2);
+  bottom: auto;
+}
+
+.banner-slide {
   position: absolute;
   left: 0;
-  top: 0;
-  width: 58%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 46%;
-  /* 右缘淡出，图不硬切在版面上 */
-  mask-image: linear-gradient(90deg, #000 0%, #000 66%, transparent 98%);
-  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 66%, transparent 98%);
+  bottom: 0;
+  height: var(--slide-h, 100%);
+  width: auto;
+  max-width: none;
+  opacity: 0;
+  transition: opacity 1.05s var(--ease-out-expo);
 }
-.banner-bg::after {
-  content: '';
+.banner-slide.is-active {
+  opacity: 1;
+  /* 极慢的推进，静态图也有呼吸感 */
+  animation: heroDrift 16s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .banner-slide.is-active { animation: none; }
+}
+
+@keyframes heroDrift {
+  from { transform: scale(1.05); }
+  to   { transform: scale(1); }
+}
+
+/* 板卡背后的冷光，让实物像是站在灯下 */
+.banner-glow {
+  position: absolute;
+  left: -8%;
+  bottom: -32%;
+  width: 760px;
+  height: 760px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(43, 98, 217, 0.5), rgba(43, 98, 217, 0) 66%);
+  filter: blur(30px);
+}
+
+/* 极细网格，给深色底一点工程感，不抢内容 */
+.banner-lines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(234, 240, 251, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234, 240, 251, 0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+  -webkit-mask-image: radial-gradient(ellipse 58% 72% at 28% 50%, #000 0%, transparent 76%);
+  mask-image: radial-gradient(ellipse 58% 72% at 28% 50%, #000 0%, transparent 76%);
+}
+
+/* 图层压暗：右侧给文字让位，上下把图收进版面色 */
+.banner-veil {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 60% 70% at 22% 55%, rgba(37, 78, 150, 0.30), transparent 70%),
     linear-gradient(180deg,
-      rgba(8, 15, 30, 0.55) 0%,
-      rgba(8, 15, 30, 0) 34%,
-      rgba(8, 15, 30, 0.30) 84%,
-      #080F1E 100%);
-}
-
-/* 横幅左侧的板卡画面 */
-.banner-card {
-  position: relative;
-  margin: 0;
-  border-radius: 22px;
-  overflow: hidden;
-  border: 1px solid rgba(56, 169, 232, 0.14);
-  background: #080F1E;
-  box-shadow: 0 44px 90px rgba(0, 0, 0, 0.62), 0 0 0 1px rgba(255, 255, 255, 0.03);
-  transform: rotate(-1.2deg);
-}
-.banner-card img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 5 / 4;
-  object-fit: cover;
-  object-position: center;
-}
-/* 四周压暗：图自带的深蓝底和横幅背景有色差，靠这层把接缝吃掉，
-   只留中间板体亮起来，看起来是板子直接摆在深色台面上 */
-.banner-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: radial-gradient(ellipse 88% 86% at 50% 48%,
-    rgba(8, 15, 30, 0) 46%,
-    rgba(8, 15, 30, 0.55) 76%,
-    rgba(8, 15, 30, 0.92) 100%);
-}
-.banner-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(8, 15, 30, 0) 82%, rgba(8, 15, 30, 0.5) 100%);
-}
-.banner-card figcaption {
-  position: absolute;
-  left: 16px;
-  bottom: 14px;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 15px;
-  border-radius: 999px;
-  font-size: 12px;
-  letter-spacing: 0.03em;
-  color: rgba(234, 240, 251, 0.9);
-  background: rgba(8, 15, 30, 0.62);
-  border: 1px solid rgba(56, 169, 232, 0.24);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-.banner-bg-glow {
-  position: absolute;
-  left: 4%;
-  bottom: -180px;
-  width: 560px;
-  height: 560px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(43, 98, 217, 0.62), rgba(43, 98, 217, 0) 68%);
-  filter: blur(30px);
+      rgba(6, 12, 24, 0.9) 0%,
+      rgba(6, 12, 24, 0) 17%,
+      rgba(6, 12, 24, 0) 60%,
+      rgba(6, 12, 24, 0.66) 90%,
+      #060C18 100%),
+    linear-gradient(90deg,
+      rgba(6, 12, 24, 0) 0%,
+      rgba(6, 12, 24, 0) 42%,
+      rgba(6, 12, 24, 0.3) 54%,
+      rgba(6, 12, 24, 0.72) 66%,
+      #060C18 80%);
 }
 
 .banner-inner {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
-  align-items: center;
-  gap: 56px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 48px;
 }
-
-/* 极细网格，给深色底一点工程感，不抢内容 */
-.banner-bg-lines {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(234, 240, 251, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(234, 240, 251, 0.045) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: radial-gradient(ellipse 70% 80% at 30% 50%, #000 0%, transparent 76%);
-  -webkit-mask-image: radial-gradient(ellipse 70% 80% at 30% 50%, #000 0%, transparent 76%);
-}
-
-/* 左侧板卡画面 */
+/* 左列留白给实拍图，只在底部放一枚交付标签和切换点 */
 .banner-visual {
   position: relative;
-  animation: fadeInUp 0.9s var(--ease-out-expo) 0.25s both;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 4px;
 }
-.banner-visual-dot {
+.banner-meta {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  animation: fadeInUp 0.9s var(--ease-out-expo) 0.3s both;
+}
+.banner-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  letter-spacing: 0.03em;
+  color: rgba(234, 240, 251, 0.9);
+  background: rgba(9, 18, 34, 0.6);
+  border: 1px solid rgba(96, 160, 255, 0.26);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.banner-tag-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: #6FC8FF;
   box-shadow: 0 0 0 4px rgba(96, 208, 255, 0.16);
 }
+.banner-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.banner-dots button {
+  width: 24px;
+  height: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: rgba(234, 240, 251, 0.22);
+  cursor: pointer;
+  transition: width 0.35s var(--ease-out-expo), background 0.35s;
+}
+.banner-dots button:hover {
+  background: rgba(234, 240, 251, 0.5);
+}
+.banner-dots button.is-active {
+  width: 40px;
+  background: #4C8DF5;
+}
+.banner-dots button:focus-visible {
+  outline: 2px solid #6FC8FF;
+  outline-offset: 4px;
+}
 
 .banner-copy {
-  max-width: 560px;
+  max-width: 580px;
+  align-self: center;
 }
 
 .banner-kicker {
@@ -541,11 +574,11 @@ ul, ol { list-style: none; }
 }
 
 .banner-title {
-  margin: 20px 0 0;
-  font-size: clamp(34px, 4.2vw, 58px);
+  margin: 22px 0 0;
+  font-size: clamp(38px, 4.5vw, 62px);
   font-weight: 800;
-  line-height: 1.18;
-  letter-spacing: 0.01em;
+  line-height: 1.14;
+  letter-spacing: -0.005em;
   color: #F5F8FE;
   animation: fadeInUp 0.8s var(--ease-out-expo) 0.1s both;
 }
@@ -575,37 +608,24 @@ ul, ol { list-style: none; }
   animation: fadeInUp 0.8s var(--ease-out-expo) 0.3s both;
 }
 .banner-pills li {
-  padding: 9px 24px;
-  border-radius: 999px;
-  font-size: 14.5px;
+  padding: 11px 27px;
+  border-radius: 12px;
+  font-size: 15px;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   color: #F1F6FE;
-  background: linear-gradient(180deg, #3568DF, #1B3F94);
-  border: 1px solid rgba(56, 169, 232, 0.32);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, #3A78E8, #1B3F94);
+  border: 1px solid rgba(96, 160, 255, 0.36);
+  box-shadow: 0 10px 24px rgba(4, 10, 22, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 .banner-slogan {
-  position: relative;
   margin-top: 26px;
-  padding-left: 18px;
   font-size: clamp(16px, 1.4vw, 19px);
   font-weight: 600;
   letter-spacing: 0.08em;
-  color: #38A9E8;
+  color: rgba(234, 240, 251, 0.66);
   animation: fadeInUp 0.8s var(--ease-out-expo) 0.36s both;
-}
-.banner-slogan::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 3px;
-  height: 16px;
-  transform: translateY(-50%);
-  border-radius: 2px;
-  background: linear-gradient(180deg, #38A9E8, rgba(56, 169, 232, 0.2));
 }
 
 .banner-actions {
@@ -2898,19 +2918,38 @@ ul, ol { list-style: none; }
 }
 
 /* ──────────────────────── 14. 响应式 ──────────────────────── */
+/* 首屏在 1180px 以下改上下排：再窄板卡就要压到标题上了 */
+@media (max-width: 1180px) {
+  /* 板卡图变成顶部一条通栏，文字落到下面 */
+  .banner { display: block; min-height: 0; padding: 0 0 72px; }
+  /* 顶部让出导航高度，板卡图整张完整显示，不再被导航压住 */
+  .banner-stage { position: relative; inset: auto; height: calc(56vw + 58px); min-height: 330px; max-height: 560px; }
+  .banner-slides { top: 58px; }
+  .banner-slides .banner-slide {
+    top: 0;
+    bottom: auto;
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+    object-position: left center;
+  }
+  .banner-veil {
+    background: linear-gradient(180deg,
+      rgba(6, 12, 24, 0) 0%,
+      rgba(6, 12, 24, 0.12) 40%,
+      rgba(6, 12, 24, 0.82) 82%,
+      #060C18 100%);
+  }
+  .banner-inner { grid-template-columns: 1fr; gap: 26px; padding-top: 26px; }
+  .banner-visual { order: -1; margin: 0; }
+  .banner-copy { max-width: 100%; }
+}
+
 @media (max-width: 1024px) {
   .products-grid { grid-template-columns: repeat(2, 1fr); }
   .specs-grid { grid-template-columns: repeat(2, 1fr); }
   .detail-layout { grid-template-columns: 1fr; gap: var(--sp-lg); }
   .detail-layout.reverse { direction: ltr; }
-  .banner { min-height: 0; padding: 120px 0 72px; }
-  .banner-inner { grid-template-columns: 1fr; gap: 0; }
-  .banner-copy { max-width: 100%; }
-  .banner-bg img { object-position: center 40%; }
-  .banner-bg::after {
-    background:
-      linear-gradient(180deg, rgba(8, 15, 30, 0.72) 0%, rgba(8, 15, 30, 0.88) 40%, #080F1E 92%);
-  }
   .svc-grid { grid-template-columns: repeat(2, 1fr); }
   .flow { grid-template-columns: 1fr; }
   .features-grid { grid-template-columns: repeat(2, 1fr); }
@@ -2947,11 +2986,13 @@ ul, ol { list-style: none; }
   .products-grid { grid-template-columns: 1fr; }
   .specs-grid { grid-template-columns: 1fr 1fr; }
 
-  .banner { padding: 104px 0 56px; }
+  .banner { padding: 0 0 56px; }
   .banner .container { padding-left: 20px; padding-right: 20px; }
-  /* 移动端也保留实物图：竖排到文案下方，缩到 74% 宽 */
-  .banner-visual { order: 2; margin-top: 30px; }
-  .banner-card { max-width: 300px; margin: 0 auto; transform: none; }
+  .banner-stage { height: calc(56vw + 54px); min-height: 270px; max-height: 360px; }
+  .banner-visual { order: -1; margin: 0; }
+  .banner-meta { gap: 12px; }
+  .banner-tag { font-size: 11.5px; padding: 8px 14px; }
+  .banner-dots { display: none; }
   .banner-title { font-size: clamp(28px, 8vw, 38px); }
   .banner-sub { font-size: 14.5px; line-height: 1.9; }
   .banner-pills li { padding: 8px 18px; font-size: 13.5px; }
