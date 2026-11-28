@@ -54,6 +54,13 @@
 - 忘密码就在服务器执行：`php tools/set-admin-password.php '新密码'`
 
 **push 失败时**：代理 502 是常态，先 `git config http.sslBackend openssl`，再重试 3–5 次即可。
+如果连续 6 次以上都是 `CONNECT tunnel failed, response 502`（或换成 `SSL_read: unexpected eof`），
+说明环境代理 `127.0.0.1:64783` 挂了 —— 直接绕过它直连，一次就过：
+
+```bash
+env -u HTTP_PROXY -u HTTPS_PROXY -u http_proxy -u https_proxy \
+  git -c http.proxy= -c https.proxy= push origin main
+```
 
 ---
 
