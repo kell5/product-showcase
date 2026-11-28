@@ -17,7 +17,9 @@ from PIL import Image, ImageDraw, ImageEnhance
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 
-SRC = os.path.join(ROOT, '..', 'preview-2026-11-28', 'gen')
+# 渲染源图归档在 tools/hero-src/，仓库里可复现；
+# 换板卡时把新渲染图按同样尺寸放进去，再改下面的 JOBS
+SRC = os.path.join(HERE, 'hero-src')
 OUT = os.path.join(ROOT, 'images', 'hero')
 PREV = os.path.join(ROOT, '..', 'preview-2026-11-28')
 
@@ -29,11 +31,11 @@ PREV = os.path.join(ROOT, '..', 'preview-2026-11-28')
 #   slide-3 板卡 800x695 → 约 624x542
 # 裁切框都避开右下角的生成水印区域（x>1400 或 y>950）。
 JOBS = [
-    ('Premium_product_hero_photograp_2026-11-28T03-14-46.png', 'slide-1.jpg',
+    ('hero-src-motor.jpg', 'slide-1.jpg',
      (60, 0, 1400, 985), 0.0),
-    ('Premium_product_hero_photograp_2026-11-28T03-15-25.png', 'slide-2.jpg',
+    ('hero-src-esp32.jpg', 'slide-2.jpg',
      (0, 0, 1536, 917), 0.55),
-    ('Premium_product_hero_photograp_2026-11-28T03-15-50.png', 'slide-3.jpg',
+    ('hero-src-servo.jpg', 'slide-3.jpg',
      (110, 0, 1380, 986), 0.0),
 ]
 

@@ -86,6 +86,7 @@ repo-product-showcase/
 ├─ tools/                        生成脚本（不进部署）
 │   ├─ gen-board-pages.py        ★三块板卡详情页生成器（数据驱动，改内容改这里再重跑）
 │   ├─ prep-product-photos.py    ★实拍图裁切/调色（参数表 JOBS）
+│   ├─ hero-src/                 ★三张渲染源图（1536x1024），换图时替换这里
 │   ├─ prep-hero-slides.py       ★首屏轮播：ImageGen 渲染图裁切/调色/边缘渐隐，
 │   │                              顺带切出首页三张 1:1 卡片图 board-card-1~3
 │   ├─ make-logo.py              ★生成 logo svg/png/ico（含手写 ICO 容器）
