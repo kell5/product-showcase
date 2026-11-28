@@ -320,6 +320,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const slides = Array.from(root.querySelectorAll('.banner-slide'));
     const dots = Array.from(root.querySelectorAll('[data-hero-dot]'));
+    const prevBtn = root.querySelector('[data-hero-prev]');
+    const nextBtn = root.querySelector('[data-hero-next]');
     const tag = root.querySelector('[data-hero-tag]');
     if (slides.length < 2 || dots.length !== slides.length) return;
 
@@ -367,6 +369,23 @@ document.addEventListener('DOMContentLoaded', () => {
         stop();
         dots[(next + dots.length) % dots.length].focus();
       });
+    });
+
+    // 左右箭头：手动翻一页，翻过之后同样停掉自动轮播
+    function step(delta) {
+      locked = true;
+      render(index + delta);
+      stop();
+    }
+    if (prevBtn) prevBtn.addEventListener('click', () => step(-1));
+    if (nextBtn) nextBtn.addEventListener('click', () => step(1));
+
+    // 焦点在箭头按钮上时，方向键也能切，不用来回挪鼠标
+    root.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      if (!e.target.closest('.banner-arrows')) return;
+      e.preventDefault();
+      step(e.key === 'ArrowRight' ? 1 : -1);
     });
 
     const stage = root.querySelector('.banner-stage');

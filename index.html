@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="/favicon.ico?v=20261129-2" sizes="any" />
+  <link rel="icon" href="/favicon.ico?v=20261129-3" sizes="any" />
   <link rel="icon" href="images/brand/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="images/brand/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="apple-touch-icon" href="images/brand/apple-touch-icon.png" />
@@ -12,7 +12,7 @@
   <meta name="description" content="励磁实验室做嵌入式与物联网项目的定制开发，不卖标准品：按需求出方案、画原理图与 PCB、写固件与上位机、调样机，帮客户把产品从想法做到能跑的样机；同时为高校学生提供毕设、课设的选题与实现指导，站内收录 699 个单片机与物联网毕业设计题目。" />
   <meta name="keywords" content="嵌入式项目定制开发,物联网方案设计,单片机程序开发,硬件调试,STM32开发,ESP32开发,CH32,PCB设计,固件开发,样机开发,产品落地,嵌入式毕设指导,单片机课程设计,励磁实验室" />
   <meta name="robots" content="index,follow" />
-  <link rel="preload" as="image" href="images/hero/slide-1.jpg?v=20261129-2" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/hero/slide-1.jpg?v=20261129-3" fetchpriority="high" />
   <link rel="canonical" href="https://www.lk-mcu.online/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="励磁实验室" />
@@ -22,9 +22,9 @@
   <meta property="og:url" content="https://www.lk-mcu.online/" />
 
   <!-- 主样式表 -->
-  <link rel="stylesheet" href="css/styles.css?v=20261129-2" />
-  <link rel="stylesheet" href="css/ai-assistant.css?v=20261129-2" />
-  <link rel="stylesheet" href="css/guestbook.css?v=20261129-2" />
+  <link rel="stylesheet" href="css/styles.css?v=20261129-3" />
+  <link rel="stylesheet" href="css/ai-assistant.css?v=20261129-3" />
+  <link rel="stylesheet" href="css/guestbook.css?v=20261129-3" />
 
   <!-- 结构化数据 -->
   <script type="application/ld+json">
@@ -90,13 +90,13 @@
     <!-- 三块板卡的实拍舞台，淡入切换；装饰性图层，读屏跳过 -->
     <div class="banner-stage" aria-hidden="true">
       <div class="banner-slides">
-        <img class="banner-slide is-active" src="images/hero/slide-1.jpg?v=20261129-2"
+        <img class="banner-slide is-active" src="images/hero/slide-1.jpg?v=20261129-3"
              alt="STM32G474 智能电机控制板，蓝色阻焊板身，板载 OLED 与三路端子，深蓝影棚打光"
              width="1821" height="1300" fetchpriority="high" />
-        <img class="banner-slide" src="images/hero/slide-2.jpg?v=20261129-2"
+        <img class="banner-slide" src="images/hero/slide-2.jpg?v=20261129-3"
              alt="ESP32 多协议联网开发板，板载 WiFi 模组、按键矩阵与状态指示灯"
              width="2634" height="1300" loading="lazy" />
-        <img class="banner-slide" src="images/hero/slide-3.jpg?v=20261129-2"
+        <img class="banner-slide" src="images/hero/slide-3.jpg?v=20261129-3"
              alt="CH32V003 低功耗舵机定时控制板，板载大容量电容与多路按键"
              width="1952" height="1300" loading="lazy" />
       </div>
@@ -112,16 +112,32 @@
             <span class="banner-tag-dot"></span>
             <span data-hero-tag>已交付 · STM32G474 智能电机控制板</span>
           </p>
-          <div class="banner-dots" aria-label="切换首屏案例">
-            <button type="button" aria-current="true" class="is-active"
-                    data-hero-dot="0" data-tag="已交付 · STM32G474 智能电机控制板"
-                    aria-label="查看 STM32G474 智能电机控制板"></button>
-            <button type="button"
-                    data-hero-dot="1" data-tag="已交付 · ESP32 多协议联网板"
-                    aria-label="查看 ESP32 多协议联网板"></button>
-            <button type="button"
-                    data-hero-dot="2" data-tag="已交付 · CH32V003 舵机定时控制板"
-                    aria-label="查看 CH32V003 舵机定时控制板"></button>
+          <div class="banner-switch">
+            <div class="banner-arrows">
+              <button type="button" class="banner-arrow" data-hero-prev aria-label="上一个案例">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+              <button type="button" class="banner-arrow" data-hero-next aria-label="下一个案例">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            </div>
+            <div class="banner-dots" aria-label="切换首屏案例">
+              <button type="button" aria-current="true" class="is-active"
+                      data-hero-dot="0" data-tag="已交付 · STM32G474 智能电机控制板"
+                      aria-label="查看 STM32G474 智能电机控制板"></button>
+              <button type="button"
+                      data-hero-dot="1" data-tag="已交付 · ESP32 多协议联网板"
+                      aria-label="查看 ESP32 多协议联网板"></button>
+              <button type="button"
+                      data-hero-dot="2" data-tag="已交付 · CH32V003 舵机定时控制板"
+                      aria-label="查看 CH32V003 舵机定时控制板"></button>
+            </div>
           </div>
         </div>
       </div>
@@ -230,14 +246,14 @@
     <div class="container">
       <div class="reveal board-head">
         <span class="section-label">Deliverables</span>
-        <h2 class="section-title">三块<span class="gradient-text">交付过的板卡</span></h2>
-        <p class="section-desc">这三块都是按需求做出来的板子，不是货架商品。原理图、固件与生产文件随交付一起移交。</p>
+        <h2 class="section-title">四件<span class="gradient-text">交付过的实物</span></h2>
+        <p class="section-desc">三块板卡加一台整机，都是按需求做出来的，不是货架商品。原理图、固件与生产文件随交付一起移交。</p>
       </div>
 
       <div class="board-grid">
         <a href="product-motor-ctrl.html" class="board-card reveal reveal-delay-1">
           <div class="board-media">
-            <img src="images/products/board-card-1.jpg?v=20261129-2" alt="STM32G474 智能电机控制板实物，蓝色阻焊板身与中文 OLED 屏" loading="lazy" />
+            <img src="images/products/board-card-1.jpg?v=20261129-3" alt="STM32G474 智能电机控制板实物，蓝色阻焊板身与中文 OLED 屏" loading="lazy" />
             <span class="board-index">01</span>
             <span class="board-chip">STM32G474</span>
           </div>
@@ -254,7 +270,7 @@
 
         <a href="product-esp32-board.html" class="board-card reveal reveal-delay-2">
           <div class="board-media">
-            <img src="images/products/board-card-2.jpg?v=20261129-2" alt="ESP32 多协议联网开发板实物，板载 WiFi 模组与按键矩阵" loading="lazy" />
+            <img src="images/products/board-card-2.jpg?v=20261129-3" alt="ESP32 多协议联网开发板实物，板载 WiFi 模组与按键矩阵" loading="lazy" />
             <span class="board-index">02</span>
             <span class="board-chip">ESP32</span>
           </div>
@@ -271,7 +287,7 @@
 
         <a href="product-servo-ctrl.html" class="board-card reveal reveal-delay-3">
           <div class="board-media">
-            <img src="images/products/board-card-3.jpg?v=20261129-2" alt="CH32V003 舵机定时控制板实物，板载大容量电容与多路按键" loading="lazy" />
+            <img src="images/products/board-card-3.jpg?v=20261129-3" alt="CH32V003 舵机定时控制板实物，板载大容量电容与多路按键" loading="lazy" />
             <span class="board-index">03</span>
             <span class="board-chip">CH32V003</span>
           </div>
@@ -282,6 +298,23 @@
               <li><b>RISC-V</b><span>CH32V003</span></li>
               <li><b>RTC</b><span>定时唤醒</span></li>
               <li><b>锂电</b><span>充放电管理</span></li>
+            </ul>
+          </div>
+        </a>
+
+        <a href="product-crab-washer.html" class="board-card reveal reveal-delay-4">
+          <div class="board-media">
+            <img src="images/products/board-card-4.jpg?v=20261129-3" alt="螃蟹造型洗手监督器整机，白色圆润外壳配蓝色蟹钳，2 寸彩屏显示超声波测距与洗手提示" loading="lazy" />
+            <span class="board-index">04</span>
+            <span class="board-chip">ESP32</span>
+          </div>
+          <div class="board-body">
+            <h3 class="board-title">洗手监督小助手</h3>
+            <p class="board-desc">HC-SR04 判定水槽前有没有人，屏幕播动画、喇叭出声催洗手，离开再回来还会接着提醒。</p>
+            <ul class="board-specs">
+              <li><b>HC-SR04</b><span>超声测距</span></li>
+              <li><b>Web</b><span>参数与音量</span></li>
+              <li><b>AI</b><span>接口预留</span></li>
             </ul>
           </div>
         </a>
@@ -303,7 +336,7 @@
         <a href="product-lightmesh.html" class="product-card yinghuo-card-link reveal reveal-delay-1">
           <div class="product-card-image">
             <div class="placeholder">
-              <img src="images/yinghuo-light.webp?v=20261129-2" alt="LightMesh 灯联网 App 与智能灯泡" />
+              <img src="images/yinghuo-light.webp?v=20261129-3" alt="LightMesh 灯联网 App 与智能灯泡" />
               <span>ESP32 BLE Mesh 灯控闭环</span>
             </div>
             <div class="product-card-overlay"></div>
@@ -327,7 +360,7 @@
         <a href="product-gesture-arm.html" class="product-card reveal reveal-delay-2">
           <div class="product-card-image">
             <div class="placeholder">
-              <img src="images/gesture-arm-main.jpg?v=20261129-2" alt="体感操控机械臂" />
+              <img src="images/gesture-arm-main.jpg?v=20261129-3" alt="体感操控机械臂" />
               <span>MPU6050 + NRF24L01 手势操控</span>
             </div>
             <div class="product-card-overlay"></div>
@@ -351,7 +384,7 @@
         <a href="product-sound-core.html" class="product-card reveal reveal-delay-3">
           <div class="product-card-image">
             <div class="placeholder">
-              <img src="images/sound-core-main.jpg?v=20261129-2" alt="SoundCore 嵌入式音频终端" />
+              <img src="images/sound-core-main.jpg?v=20261129-3" alt="SoundCore 嵌入式音频终端" />
               <span>嵌入式音频终端</span>
             </div>
             <div class="product-card-overlay"></div>
@@ -374,7 +407,7 @@
         <a href="product-vision-tracker.html" class="product-card reveal reveal-delay-1">
           <div class="product-card-image">
             <div class="placeholder">
-              <img src="images/vision-tracker-main.jpg?v=20261129-2" alt="智能视觉追踪臂" />
+              <img src="images/vision-tracker-main.jpg?v=20261129-3" alt="智能视觉追踪臂" />
               <span>K210 视觉识别 + 云台跟随</span>
             </div>
             <div class="product-card-overlay"></div>
@@ -432,7 +465,7 @@
       <div class="about-layout reveal">
         <div class="about-photo-wrap">
           <div class="about-photo">
-            <img src="images/avatar.jpg?v=20261129-2" alt="励磁实验室：桌面机械臂与硬件工作台" />
+            <img src="images/avatar.jpg?v=20261129-3" alt="励磁实验室：桌面机械臂与硬件工作台" />
           </div>
           <div class="about-photo-tag">
             <strong>LICI LAB</strong>
@@ -541,8 +574,8 @@
   </footer>
 
   <!-- 主脚本 -->
-  <script src="js/main.js?v=20261129-2"></script>
-  <script src="js/guestbook.js?v=20261129-2" defer></script>
-  <script src="js/ai-assistant.js?v=20261129-2" defer></script>
+  <script src="js/main.js?v=20261129-3"></script>
+  <script src="js/guestbook.js?v=20261129-3" defer></script>
+  <script src="js/ai-assistant.js?v=20261129-3" defer></script>
 </body>
 </html>
