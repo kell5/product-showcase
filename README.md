@@ -4,6 +4,12 @@
 
 > 📌 **接续开发先读 [`docs/DEV-PROGRESS.md`](docs/DEV-PROGRESS.md)** —— 当前进度、设计系统、已踩的坑、待办清单都在里面。
 
+## 定位（2026-11-28 起）
+
+**不卖标准品，做需求交付**：嵌入式与物联网项目的定制开发 —— 方案设计、程序开发、硬件调试，
+帮客户把想法做到能跑的样机；板卡只作为「交付样例」展示，不是货架商品。
+另一条业务线是**学生指导**：毕设 / 课设的选题、方案评审、代码调试与实物把关（挂着 699 条选题库）。
+
 ## 在线入口
 
 - LightMesh 灯联网展示页：<https://www.lk-mcu.online/product-lightmesh.html>
@@ -12,7 +18,7 @@
 
 ## 页面组成
 
-- `index.html`：首页（Hero / 4 个精选作品 / 选题库入口 / 关于 / 留言）
+- `index.html`：首页（深色横幅 / 四条服务交付线 / 三块交付样例 / 4 个项目案例 / 学生指导 / 合作方式 / 留言）
 - `product-lightmesh.html`：LightMesh 灯联网单独展示页
 - `product-lightmesh-doorbell.html`：可视化门铃详情页
 - `product-yinghuo-zhilian.html`：旧入口兼容跳转页

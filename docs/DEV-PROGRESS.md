@@ -8,9 +8,28 @@
 
 ## 1. 一句话现状
 
-一个已经上线、能用的团队官网：品牌刚改名为「励磁实验室 / LICI LAB」，首页从「个人工作室作品集」重构为「自研板卡 + 项目案例」的团队形态，三块实拍板卡（STM32G474 电机控制、ESP32 联网、CH32V003 舵机定时）已上线独立详情页。**视觉与内容基本定稿，下一阶段是内容增量和 SEO 收录。**
+**定位已改为「需求交付」而非「卖产品」**：嵌入式 / 物联网项目定制开发（方案设计 · 程序开发 · 硬件调试），
+帮客户把想法做到能跑的样机；板卡降级为「交付样例」，不再说「自研 / 在售」。
+首页首屏换成深色横幅（参考了同行那张板卡 banner 的版式，但换成森林绿 + 金的品牌色）。
+另一条业务线是学生指导（毕设 / 课设 + 699 条选题库）。
 
-当前分支 `main` 干净，最新提交 `195a84e feat(brand+boards): 改名励磁实验室 LICI LAB，上线三块自研板卡`。
+当前分支 `main` 干净，最新提交见 `git log`。
+
+---
+
+## 1.5 定位与信息架构（2026-11-28 定稿）
+
+| 区块 | id | 说什么 |
+|---|---|---|
+| 深色横幅 | `#hero` | 嵌入式 / 物联网 项目定制开发；三个胶囊 = 方案设计 · 程序开发 · 硬件调试；口号「从想法到样机 · 高效对接 · 踏实落地」 |
+| 四条交付线 | `#services` | 需求梳理与方案设计 / 原理图与 PCB / 程序开发 / 样机联调与移交，每张卡带「交付物」清单 |
+| 交付样例 | `#deliverables` | 三块按需求做出来的板子，明确写「不是货架商品」（原 `#boards`，已改名） |
+| 项目案例 | `#work` | 4 个方向的实际交付 |
+| 学生指导 | `#students` | 699 条选题库 + 一对一指导（原 `#thesis-entry`） |
+| 合作方式 | `#about` | 四步流程：聊需求 → 方案与报价 → 分段开发 → 验收与移交 |
+| 留言/需求登记 | `#guestbook` | 加了 `.gb-intro` 引导语 |
+
+**措辞红线**：不写「自研」「在售」「自有产品线」「套件」「购买」。板卡统一叫「交付样例 / 按需求定制的板子」。
 
 ---
 
@@ -57,7 +76,8 @@ repo-product-showcase/
 ├─ css/  styles.css(3783) admin.css ai-assistant.css guestbook.css thesis-topics.css
 ├─ js/   main.js admin.js ai-assistant.js guestbook.js thesis-topics.js(+data)
 ├─ images/
-│   ├─ products/                 ★本次新增的板卡实拍（motor-ctrl-1 / esp32-board-1 /
+│   ├─ hero/hero-card.jpg        ★首页横幅左侧板卡画面（prep-hero.py 生成）
+│   ├─ products/                 板卡实拍（motor-ctrl-1 / esp32-board-1 /
 │   │                              servo-ctrl-1 / servo-ctrl-schematic / hero-board-1~3）
 │   ├─ brand/                    logo：mark.svg / favicon.svg / icon-192 / apple-touch-icon
 │   └─ *.jpg|webp                老项目图 + avatar.jpg（无人工作室场景，非真人）
@@ -66,6 +86,7 @@ repo-product-showcase/
 ├─ tools/                        生成脚本（不进部署）
 │   ├─ gen-board-pages.py        ★三块板卡详情页生成器（数据驱动，改内容改这里再重跑）
 │   ├─ prep-product-photos.py    ★实拍图裁切/调色（参数表 JOBS）
+│   ├─ prep-hero.py              ★首页横幅图：裁掉报错屏、降饱和、底部压暗
 │   ├─ make-logo.py              ★生成 logo svg/png/ico（含手写 ICO 容器）
 │   ├─ make-favicon.py           按矢量坐标重绘 16/32/48/64 并打包 ICO
 │   ├─ process-gen-images.py     AI 图去水印/调色
@@ -141,7 +162,9 @@ repo-product-showcase/
 ### 布局
 
 - 首屏 Hero 的 inline `style="display:flex"` 会压过媒体查询，导致移动端横向溢出 → 一律移进 CSS 类
-- `.reveal` 元素靠 IntersectionObserver 加 `is-visible`，**无头截图会全白**，必须先注入 `.reveal,.hero-*{opacity:1!important}` 并关掉 animation
+- `.reveal` 元素靠 IntersectionObserver 加 `is-visible`，**无头截图会全白**，必须先注入 `.reveal{opacity:1!important}` 并关掉 animation
+- Edge headless 的 `--window-size` 有最小宽度（实测 390 会被当成 504 布局再裁图），**窄屏验证要按 504 截**，否则误判横向溢出
+- 首页横幅是深色，未滚动时导航要反白：给 `<body>` 加 `.has-dark-hero`，Logo 换 `mark-reverse.svg`。滚过 60px 后 `.navbar.scrolled` 会自动切回浅色
 
 ### 无头截图（Edge）
 
@@ -167,7 +190,8 @@ repo-product-showcase/
 |---|---|
 | 11-18 | 站点搭建：静态展示 + PHP 接口 + 后台 + 留言板 + AI 站内助手；上阿里云 ECS，GitHub Actions 自动化部署跑通 |
 | 11-24 | 切 LK Studio 暖色亮色主题；团队化改造（机器人/AI/创客定位）；图片加版本号修缓存；根目录 favicon.ico 修 Bing 地球图标；IndexNow 接入 |
-| 11-28 | **改名励磁实验室 LICI LAB**；新 logo + 全套 favicon；三块实拍板卡上线，首页新增 `#boards`；团队照改无人工作室场景；品牌名 48 处统一替换 |
+| 11-28 | **改名励磁实验室 LICI LAB**；新 logo + 全套 favicon；三块实拍板卡上线；团队照改无人工作室场景；品牌名 48 处统一替换 |
+| 11-28 | **定位改为需求交付**：全站去掉「自研 / 在售」，首页重排为 深色横幅 → 四条交付线 → 交付样例 → 项目案例 → 学生指导 → 合作流程；`#boards` 改名 `#deliverables`；新增 `tools/prep-hero.py` |
 
 ---
 
@@ -186,6 +210,8 @@ repo-product-showcase/
 6. 板卡页可加「立即咨询 / 索取原理图」CTA，把流量导向留言板（目前只有文字说明，转化路径弱）
 7. 三块板卡可加参数对比表（首页 / 一个 `boards-compare` 区块），面向选型用户
 8. 图片若有条件重拍，`tools/prep-product-photos.py` 的 `JOBS` 参数表直接复用，只改文件名
+9. 三块交付样例的实拍色调不统一（白桌 / 暗场 / 特写），同屏并排时差异明显，重拍能解决一大半
+10. 详情页 CTA 目前只跳到其他板卡，缺「这类需求也能做，聊聊」的转化入口
 
 ---
 
@@ -200,6 +226,9 @@ python tools/gen-board-pages.py
 
 # 处理新实拍图（改 JOBS 里的文件名与裁切参数）
 python tools/prep-product-photos.py
+
+# 重新生成首页横幅图（换板卡或换裁切框时）
+python tools/prep-hero.py
 
 # 重新生成 logo / favicon
 python tools/make-logo.py
@@ -238,6 +267,7 @@ curl -sI https://www.lk-mcu.online/favicon.ico | grep -i content-type
 直接说其中一句，能省掉全部背景介绍：
 
 - 「读 `docs/DEV-PROGRESS.md`，接着做待办第 N 项」
-- 「把老案例页文案改成团队口径」
+- 「把老案例页文案改成需求交付口径」
+- 「首页横幅标题再大一点 / 换一张板卡做主视觉」
 - 「首页加板卡参数对比表」
 - 「板卡页加咨询 CTA，接到留言板」

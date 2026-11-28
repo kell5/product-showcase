@@ -6,7 +6,7 @@
 """
 import os
 
-VER = '20261128-1'
+VER = '20261201-1'
 
 # 通用图标
 IC = {
@@ -34,10 +34,11 @@ NAV = '''  <nav class="navbar">
       </a>
       <div class="nav-links">
         <a href="index.html">首页</a>
-        <a href="index.html#boards">在售板卡</a>
+        <a href="index.html#services">服务内容</a>
+        <a href="index.html#deliverables">交付样例</a>
         <a href="index.html#work">项目案例</a>
-        <a href="thesis-topics.html">毕设题目</a>
-        <a href="index.html#contact" class="nav-contact-btn">联系我们</a>
+        <a href="thesis-topics.html">学生指导</a>
+        <a href="index.html#contact" class="nav-contact-btn">聊聊需求</a>
       </div>
       <button class="nav-toggle" aria-label="菜单">
         <span></span><span></span><span></span>
@@ -53,10 +54,10 @@ FOOTER = '''  <footer class="site-footer">
             <span class="nav-brand-icon"></span>
             励磁实验室
           </div>
-          <p class="footer-desc">电机控制、联网开发与低功耗定时三类控制板的自研与定制，原理图与固件随板交付。</p>
+          <p class="footer-desc">嵌入式与物联网项目定制开发：方案设计、程序开发、硬件调试。以下板卡都是按需求交付的样例，原理图与固件随交付移交。</p>
         </div>
         <div class="footer-links-group">
-          <h4>在售板卡</h4>
+          <h4>交付样例</h4>
           <a href="product-motor-ctrl.html">智能电机控制板</a>
           <a href="product-esp32-board.html">多协议联网开发板</a>
           <a href="product-servo-ctrl.html">舵机定时控制板</a>
@@ -64,8 +65,9 @@ FOOTER = '''  <footer class="site-footer">
         <div class="footer-links-group">
           <h4>快速导航</h4>
           <a href="index.html">首页</a>
+          <a href="index.html#services">服务内容</a>
           <a href="index.html#work">项目案例</a>
-          <a href="thesis-topics.html">毕设题目</a>
+          <a href="thesis-topics.html">学生指导</a>
         </div>
       </div>
       <div class="footer-bottom">
@@ -76,8 +78,8 @@ FOOTER = '''  <footer class="site-footer">
     </div>
   </footer>
 
-  <script src="js/main.js?v=20261124-2"></script>
-  <script src="js/ai-assistant.js?v=20261124-2" defer></script>'''
+  <script src="js/main.js?v={VER}"></script>
+  <script src="js/ai-assistant.js?v={VER}" defer></script>'''
 
 
 def feature_block(icon, title, desc):
@@ -124,7 +126,7 @@ def render(page):
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.ico?v={VER}" sizes="any" />
   <link rel="icon" href="images/brand/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="images/brand/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="apple-touch-icon" href="images/brand/apple-touch-icon.png" />
@@ -133,7 +135,7 @@ def render(page):
   <meta name="description" content="{page['desc']}" />
   <link rel="canonical" href="https://www.lk-mcu.online/{page['slug']}" />
   <link rel="stylesheet" href="css/styles.css?v={VER}" />
-  <link rel="stylesheet" href="css/ai-assistant.css?v=20261124-2" />
+  <link rel="stylesheet" href="css/ai-assistant.css?v={VER}" />
 </head>
 <body>
 
@@ -152,7 +154,7 @@ def render(page):
       <div class="page-hero-breadcrumb">
         <a href="index.html">首页</a>
         <span class="sep">/</span>
-        <a href="index.html#boards">在售板卡</a>
+        <a href="index.html#deliverables">交付样例</a>
         <span class="sep">/</span>
         <span>{page['name']}</span>
       </div>

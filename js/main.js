@@ -310,41 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadDynamicProducts();
 
-  /* ─────────── 13. Hero 卡片点击切换 + 动态加载 ─────────── */
-  const heroCardStack = document.getElementById('heroCardStack');
-  if (heroCardStack) {
-    const heroCards = heroCardStack.querySelectorAll('.hero-float-card');
-    const posClasses = ['hero-float-card--1', 'hero-float-card--2', 'hero-float-card--3'];
-
-    heroCards.forEach(card => {
-      card.addEventListener('click', () => {
-        const clickedPos = posClasses.findIndex(cls => card.classList.contains(cls));
-        if (clickedPos === 0) return; // 已经是主图
-        // 交换点击卡片和主图的位置类
-        const mainCard = heroCardStack.querySelector('.hero-float-card--1');
-        if (!mainCard) return;
-        mainCard.classList.remove('hero-float-card--1');
-        mainCard.classList.add(posClasses[clickedPos]);
-        card.classList.remove(posClasses[clickedPos]);
-        card.classList.add('hero-float-card--1');
-      });
-    });
-
-    // 从API加载 Hero 图片
-    fetch('api.php?action=get_hero')
-      .then(r => r.json())
-      .then(data => {
-        const images = data.images || [];
-        if (images.length === 0) return;
-        heroCards.forEach((card, i) => {
-          if (images[i]) {
-            const img = card.querySelector('img');
-            if (img) img.src = images[i];
-          }
-        });
-      })
-      .catch(() => {});
-  }
+  /* 首页横幅改为深色静态图，原浮动卡片堆栈与 get_hero 拉取已下线 */
 
   console.log('✨ 产品展示网站已加载');
 });
