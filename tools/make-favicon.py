@@ -9,7 +9,7 @@ import struct
 import io
 from PIL import Image, ImageDraw
 
-BG = (16, 28, 22, 255)        # #101C16
+BG = (13, 26, 46, 255)        # #101C16
 FG = (255, 255, 255, 255)
 SS = 12                        # 超采样倍数
 
